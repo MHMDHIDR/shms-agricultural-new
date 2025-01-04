@@ -6,6 +6,7 @@ import { compare } from "bcryptjs";
 import { signInSchema } from "@/schemas/signin";
 import type { UserTheme } from "@prisma/client";
 import type { AdapterUser } from "@auth/core/adapters";
+import type { JWT } from "next-auth/jwt";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -96,6 +97,23 @@ export const authConfig = {
       return token;
     },
     async session({ session, token }) {
+      // Create a database session record
+      if (session?.user?.email && token.jti) {
+        await db.session.upsert({
+          where: {
+            sessionToken: token.jti,
+          },
+          create: {
+            sessionToken: token.jti,
+            userId: token.id as string,
+            expires: new Date((token.exp as number) * 1000),
+          },
+          update: {
+            expires: new Date((token.exp as number) * 1000),
+          },
+        });
+      }
+
       return {
         ...session,
         user: {
@@ -108,5 +126,16 @@ export const authConfig = {
   },
   session: {
     strategy: "jwt",
+  },
+  events: {
+    async signOut(message) {
+      // Check if we have a JWT token in the message
+      if ("token" in message && message.token) {
+        const token = message.token as JWT;
+        if (token.jti) {
+          await db.session.delete({ where: { sessionToken: token.jti } });
+        }
+      }
+    },
   },
 } satisfies NextAuthConfig;

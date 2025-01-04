@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { HydrateClient } from "@/trpc/server";
-import { auth, signOut } from "@/server/auth";
+import { auth } from "@/server/auth";
+import { signOut } from "@/actions/auth";
 
 export default async function Home() {
   const session = await auth();
@@ -10,13 +11,8 @@ export default async function Home() {
   return (
     <HydrateClient>
       {user ? (
-        <form
-          action={async () => {
-            "use server";
-            await signOut();
-          }}
-        >
-          <h1 className="text-5xl">Welcome {user.name}</h1>
+        <form action={signOut}>
+          <h1 className="my-2.5 text-5xl">Welcome {user.name}</h1>
           <Button size={"lg"} className="min-w-96 py-10 text-5xl">
             Sign Out
           </Button>

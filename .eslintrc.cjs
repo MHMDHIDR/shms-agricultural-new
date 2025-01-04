@@ -31,23 +31,7 @@ const config = {
     "@typescript-eslint/require-await": "off",
     "@typescript-eslint/no-misused-promises": [
       "error",
-      {
-        checksVoidReturn: {
-          attributes: false,
-        },
-      },
-    ],
-    "drizzle/enforce-delete-with-where": [
-      "error",
-      {
-        drizzleObjectName: ["db", "ctx.db"],
-      },
-    ],
-    "drizzle/enforce-update-with-where": [
-      "error",
-      {
-        drizzleObjectName: ["db", "ctx.db"],
-      },
+      { checksVoidReturn: { attributes: false } },
     ],
   },
 };
