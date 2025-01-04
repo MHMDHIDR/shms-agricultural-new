@@ -1,6 +1,5 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,17 +13,17 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { type SignInFormValues, signInSchema } from "@/schemas/signin";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { getUserTheme, signInAction } from "./actions";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
 
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { setTheme } = useTheme();
-  const toast = useToast();
   const router = useRouter();
+  const toast = useToast();
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -32,25 +31,34 @@ export function SignInForm() {
   });
 
   async function onSubmit(values: SignInFormValues) {
-    setIsLoading(true);
-    const result = await signInAction(values);
-    setIsLoading(false);
-
-    if (result.error) {
-      toast.error(result.error);
-    } else {
-      toast.success("You have successfully signed in.");
-      void setConfigurations();
-    }
-  }
-
-  async function setConfigurations() {
     try {
-      const [userTheme] = await getUserTheme();
-      setTheme(userTheme ?? "light");
+      setIsLoading(true);
+      const result = await signInAction(values);
+
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      // Sign-in successful
+      toast.success("You have successfully signed in.");
+
+      // Get user theme after successful authentication
+      try {
+        const userTheme = await getUserTheme();
+        setTheme(userTheme || "light");
+      } catch (error) {
+        console.error("Error setting theme:", error);
+        // Continue with default theme if theme setting fails
+      }
+
+      // Use router.push instead of redirect
       router.push("/");
     } catch (error) {
-      console.error("Error while setting configurations", error);
+      console.error("Sign in error:", error);
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -88,8 +96,7 @@ export function SignInForm() {
           )}
         />
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? <Loader2 className="text-green-600" /> : null}
-          Sign in
+          {isLoading ? "Signing in..." : "Sign in"}
         </Button>
       </form>
     </Form>
