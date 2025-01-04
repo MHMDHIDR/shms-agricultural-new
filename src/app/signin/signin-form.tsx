@@ -40,14 +40,14 @@ export function SignInForm() {
       toast.error(result.error);
     } else {
       toast.success("You have successfully signed in.");
-      setConfigurations();
+      void setConfigurations();
     }
   }
 
   async function setConfigurations() {
     try {
       const [userTheme] = await getUserTheme();
-      setTheme(userTheme || "light");
+      setTheme(userTheme ?? "light");
       router.push("/");
     } catch (error) {
       console.error("Error while setting configurations", error);
