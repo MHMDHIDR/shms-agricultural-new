@@ -10,9 +10,7 @@ export const signInSchema = z.object({
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(value) || isValidPhoneNumber(value);
       },
-      {
-        message: "Please provide a valid email or phone number",
-      },
+      { message: "Please provide a valid email or phone number" },
     ),
   password: z
     .string({ required_error: "Password is required" })

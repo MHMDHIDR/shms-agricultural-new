@@ -2,14 +2,13 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import type { DefaultSession, NextAuthConfig } from "next-auth";
 import { db } from "@/server/db";
-import crypto from "crypto";
-import { getUser } from "@/server/auth/actions";
+import { compare } from "bcryptjs";
+import { signInSchema } from "@/schemas/signin";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // role: UserRole;
     } & DefaultSession["user"];
   }
 }
@@ -19,47 +18,83 @@ export const authConfig = {
   providers: [
     Credentials({
       credentials: {
-        email: { label: "Email" },
+        emailOrPhone: { label: "Email or Phone" },
         password: { label: "Password", type: "password" },
       },
-      authorize: async (credentials) => {
-        let user = null;
-        const email = credentials.email as string;
-        const password = credentials.password as string;
+      async authorize(credentials) {
+        try {
+          const { emailOrPhone, password } =
+            await signInSchema.parseAsync(credentials);
 
-        // logic to salt and hash password
-        const pwHash = saltAndHashPassword(password);
+          if (!emailOrPhone || !password) {
+            return null;
+          }
 
-        // logic to verify if the user exists
-        user = await getUser(email, pwHash);
+          const user = await db.user.findFirst({
+            where: {
+              AND: [
+                { OR: [{ email: emailOrPhone }, { phone: emailOrPhone }] },
+                { userIsDeleted: false },
+              ],
+            },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              image: true,
+              password: true,
+              userAccountStatus: true,
+            },
+          });
 
-        if (!user) {
-          // No user found, so this is their first attempt to login
-          // Optionally, this is also the place you could do a user registration
-          throw new Error("Invalid credentials.");
+          if (!user) {
+            return null;
+          }
+
+          if (user.userAccountStatus !== "active") {
+            throw new Error("Account is not active");
+          }
+
+          const isValidPassword = await compare(password, user.password);
+
+          if (!isValidPassword) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          };
+        } catch (error) {
+          console.error("Auth error:", error);
+          return null;
         }
-
-        // return user object with their profile data
-        return user;
       },
     }),
   ],
+  pages: {
+    signIn: "/signin",
+  },
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id as string,
+        },
+      };
+    },
+  },
+  session: {
+    strategy: "jwt",
   },
 } satisfies NextAuthConfig;
-
-function saltAndHashPassword(password: string) {
-  const salt = crypto.randomBytes(16).toString("hex");
-  const hash = crypto
-    .pbkdf2Sync(password, salt, 1000, 64, "sha512")
-    .toString("hex");
-
-  return `${salt}:${hash}`;
-}
