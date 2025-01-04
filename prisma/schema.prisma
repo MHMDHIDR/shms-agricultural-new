@@ -23,6 +23,11 @@ enum ProjectStatus {
     active
 }
 
+enum UserTheme {
+    light
+    dark
+}
+
 type Stocks {
     id               String
     stocks           Int
@@ -82,6 +87,7 @@ model User {
     sessions          Session[]
     password          String
     phone             String
+    theme             UserTheme          @default(light)
     doc               String
     userStocks        Stocks[]
     userStockLimit    Int                @default(20)

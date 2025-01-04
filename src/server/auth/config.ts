@@ -4,17 +4,23 @@ import type { DefaultSession, NextAuthConfig } from "next-auth";
 import { db } from "@/server/db";
 import { compare } from "bcryptjs";
 import { signInSchema } from "@/schemas/signin";
+import type { UserTheme } from "@prisma/client";
+import type { AdapterUser } from "@auth/core/adapters";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      theme: UserTheme;
     } & DefaultSession["user"];
+  }
+  interface User extends AdapterUser {
+    theme: UserTheme;
   }
 }
 
 export const authConfig = {
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(db) as any,
   providers: [
     Credentials({
       credentials: {
@@ -43,7 +49,9 @@ export const authConfig = {
               name: true,
               image: true,
               password: true,
+              theme: true,
               userAccountStatus: true,
+              emailVerified: true,
             },
           });
 
@@ -66,6 +74,8 @@ export const authConfig = {
             email: user.email,
             name: user.name,
             image: user.image,
+            theme: user.theme,
+            emailVerified: null,
           };
         } catch (error) {
           console.error("Auth error:", error);
@@ -81,6 +91,7 @@ export const authConfig = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.theme = user.theme;
       }
       return token;
     },
@@ -90,6 +101,7 @@ export const authConfig = {
         user: {
           ...session.user,
           id: token.id as string,
+          theme: token.theme as UserTheme,
         },
       };
     },

@@ -1,7 +1,9 @@
 "use server";
 
 import { SignInFormValues } from "@/schemas/signin";
-import { signIn } from "@/server/auth";
+import { auth, signIn } from "@/server/auth";
+import { db } from "@/server/db";
+import { UserTheme } from "@prisma/client";
 
 export async function signInAction(values: SignInFormValues) {
   try {
@@ -28,5 +30,24 @@ export async function signInAction(values: SignInFormValues) {
       }
     }
     return { error: "An unexpected error occurred" };
+  }
+}
+
+export async function getUserTheme(): Promise<UserTheme> {
+  try {
+    const session = await auth();
+    const user = session?.user;
+
+    if (!user?.id) return "light";
+
+    const theme = await db.user.findFirst({
+      where: { id: user.id },
+      select: { theme: true },
+    });
+
+    return theme?.theme ?? "light";
+  } catch (error) {
+    console.error("Error getting user theme:", error);
+    return "light";
   }
 }

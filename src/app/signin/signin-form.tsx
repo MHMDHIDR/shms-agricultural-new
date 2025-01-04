@@ -16,10 +16,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { signInAction } from "./actions";
+import { getUserTheme, signInAction } from "./actions";
+import { useTheme } from "next-themes";
 
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const { setTheme } = useTheme();
   const toast = useToast();
 
   const form = useForm<SignInFormValues>({
@@ -36,8 +38,13 @@ export function SignInForm() {
       toast.error(result.error);
     } else {
       toast.success("You have successfully signed in.");
-      redirect("/");
+      // Fetch and set theme on successful authentication
+      const [userTheme] = await Promise.all([getUserTheme()]);
+
+      setTheme(userTheme || "light");
     }
+
+    redirect("/");
   }
 
   return (
