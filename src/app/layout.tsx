@@ -1,9 +1,8 @@
 import "@/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { Providers } from "./providers";
-import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "./providers/theme-provider";
-import { cookies } from "next/headers";
+import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   title: "Shms Agricultural",
@@ -16,12 +15,9 @@ export const viewport: Viewport = {
   themeColor: "#22c55f",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const cookieStore = await cookies();
-  const theme = cookieStore.get("theme")?.value;
-
   return (
     <html
       lang="en"
@@ -32,7 +28,6 @@ export default async function RootLayout({
         <Providers>
           <ThemeProvider
             attribute="class"
-            defaultTheme={theme}
             disableTransitionOnChange
             enableSystem
           >
