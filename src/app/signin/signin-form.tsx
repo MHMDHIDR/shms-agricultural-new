@@ -49,14 +49,13 @@ export function SignInForm() {
       } catch (error) {
         console.error("Error setting theme:", error);
       }
-
-      router.push("/");
     } catch (error) {
       console.error("Sign in error:", error);
       toast.error("An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
+    router.push("/");
   }
 
   return (
