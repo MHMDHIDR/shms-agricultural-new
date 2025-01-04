@@ -5,6 +5,7 @@ import { db } from "@/server/db";
 import { compare } from "bcryptjs";
 import { signInSchema } from "@/schemas/signin";
 import type { UserTheme } from "@prisma/client";
+import { cookies } from "next/headers";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -64,6 +65,9 @@ export const authConfig = {
           if (!isValidPassword) {
             return null;
           }
+
+          const cookieStore = await cookies();
+          cookieStore.set("theme", user.theme);
 
           return {
             id: user.id,

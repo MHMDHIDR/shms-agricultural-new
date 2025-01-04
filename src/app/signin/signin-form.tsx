@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,16 +14,15 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { type SignInFormValues, signInSchema } from "@/schemas/signin";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { getUserTheme, signInAction } from "./actions";
-import { useTheme } from "next-themes";
+import { signInAction } from "./actions";
 
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { setTheme } = useTheme();
-  const router = useRouter();
   const toast = useToast();
 
   const form = useForm<SignInFormValues>({
@@ -40,26 +40,15 @@ export function SignInForm() {
         return;
       }
 
-      // Sign-in successful
+      setTheme(result.theme ?? "light");
+
       toast.success("You have successfully signed in.");
-
-      // Get user theme after successful authentication
-      try {
-        const userTheme = await getUserTheme();
-        setTheme(userTheme || "light");
-      } catch (error) {
-        console.error("Error setting theme:", error);
-        // Continue with default theme if theme setting fails
-      }
-
-      // Use router.push instead of redirect
-      router.push("/");
     } catch (error) {
       console.error("Sign in error:", error);
       toast.error("An unexpected error occurred");
-    } finally {
-      setIsLoading(false);
     }
+
+    redirect("/");
   }
 
   return (
@@ -96,7 +85,8 @@ export function SignInForm() {
           )}
         />
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Signing in..." : "Sign in"}
+          {isLoading && <Loader2 className="animate-spin text-green-500" />}
+          Sign in
         </Button>
       </form>
     </Form>

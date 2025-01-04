@@ -1,9 +1,9 @@
 import "@/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { Providers } from "./providers";
+import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "./providers/theme-provider";
-import { auth } from "@/server/auth";
-import type { Viewport, Metadata } from "next";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Shms Agricultural",
@@ -19,8 +19,8 @@ export const viewport: Viewport = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const session = await auth();
-  const user = session?.user;
+  const cookieStore = await cookies();
+  const theme = cookieStore.get("theme")?.value;
 
   return (
     <html
@@ -32,7 +32,7 @@ export default async function RootLayout({
         <Providers>
           <ThemeProvider
             attribute="class"
-            defaultTheme={user?.theme ?? "light"}
+            defaultTheme={theme}
             disableTransitionOnChange
             enableSystem
           >
