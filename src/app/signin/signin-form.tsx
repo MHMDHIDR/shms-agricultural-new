@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { type SignInFormValues, signInSchema } from "@/schemas/signin";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { getUserTheme, signInAction } from "./actions";
@@ -22,6 +22,7 @@ import { useTheme } from "next-themes";
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { setTheme } = useTheme();
+  const router = useRouter();
   const toast = useToast();
 
   const form = useForm<SignInFormValues>({
@@ -30,21 +31,32 @@ export function SignInForm() {
   });
 
   async function onSubmit(values: SignInFormValues) {
-    setIsLoading(true);
-    const result = await signInAction(values);
-    setIsLoading(false);
+    try {
+      setIsLoading(true);
+      const result = await signInAction(values);
 
-    if (result.error) {
-      toast.error(result.error);
-    } else {
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+
       toast.success("You have successfully signed in.");
-      // Fetch and set theme on successful authentication
-      // const [userTheme] = await Promise.all([getUserTheme()]);
 
-      // setTheme(userTheme || "light");
+      // Get user theme after successful authentication
+      try {
+        const userTheme = await getUserTheme();
+        setTheme(userTheme || "light");
+      } catch (error) {
+        console.error("Error setting theme:", error);
+      }
+
+      router.push("/");
+    } catch (error) {
+      console.error("Sign in error:", error);
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
     }
-
-    redirect("/");
   }
 
   return (
