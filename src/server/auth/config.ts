@@ -5,8 +5,6 @@ import { db } from "@/server/db";
 import { compare } from "bcryptjs";
 import { signInSchema } from "@/schemas/signin";
 import type { UserTheme } from "@prisma/client";
-import type { AdapterUser } from "@auth/core/adapters";
-import type { JWT } from "next-auth/jwt";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -15,13 +13,10 @@ declare module "next-auth" {
       theme: UserTheme;
     } & DefaultSession["user"];
   }
-  interface User extends AdapterUser {
-    theme: UserTheme;
-  }
 }
 
 export const authConfig = {
-  adapter: PrismaAdapter(db) as any,
+  adapter: PrismaAdapter(db),
   providers: [
     Credentials({
       credentials: {
@@ -92,7 +87,6 @@ export const authConfig = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.theme = user.theme;
       }
       return token;
     },
@@ -100,17 +94,13 @@ export const authConfig = {
       // Create a database session record
       if (session?.user?.email && token.jti) {
         await db.session.upsert({
-          where: {
-            sessionToken: token.jti,
-          },
+          where: { sessionToken: token.jti },
           create: {
             sessionToken: token.jti,
             userId: token.id as string,
-            expires: new Date((token.exp as number) * 1000),
+            expires: new Date(token.exp! * 1000),
           },
-          update: {
-            expires: new Date((token.exp as number) * 1000),
-          },
+          update: { expires: new Date(token.exp! * 1000) },
         });
       }
 
@@ -131,7 +121,7 @@ export const authConfig = {
     async signOut(message) {
       // Check if we have a JWT token in the message
       if ("token" in message && message.token) {
-        const token = message.token as JWT;
+        const token = message.token;
         if (token.jti) {
           await db.session.delete({ where: { sessionToken: token.jti } });
         }

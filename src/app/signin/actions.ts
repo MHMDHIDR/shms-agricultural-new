@@ -1,17 +1,17 @@
 "use server";
 
-import { SignInFormValues } from "@/schemas/signin";
 import { auth, signIn } from "@/server/auth";
 import { db } from "@/server/db";
-import { UserTheme } from "@prisma/client";
+import type { SignInFormValues } from "@/schemas/signin";
+import type { UserTheme } from "@prisma/client";
 
 export async function signInAction(values: SignInFormValues) {
   try {
-    const result = await signIn("credentials", {
+    const result = (await signIn("credentials", {
       redirect: false,
       emailOrPhone: values.emailOrPhone,
       password: values.password,
-    });
+    })) as { error: string };
 
     if (!result) {
       return { error: "An unexpected error occurred" };

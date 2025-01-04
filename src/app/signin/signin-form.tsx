@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { SignInFormValues, signInSchema } from "@/schemas/signin";
+import { type SignInFormValues, signInSchema } from "@/schemas/signin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { useState } from "react";
