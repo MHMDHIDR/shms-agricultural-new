@@ -39,9 +39,9 @@ export function SignInForm() {
     } else {
       toast.success("You have successfully signed in.");
       // Fetch and set theme on successful authentication
-      const [userTheme] = await Promise.all([getUserTheme()]);
+      // const [userTheme] = await Promise.all([getUserTheme()]);
 
-      setTheme(userTheme || "light");
+      // setTheme(userTheme || "light");
     }
 
     redirect("/");
