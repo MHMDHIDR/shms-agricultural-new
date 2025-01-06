@@ -1,44 +1,57 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import Credentials from "next-auth/providers/credentials";
-import type { DefaultSession, NextAuthConfig } from "next-auth";
-import { db } from "@/server/db";
-import { compare } from "bcryptjs";
-import { signInSchema } from "@/schemas/signin";
-import type { UserTheme } from "@prisma/client";
-import { cookies } from "next/headers";
+import { PrismaAdapter } from '@auth/prisma-adapter'
+import { compare } from 'bcryptjs'
+import Credentials from 'next-auth/providers/credentials'
+import { cookies } from 'next/headers'
+import { signInSchema } from '@/schemas/signin'
+import { db } from '@/server/db'
+import type { Adapter } from '@auth/core/adapters'
+import type { User as UserTable, UserTheme } from '@prisma/client'
+import type { NextAuthConfig, User } from 'next-auth'
 
-declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-      theme: UserTheme;
-    } & DefaultSession["user"];
+declare module 'next-auth' {
+  interface User {
+    role: UserTable['role']
+    theme: UserTheme
+  }
+}
+
+declare module '@auth/core/jwt' {
+  interface JWT {
+    id: string
+    role: UserTable['role']
+    theme: UserTheme
+  }
+}
+
+declare module '@auth/core/adapters' {
+  interface AdapterUser {
+    role: UserTable['role']
+    theme: UserTheme
   }
 }
 
 export const authConfig = {
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(db) as Adapter,
   providers: [
     Credentials({
       credentials: {
-        emailOrPhone: { label: "Email or Phone" },
-        password: { label: "Password", type: "password" },
+        emailOrPhone: { label: 'Email or Phone' },
+        password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<User | null> {
         try {
-          const { emailOrPhone, password } =
-            await signInSchema.parseAsync(credentials);
+          const { emailOrPhone, password } = await signInSchema.parseAsync(credentials)
 
           if (!emailOrPhone || !password) {
-            return null;
+            return null
           }
 
           const user = await db.user.findFirst({
             where: {
               AND: [
                 { OR: [{ email: emailOrPhone }, { phone: emailOrPhone }] },
-                { userIsDeleted: false },
-              ],
+                { isDeleted: false }
+              ]
             },
             select: {
               id: true,
@@ -47,27 +60,27 @@ export const authConfig = {
               image: true,
               password: true,
               theme: true,
-              userAccountStatus: true,
-              emailVerified: true,
-            },
-          });
+              role: true,
+              accountStatus: true
+            }
+          })
 
           if (!user) {
-            return null;
+            return null
           }
 
-          if (user.userAccountStatus !== "active") {
-            throw new Error("Account is not active");
+          if (user.accountStatus !== 'active') {
+            throw new Error('Account is not active')
           }
 
-          const isValidPassword = await compare(password, user.password);
+          const isValidPassword = await compare(password, user.password)
 
           if (!isValidPassword) {
-            return null;
+            return null
           }
 
-          const cookieStore = await cookies();
-          cookieStore.set("theme", user.theme);
+          const cookieStore = await cookies()
+          cookieStore.set('theme', user.theme)
 
           return {
             id: user.id,
@@ -75,37 +88,36 @@ export const authConfig = {
             name: user.name,
             image: user.image,
             theme: user.theme,
-            emailVerified: null,
-          };
+            role: user.role
+          }
         } catch (error) {
-          console.error("Auth error:", error);
-          return null;
+          console.error('Auth error:', error)
+          return null
         }
-      },
-    }),
+      }
+    })
   ],
-  pages: {
-    signIn: "/signin",
-  },
+  pages: { signIn: '/signin' },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = user.id
+        token.role = user.role
+        token.theme = user.theme
       }
-      return token;
+      return token
     },
     async session({ session, token }) {
-      // Create a database session record
       if (session?.user?.email && token.jti) {
         await db.session.upsert({
           where: { sessionToken: token.jti },
           create: {
             sessionToken: token.jti,
             userId: token.id as string,
-            expires: new Date(token.exp! * 1000),
+            expires: new Date(token.exp! * 1000)
           },
-          update: { expires: new Date(token.exp! * 1000) },
-        });
+          update: { expires: new Date(token.exp! * 1000) }
+        })
       }
 
       return {
@@ -113,23 +125,23 @@ export const authConfig = {
         user: {
           ...session.user,
           id: token.id as string,
-          theme: token.theme as UserTheme,
-        },
-      };
-    },
+          role: token.role as UserTable['role'],
+          theme: token.theme as UserTheme
+        }
+      }
+    }
   },
   session: {
-    strategy: "jwt",
+    strategy: 'jwt'
   },
   events: {
     async signOut(message) {
-      // Check if we have a JWT token in the message
-      if ("token" in message && message.token) {
-        const token = message.token;
+      if ('token' in message && message.token) {
+        const token = message.token
         if (token.jti) {
-          await db.session.delete({ where: { sessionToken: token.jti } });
+          await db.session.delete({ where: { sessionToken: token.jti } })
         }
       }
-    },
-  },
-} satisfies NextAuthConfig;
+    }
+  }
+} satisfies NextAuthConfig

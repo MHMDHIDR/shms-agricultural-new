@@ -1,22 +1,22 @@
-import { z } from "zod";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { isValidPhoneNumber } from 'libphonenumber-js'
+import { z } from 'zod'
 
 export const signInSchema = z.object({
   emailOrPhone: z
-    .string({ required_error: "Email or phone number is required" })
-    .min(1, "Email or phone number is required")
+    .string({ required_error: 'Email or phone number is required' })
+    .min(1, 'Email or phone number is required')
     .refine(
-      (value) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(value) || isValidPhoneNumber(value);
+      value => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return emailRegex.test(value) || isValidPhoneNumber(value)
       },
-      { message: "Please provide a valid email or phone number" },
+      { message: 'Please provide a valid email or phone number' }
     ),
   password: z
-    .string({ required_error: "Password is required" })
-    .min(1, "Password is required")
-    .min(8, "Password must be more than 8 characters")
-    .max(32, "Password must be less than 32 characters"),
-});
+    .string({ required_error: 'Password is required' })
+    .min(1, 'Password is required')
+    .min(8, 'Password must be more than 8 characters')
+    .max(32, 'Password must be less than 32 characters')
+})
 
-export type SignInFormValues = z.infer<typeof signInSchema>;
+export type SignInFormValues = z.infer<typeof signInSchema>

@@ -1,37 +1,27 @@
-/** @type {import("eslint").Linter.Config} */
-const config = {
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    project: true,
-  },
-  extends: [
-    "next/core-web-vitals",
-    "plugin:@typescript-eslint/recommended-type-checked",
-    "plugin:@typescript-eslint/stylistic-type-checked",
-  ],
+module.exports = {
+  extends: ["next/core-web-vitals", "prettier"],
   rules: {
-    "@typescript-eslint/only-throw-error": "off",
-    "@typescript-eslint/no-unsafe-assignment": "off",
-    "@typescript-eslint/array-type": "off",
-    "@typescript-eslint/consistent-type-definitions": "off",
-    "@typescript-eslint/consistent-type-imports": [
+    "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+    "func-names": ["warn", "as-needed"],
+    "max-depth": ["warn", 4],
+    "max-lines": [
       "warn",
-      {
-        prefer: "type-imports",
-        fixStyle: "inline-type-imports",
-      },
+      { max: 450, skipBlankLines: true, skipComments: true },
     ],
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        argsIgnorePattern: "^_",
-      },
-    ],
-    "@typescript-eslint/require-await": "off",
-    "@typescript-eslint/no-misused-promises": [
-      "error",
-      { checksVoidReturn: { attributes: false } },
-    ],
+    "prefer-arrow-callback": "warn",
+    "prefer-const": "warn",
+    "prefer-template": "warn",
+    "object-curly-spacing": ["warn", "always"],
+    "keyword-spacing": "warn",
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/no-unescaped-entities": "warn",
+    "react/no-children-prop": "warn",
+    "react/jsx-fragments": ["warn", "syntax"],
+    "react/jsx-no-useless-fragment": "warn",
+    "react/jsx-pascal-case": "warn",
+    "import/prefer-default-export": "off",
+    "@next/next/no-img-element": "warn",
+    "@next/next/no-html-link-for-pages": "warn",
   },
 };
-module.exports = config;
