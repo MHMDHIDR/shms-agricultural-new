@@ -11,9 +11,9 @@ type ToastStyles = {
 }
 
 type ToastFunctions = {
-  success: (message: string, options?: Omit<ToastT, 'message'>) => void
-  error: (message: string, options?: Omit<ToastT, 'message'>) => void
-  loading: (message: string, options?: Omit<ToastT, 'message'>) => void
+  success: (_message: string, _options?: Omit<ToastT, 'message'>) => void
+  error: (_message: string, _options?: Omit<ToastT, 'message'>) => void
+  loading: (_message: string, _options?: Omit<ToastT, 'message'>) => void
 }
 
 const toastStyles: Record<ToastType, ToastStyles> = {

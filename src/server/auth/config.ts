@@ -8,6 +8,7 @@ import type { Adapter } from '@auth/core/adapters'
 import type { User as UserTable, UserTheme } from '@prisma/client'
 import type { NextAuthConfig, User } from 'next-auth'
 
+/* eslint-disable no-unused-vars */
 declare module 'next-auth' {
   interface User {
     role: UserTable['role']
@@ -30,6 +31,7 @@ declare module '@auth/core/adapters' {
   }
 }
 
+/* eslint-enable no-unused-vars */
 export const authConfig = {
   adapter: PrismaAdapter(db) as Adapter,
   providers: [
