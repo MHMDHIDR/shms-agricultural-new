@@ -47,7 +47,7 @@ export async function Nav() {
   return (
     <nav className='bg-white text-black'>
       <div className='mx-auto container px-4'>
-        <div className='flex h-16 items-center justify-between'>
+        <div className='flex h-16 items-center justify-between select-none'>
           <div className='flex items-center'>
             <Link href='/'>
               <ShmsIcon className='h-11 w-24' />
@@ -73,7 +73,7 @@ export async function Nav() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant='ghost' className=''>
+                <Button variant='ghost'>
                   {user.name}
                   <User2Icon className='h-5 w-5' />
                 </Button>

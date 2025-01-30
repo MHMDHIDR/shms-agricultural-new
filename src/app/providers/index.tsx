@@ -5,7 +5,7 @@ import { TRPCReactProvider } from '@/trpc/react'
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <NextTopLoader color='#b73306' showAtBottom={false} zIndex={1600} />
+      <NextTopLoader color='#22c55f' showAtBottom={false} zIndex={1600} />
       <TRPCReactProvider>{children}</TRPCReactProvider>
       <Toaster />
     </>

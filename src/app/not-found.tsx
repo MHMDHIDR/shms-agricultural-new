@@ -6,7 +6,7 @@ export default function NotFound() {
     <div className='flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-background to-muted p-4'>
       <div className='mx-auto w-full max-w-3xl space-y-8 text-center duration-1000 animate-in fade-in slide-in-from-bottom-4'>
         <div className='space-y-2'>
-          <h1 className='text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl'>
+          <h1 className='text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-primary'>
             Oops! You&apos;re Lost in Space
           </h1>
           <p className='mx-auto max-w-[700px] text-muted-foreground md:text-xl'>
@@ -20,6 +20,7 @@ export default function NotFound() {
             alt='404 Illustration'
             fill
             className='animate-float object-contain'
+            priority
           />
         </div>
 
