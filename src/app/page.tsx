@@ -1,11 +1,12 @@
-import { Nav } from '@/components/custom/nav'
+import Hero from '@/components/custom/hero'
 import { HydrateClient } from '@/trpc/server'
 
 export default async function Home() {
   return (
     <>
-      <Nav />
-      <HydrateClient>Hello world</HydrateClient>
+      <HydrateClient>
+        <Hero />
+      </HydrateClient>
     </>
   )
 }

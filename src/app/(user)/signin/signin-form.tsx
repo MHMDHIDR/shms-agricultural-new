@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
@@ -25,6 +25,7 @@ export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false)
   const { setTheme } = useTheme()
   const toast = useToast()
+  const router = useRouter()
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -44,13 +45,13 @@ export function SignInForm() {
 
       setTheme(result.theme ?? 'light')
       toast.success('You have successfully signed in.')
+      router.refresh()
+      router.push('/')
     } catch (error) {
       console.error('Sign in error:', error)
       toast.error('An unexpected error occurred')
       setIsLoading(false)
     }
-
-    redirect('/')
   }
 
   return (
