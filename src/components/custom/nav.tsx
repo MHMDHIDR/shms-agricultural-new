@@ -1,6 +1,6 @@
 import { MenuIcon, User2Icon } from 'lucide-react'
 import Link from 'next/link'
-import { signOut } from '@/actions/auth'
+import { handleSignOut } from '@/actions/auth'
 import { ShmsIcon } from '@/components/custom/icons'
 import { Button } from '@/components/ui/button'
 import {
@@ -71,32 +71,22 @@ export async function Nav() {
           </div>
 
           {user ? (
-            <DropdownMenu>
+            <DropdownMenu dir='rtl'>
               <DropdownMenuTrigger asChild>
-                <Button variant='ghost'>
-                  {user.name}
+                <Button variant='ghost' className='gap-1.5'>
                   <User2Icon className='h-5 w-5' />
+                  {user.name}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownLinkItem
-                  href='/dashboard'
-                  className='justify-end px-2.5 hover:cursor-pointer'
-                >
-                  لوحة التحكم
-                </DropdownLinkItem>
+              <DropdownMenuContent align='end' className='text-right'>
+                <DropdownLinkItem href='/dashboard'>لوحة التحكم</DropdownLinkItem>
                 {user.role === 'admin' && (
-                  <DropdownLinkItem
-                    href='/admin'
-                    className='justify-end px-2.5 hover:cursor-pointer'
-                  >
-                    الإدارة
-                  </DropdownLinkItem>
+                  <DropdownLinkItem href='/admin'>الإدارة</DropdownLinkItem>
                 )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className='p-0'>
-                  <form action={signOut} className='w-full'>
-                    <Button variant='destructive' type='submit' className='w-full'>
+                <DropdownMenuItem asChild>
+                  <form action={handleSignOut} className='w-full'>
+                    <Button variant='destructive' type='submit' className='w-full justify-start'>
                       تسجيل الخروج
                     </Button>
                   </form>
