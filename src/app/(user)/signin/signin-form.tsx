@@ -1,70 +1,73 @@
-'use client'
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2 } from 'lucide-react'
-import { useTheme } from 'next-themes'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { useToast } from '@/hooks/use-toast'
-import { signInSchema } from '@/schemas/signin'
-import { signInAction } from './actions'
-import type { SignInFormValues } from '@/schemas/signin'
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { signInSchema } from "@/schemas/signin";
+import { signInAction } from "./actions";
+import type { SignInFormValues } from "@/schemas/signin";
 
 export function SignInForm() {
-  const [isLoading, setIsLoading] = useState(false)
-  const { setTheme } = useTheme()
-  const toast = useToast()
-  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const { setTheme } = useTheme();
+  const toast = useToast();
+  const router = useRouter();
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
-    defaultValues: { emailOrPhone: '', password: '' }
-  })
+    defaultValues: { emailOrPhone: "", password: "" },
+  });
 
   async function onSubmit(values: SignInFormValues) {
     try {
-      setIsLoading(true)
-      const result = await signInAction(values)
+      setIsLoading(true);
+      const result = await signInAction(values);
 
       if (result.error) {
-        toast.error(result.error)
-        setIsLoading(false)
-        return
+        toast.error(result.error);
+        setIsLoading(false);
+        return;
       }
 
-      setTheme(result.theme ?? 'light')
-      toast.success('You have successfully signed in.')
-      router.refresh()
-      router.push('/')
+      setTheme(result.theme ?? "light");
+      toast.success("تم تسجيل الدخول بنجاح");
+      router.refresh();
+      router.push("/");
     } catch (error) {
-      console.error('Sign in error:', error)
-      toast.error('An unexpected error occurred')
-      setIsLoading(false)
+      console.error("Sign in error:", error);
+      toast.error("حدث خطأ اثناء تسجيل الدخول");
+      setIsLoading(false);
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name='emailOrPhone'
+          name="emailOrPhone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email or Phone</FormLabel>
+              <FormLabel>رقم الهاتف او البريد الالكتروني</FormLabel>
               <FormControl>
-                <Input placeholder='Email or phone number' {...field} />
+                <Input
+                  placeholder="البريد الالكتروني أو رقم الهاتف"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -72,22 +75,22 @@ export function SignInForm() {
         />
         <FormField
           control={form.control}
-          name='password'
+          name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>كلمة المرور</FormLabel>
               <FormControl>
-                <Input type='password' placeholder='Enter your password' {...field} />
+                <Input type="password" placeholder="كلمة المرور" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type='submit' disabled={isLoading}>
-          {isLoading && <Loader2 className='animate-spin text-green-500' />}
-          Sign in
+        <Button type="submit" disabled={isLoading}>
+          {isLoading && <Loader2 className="animate-spin text-green-500" />}
+          تسجيل الدخول
         </Button>
       </form>
     </Form>
-  )
+  );
 }
