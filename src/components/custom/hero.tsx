@@ -10,23 +10,25 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useCountUp } from "@/hooks/use-count-up";
+import { api } from "@/trpc/react";
 import { NutIcon, Play, TreePineIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function Hero() {
+  const { data: usersData } = api.user.getAll.useQuery();
   const YEAR_IN_INDUSTRY = Math.abs(2020 - new Date().getFullYear());
   const FARMING_PROJECTS = 1;
   const USER_SATISFACTION = 100;
-  const TOTAL_USERS = 7000;
+  const TOTAL_USERS = usersData?.count ?? 1;
 
   const [isVideoOpen, setIsVideoOpen] = useState(false);
 
   const yearInIndustryCount = useCountUp(YEAR_IN_INDUSTRY);
   const farmingProjectsCount = useCountUp(FARMING_PROJECTS);
   const satisfactionCount = useCountUp(USER_SATISFACTION);
-  const usersCount = useCountUp(TOTAL_USERS);
+  const usersCount = useCountUp(TOTAL_USERS, 1);
 
   const users = [{ fallback: "مح" }, { fallback: "عل" }, { fallback: "بش" }];
 
