@@ -1,0 +1,41 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { MyTooltip } from "@/components/ui/tooltip";
+import { ChevronUp } from "lucide-react";
+import { scrollToView } from "@/lib/scroll-to-view";
+
+export function NavigateTop({
+  scrolledHeight = 200,
+}: {
+  scrolledHeight?: number;
+}) {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const isSticky = () => {
+    const scrollTop = window.scrollY;
+    scrollTop > scrolledHeight ? setIsScrolled(true) : setIsScrolled(false);
+  };
+  useEffect(() => {
+    window.addEventListener("scroll", isSticky);
+    return () => window.removeEventListener("scroll", isSticky);
+  }, [isSticky]);
+
+  return (
+    <MyTooltip text="الى الأعلى">
+      <Button
+        variant={"outline"}
+        className={`group fixed bottom-2.5 right-2.5 w-fit opacity-80 transition duration-700 hover:opacity-100 ${
+          isScrolled ? `translate-x-0` : `translate-x-20`
+        }`}
+        onClick={() => scrollToView(400)}
+        aria-label="الى الأعلى"
+      >
+        <ChevronUp
+          strokeWidth={1.5}
+          className="stroke-green-600 opacity-75 transition-transform group-hover:-translate-y-1 group-hover:scale-110 group-hover:opacity-100"
+        />
+      </Button>
+    </MyTooltip>
+  );
+}

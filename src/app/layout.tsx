@@ -4,6 +4,7 @@ import { Nav } from "@/components/custom/nav";
 import type { Metadata, Viewport } from "next";
 import { Providers } from "@/providers";
 import { ThemeProvider } from "@/providers/theme-provider";
+import Footer from "@/components/custom/footer";
 
 const notoKufiArabic = Noto_Kufi_Arabic({
   subsets: ["arabic"],
@@ -32,7 +33,7 @@ export default async function RootLayout({
       suppressHydrationWarning
       dir="rtl"
     >
-      <body className="font-noto-kufi bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50">
+      <body className="bg-slate-50 font-noto-kufi text-slate-900 dark:bg-slate-900 dark:text-slate-50">
         <Providers>
           <ThemeProvider
             attribute="class"
@@ -41,6 +42,7 @@ export default async function RootLayout({
           >
             <Nav />
             {children}
+            <Footer />
           </ThemeProvider>
         </Providers>
       </body>

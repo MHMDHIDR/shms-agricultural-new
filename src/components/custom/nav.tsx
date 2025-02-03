@@ -1,6 +1,3 @@
-import { MenuIcon, User2Icon } from "lucide-react";
-import Link from "next/link";
-import { handleSignOut } from "@/actions/auth";
 import { ShmsIcon } from "@/components/custom/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +16,9 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { auth } from "@/server/auth";
+import { auth, signOut } from "@/server/auth";
+import { MenuIcon, User2Icon } from "lucide-react";
+import Link from "next/link";
 
 export async function Nav() {
   const session = await auth();
@@ -90,7 +89,13 @@ export async function Nav() {
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <form action={handleSignOut} className="w-full">
+                  <form
+                    action={async () => {
+                      "use server";
+                      await signOut();
+                    }}
+                    className="w-full"
+                  >
                     <Button
                       variant="destructive"
                       type="submit"
