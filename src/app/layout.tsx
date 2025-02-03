@@ -1,9 +1,15 @@
 import "@/styles/globals.css";
-import { GeistSans } from "geist/font/sans";
+import { Noto_Kufi_Arabic } from "next/font/google";
 import { Nav } from "@/components/custom/nav";
 import type { Metadata, Viewport } from "next";
 import { Providers } from "@/providers";
 import { ThemeProvider } from "@/providers/theme-provider";
+
+const notoKufiArabic = Noto_Kufi_Arabic({
+  subsets: ["arabic"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-noto-kufi",
+});
 
 export const metadata: Metadata = {
   title: "Shms Agricultural",
@@ -21,11 +27,12 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="en"
-      className={`${GeistSans.variable}`}
+      lang="ar"
+      className={`${notoKufiArabic.variable}`}
       suppressHydrationWarning
+      dir="rtl"
     >
-      <body className="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50">
+      <body className="font-noto-kufi bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50">
         <Providers>
           <ThemeProvider
             attribute="class"
