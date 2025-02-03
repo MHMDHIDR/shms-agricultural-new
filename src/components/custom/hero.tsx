@@ -57,6 +57,7 @@ export default function Hero() {
                   className="h-full w-full object-cover"
                   width={500}
                   height={500}
+                  priority
                 />
               </div>
               <div className="absolute bottom-0 z-10 flex max-w-fit items-center justify-center gap-1 rounded-full bg-white px-4 py-3 shadow-md">
@@ -138,7 +139,7 @@ export default function Hero() {
 
       <Dialog open={isVideoOpen} onOpenChange={setIsVideoOpen}>
         <DialogContent className="p-2.5 sm:max-w-[800px]">
-          <DialogHeader>
+          <DialogHeader className="select-none pt-4 !text-center">
             <DialogTitle>فيديو استثمار</DialogTitle>
             <DialogDescription>
               شاهد فيديو الاستثمار في مجال الزراعة
