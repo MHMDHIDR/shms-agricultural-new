@@ -1,32 +1,42 @@
-import '@/styles/globals.css'
-import { GeistSans } from 'geist/font/sans'
-import { Nav } from '@/components/custom/nav'
-import { Providers } from './providers'
-import { ThemeProvider } from './providers/theme-provider'
-import type { Metadata, Viewport } from 'next'
+import "@/styles/globals.css";
+import { GeistSans } from "geist/font/sans";
+import { Nav } from "@/components/custom/nav";
+import type { Metadata, Viewport } from "next";
+import { Providers } from "@/providers";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 export const metadata: Metadata = {
-  title: 'Shms Agricultural',
-  authors: [{ name: 'Mohammed Ibrahim', url: 'https://mohammedhaydar.com' }],
-  description: 'Shms Agricultural',
-  icons: [{ rel: 'icon', url: '/favicon.ico' }]
-}
+  title: "Shms Agricultural",
+  authors: [{ name: "Mohammed Ibrahim", url: "https://mohammedhaydar.com" }],
+  description: "Shms Agricultural",
+  icons: [{ rel: "icon", url: "/favicon.ico" }],
+};
 
 export const viewport: Viewport = {
-  themeColor: '#22c55f'
-}
+  themeColor: "#22c55f",
+};
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang='en' className={`${GeistSans.variable}`} suppressHydrationWarning>
-      <body className='bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50'>
+    <html
+      lang="en"
+      className={`${GeistSans.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50">
         <Providers>
-          <ThemeProvider attribute='class' disableTransitionOnChange enableSystem>
+          <ThemeProvider
+            attribute="class"
+            disableTransitionOnChange
+            enableSystem
+          >
             <Nav />
             {children}
           </ThemeProvider>
         </Providers>
       </body>
     </html>
-  )
+  );
 }

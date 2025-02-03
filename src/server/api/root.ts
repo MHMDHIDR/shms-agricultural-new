@@ -1,10 +1,10 @@
-import { createCallerFactory, createTRPCRouter } from '@/server/api/trpc'
-import { userRouter } from './routers/user'
+import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
+import { userRouter } from "./routers/user";
 
 export const appRouter = createTRPCRouter({
-  user: userRouter
-})
+  user: userRouter,
+});
 
-export type AppRouter = typeof appRouter
+export type AppRouter = typeof appRouter;
 
-export const createCaller = createCallerFactory(appRouter)
+export const createCaller = createCallerFactory(appRouter);
