@@ -1,12 +1,12 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { compare } from "bcryptjs";
-import Credentials from "next-auth/providers/credentials";
-import { cookies } from "next/headers";
 import { signInSchema } from "@/schemas/signin";
 import { db } from "@/server/db";
 import type { Adapter } from "@auth/core/adapters";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { User as UserTable, UserTheme } from "@prisma/client";
+import { compare } from "bcryptjs";
 import type { NextAuthConfig, User } from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import { cookies } from "next/headers";
 
 /* eslint-disable no-unused-vars */
 declare module "next-auth" {
@@ -33,7 +33,7 @@ declare module "@auth/core/adapters" {
 
 /* eslint-enable no-unused-vars */
 export const authConfig = {
-  adapter: PrismaAdapter(db) as Adapter,
+  adapter: PrismaAdapter(db),
   providers: [
     Credentials({
       credentials: {
