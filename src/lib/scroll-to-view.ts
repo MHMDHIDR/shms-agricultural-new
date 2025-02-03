@@ -3,14 +3,11 @@
  * @param scrollY the y position to scroll to
  * @returns void
  */
-export const scrollToView = (scrollY: number | undefined = 500) =>
-  setTimeout(
-    () =>
-      window.scrollTo({
-        top:
-          scrollY ??
-          (document.querySelector(`#hero`) as HTMLElement)?.offsetHeight, // ==> window.scrollY / 3
-        behavior: "smooth",
-      }),
-    100,
-  );
+export const scrollToView = (scrollY = 500) =>
+  setTimeout(() => {
+    const heroElement = document.querySelector("#hero")!;
+    window.scrollTo({
+      top: scrollY ?? (heroElement as HTMLElement).offsetHeight,
+      behavior: "smooth",
+    });
+  }, 100);

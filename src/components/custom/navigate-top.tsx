@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MyTooltip } from "@/components/ui/tooltip";
 import { ChevronUp } from "lucide-react";
@@ -12,10 +12,10 @@ export function NavigateTop({
   scrolledHeight?: number;
 }) {
   const [isScrolled, setIsScrolled] = useState(false);
-  const isSticky = () => {
+  const isSticky = useCallback(() => {
     const scrollTop = window.scrollY;
-    scrollTop > scrolledHeight ? setIsScrolled(true) : setIsScrolled(false);
-  };
+    setIsScrolled(scrollTop > scrolledHeight);
+  }, [scrolledHeight]);
   useEffect(() => {
     window.addEventListener("scroll", isSticky);
     return () => window.removeEventListener("scroll", isSticky);

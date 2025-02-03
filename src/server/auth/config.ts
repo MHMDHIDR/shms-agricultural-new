@@ -1,6 +1,5 @@
 import { signInSchema } from "@/schemas/signin";
 import { db } from "@/server/db";
-import type { Adapter } from "@auth/core/adapters";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { User as UserTable, UserTheme } from "@prisma/client";
 import { compare } from "bcryptjs";

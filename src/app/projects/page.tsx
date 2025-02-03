@@ -1,5 +1,5 @@
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: `مشاريعنا الاستثمارية | ${APP_TITLE}

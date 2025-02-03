@@ -1,4 +1,5 @@
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const sections = [
@@ -35,10 +36,12 @@ export default function Footer() {
             <div className="flex w-full max-w-96 shrink flex-col items-center justify-between gap-6 lg:items-start">
               <div>
                 <span className="flex items-center justify-center gap-4 lg:justify-start">
-                  <img
-                    src="https://shadcnblocks.com/images/block/block-1.svg"
+                  <Image
+                    src="/logo.svg"
                     alt="logo"
                     className="h-11"
+                    width={44}
+                    height={44}
                   />
                   <p className="text-3xl font-semibold">شمــس</p>
                 </span>
