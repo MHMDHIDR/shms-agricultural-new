@@ -15,16 +15,20 @@ import { NutIcon, Play, TreePineIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { LoadingCard } from "./loading";
 
 export default function Hero() {
-  const { data: usersData } = api.user.getAll.useQuery();
+  const { data: usersData, isLoading: isLoadingUsers } =
+    api.user.getAll.useQuery();
   const YEAR_IN_INDUSTRY = Math.abs(2020 - new Date().getFullYear());
   const FARMING_PROJECTS = 1;
   const USER_SATISFACTION = 100;
   const TOTAL_USERS = usersData?.count ?? 1;
   const TOP_INVESTORS_NAMES = usersData?.users
     .map((user) => user.name?.slice(0, 2))
-    .slice(0, 3);
+    .slice(0, 7); // get the first 7 names;
+  const MAIN_HEADLINE = "استثمر في مجال الزراعة في السودان";
+  const SUB_HEADLINE = `"ازرع ثروتك اليوم.. واحصد نجاحك غدًا! استثمر في مستقبل الزراعة في السودان." 🌱💰`;
 
   const [isVideoOpen, setIsVideoOpen] = useState(false);
 
@@ -50,9 +54,9 @@ export default function Hero() {
       </div>
 
       <div className="container relative z-20 mx-auto md:max-w-[70rem]">
-        <div className="flex flex-col gap-4 md:flex-row">
-          <div className="md:w-1/2">
-            <div className="relative mx-auto mt-28 h-[21.25rem] w-[21.25rem] rounded-full bg-secondary shadow-2xl transition-transform duration-300 hover:-translate-y-2 md:mx-0 md:mt-0 lg:h-[25rem] lg:w-[25rem]">
+        <div className="flex flex-col-reverse gap-4 md:flex-row">
+          <div className="flex justify-center md:w-1/2">
+            <div className="relative mx-auto h-[16rem] w-[16rem] rounded-full bg-secondary shadow-2xl transition-transform duration-300 hover:-translate-y-2 md:mx-0 md:mt-0 md:h-[21.25rem] md:w-[21.25rem] lg:h-[25rem] lg:w-[25rem]">
               <div className="absolute inset-0 overflow-hidden rounded-full">
                 <Image
                   src="/vision-hero.webp"
@@ -74,16 +78,24 @@ export default function Hero() {
                   </span>
                 </div>
                 <div className="flex -space-x-2" dir="ltr">
-                  {users?.map(({ fallback }, index) => (
-                    <Avatar
-                      key={index}
-                      className="h-8 w-8 rounded-full border-4 border-white bg-primary"
-                    >
-                      <AvatarFallback className="text-xs">
-                        {fallback}
-                      </AvatarFallback>
-                    </Avatar>
-                  ))}
+                  {isLoadingUsers ? (
+                    <LoadingCard
+                      layout="horizontal"
+                      className="h-6 w-6 rounded-full"
+                      renderedSkeletons={5}
+                    />
+                  ) : (
+                    users?.map(({ fallback }, index) => (
+                      <Avatar
+                        key={index}
+                        className="h-8 w-8 rounded-full border-4 border-white bg-primary"
+                      >
+                        <AvatarFallback className="text-xs">
+                          {fallback}
+                        </AvatarFallback>
+                      </Avatar>
+                    ))
+                  )}
                 </div>
               </div>
               <div className="absolute right-0 top-0 flex h-[6.25rem] w-[6.25rem] rotate-12 rounded-3xl border-8 border-white bg-primary lg:h-[6.875rem] lg:w-[6.875rem]">
@@ -95,17 +107,23 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="flex flex-col justify-center gap-6 md:w-1/2">
-            <h1 className="text-4xl font-extrabold !leading-snug text-white lg:text-5xl">
-              استثمر في مجال الزراعة في السودان
+          <div className="flex flex-col items-center px-4 text-center md:hidden">
+            <h1 className="mb-4 text-3xl font-extrabold !leading-snug text-white">
+              {MAIN_HEADLINE}
+            </h1>
+            <p className="mb-6 text-lg text-gray-200">{SUB_HEADLINE}</p>
+          </div>
+
+          <div className="hidden flex-col justify-center gap-6 md:flex md:w-1/2">
+            <h1 className="text-3xl font-extrabold !leading-snug text-white lg:text-5xl">
+              {MAIN_HEADLINE}
             </h1>
             <p className="text-lg text-gray-200 lg:max-w-[80%]">
-              &quot;ازرع ثروتك اليوم.. واحصد نجاحك غدًا! استثمر في مستقبل
-              الزراعة في السودان.&quot; 🌱💰
+              {SUB_HEADLINE}
             </p>
             <div className="relative z-10 flex flex-wrap items-center gap-6">
               <Button asChild variant="default">
-                <Link href="/signup">ابدأ الاستثمار</Link>
+                <Link href="/signup">ابدأ الاستثمار</Link>
               </Button>
               <Button
                 variant="ghost"

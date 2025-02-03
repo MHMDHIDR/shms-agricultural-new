@@ -81,7 +81,7 @@ export async function Nav() {
                   {user.name}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="text-right">
+              <DropdownMenuContent align="end" className="min-w-44 text-right">
                 <DropdownLinkItem href="/dashboard">
                   لوحة التحكم
                 </DropdownLinkItem>
@@ -94,7 +94,7 @@ export async function Nav() {
                     <Button
                       variant="destructive"
                       type="submit"
-                      className="w-full justify-start"
+                      className="w-full"
                     >
                       تسجيل الخروج
                     </Button>
