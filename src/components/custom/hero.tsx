@@ -26,9 +26,9 @@ export default function Hero() {
   const [isVideoOpen, setIsVideoOpen] = useState(false);
 
   const yearInIndustryCount = useCountUp(YEAR_IN_INDUSTRY);
-  const farmingProjectsCount = useCountUp(FARMING_PROJECTS);
+  const farmingProjectsCount = useCountUp(FARMING_PROJECTS, 500);
   const satisfactionCount = useCountUp(USER_SATISFACTION);
-  const usersCount = useCountUp(TOTAL_USERS, 1);
+  const usersCount = useCountUp(TOTAL_USERS);
 
   const users = [{ fallback: "مح" }, { fallback: "عل" }, { fallback: "بش" }];
 
@@ -60,20 +60,27 @@ export default function Hero() {
                   priority
                 />
               </div>
-              <div className="absolute bottom-0 z-10 flex max-w-fit items-center justify-center gap-1 rounded-full bg-white px-4 py-3 shadow-md">
-                <div className="flex -space-x-4" dir="ltr">
+              <div className="absolute bottom-0 z-10 flex max-w-fit flex-col items-center justify-center gap-0.5 rounded-full bg-white px-6 py-2 shadow-md">
+                <div className="flex-1 text-sm text-gray-800">
+                  <span>
+                    إنضم لـ
+                    <strong className="mx-1">
+                      +{usersCount.toLocaleString()}
+                    </strong>
+                    مستثمرين المستقبل
+                  </span>
+                </div>
+                <div className="flex -space-x-2" dir="ltr">
                   {users.map(({ fallback }, index) => (
                     <Avatar
                       key={index}
-                      className="h-10 w-10 rounded-full border-4 border-white bg-primary ring-0"
+                      className="h-6 w-6 rounded-full border-4 border-white bg-primary"
                     >
-                      <AvatarFallback>{fallback}</AvatarFallback>
+                      <AvatarFallback className="text-xs">
+                        {fallback}
+                      </AvatarFallback>
                     </Avatar>
                   ))}
-                </div>
-                <div className="flex-1 text-sm text-gray-800">
-                  <strong>{usersCount.toLocaleString()}+</strong> مستثمرين
-                  المستقبل
                 </div>
               </div>
               <div className="absolute right-0 top-0 flex h-[6.25rem] w-[6.25rem] rotate-12 rounded-3xl border-8 border-white bg-primary lg:h-[6.875rem] lg:w-[6.875rem]">
@@ -86,7 +93,7 @@ export default function Hero() {
           </div>
 
           <div className="flex flex-col gap-6 md:w-1/2">
-            <h1 className="text-4xl font-extrabold text-white lg:text-6xl">
+            <h1 className="text-4xl font-extrabold !leading-snug text-white lg:text-6xl">
               استثمر في مجال الزراعة في السودان
             </h1>
             <p className="text-lg text-gray-200 lg:max-w-[80%]">
