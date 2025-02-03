@@ -109,7 +109,7 @@ export async function Nav() {
           )}
 
           <div className="sm:hidden">
-            <NavigationMenu>
+            <NavigationMenu className="z-50">
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger>
