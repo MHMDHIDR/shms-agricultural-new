@@ -22,6 +22,9 @@ export default function Hero() {
   const FARMING_PROJECTS = 1;
   const USER_SATISFACTION = 100;
   const TOTAL_USERS = usersData?.count ?? 1;
+  const TOP_INVESTORS_NAMES = usersData?.users
+    .map((user) => user.name?.slice(0, 2))
+    .slice(0, 3);
 
   const [isVideoOpen, setIsVideoOpen] = useState(false);
 
@@ -30,12 +33,12 @@ export default function Hero() {
   const satisfactionCount = useCountUp(USER_SATISFACTION);
   const usersCount = useCountUp(TOTAL_USERS);
 
-  const users = [{ fallback: "مح" }, { fallback: "عل" }, { fallback: "بش" }];
+  const users = TOP_INVESTORS_NAMES?.map((name) => ({ fallback: name }));
 
   return (
     <section className="relative select-none overflow-hidden bg-background py-12 md:py-32">
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 z-10 bg-black/50" />
+        <div className="absolute inset-0 z-10 bg-black/70" />
         <video
           src="/hero.mp4"
           loop
@@ -46,10 +49,10 @@ export default function Hero() {
         />
       </div>
 
-      <div className="container relative z-20 mx-auto max-w-[60rem]">
+      <div className="container relative z-20 mx-auto md:max-w-[70rem]">
         <div className="flex flex-col gap-4 md:flex-row">
           <div className="md:w-1/2">
-            <div className="relative mx-auto mt-28 h-[21.25rem] w-[21.25rem] rounded-full bg-orange-300 shadow-2xl transition-transform duration-300 hover:-translate-y-2 md:mx-0 md:mt-0 lg:h-[25rem] lg:w-[25rem]">
+            <div className="relative mx-auto mt-28 h-[21.25rem] w-[21.25rem] rounded-full bg-secondary shadow-2xl transition-transform duration-300 hover:-translate-y-2 md:mx-0 md:mt-0 lg:h-[25rem] lg:w-[25rem]">
               <div className="absolute inset-0 overflow-hidden rounded-full">
                 <Image
                   src="/vision-hero.webp"
@@ -71,10 +74,10 @@ export default function Hero() {
                   </span>
                 </div>
                 <div className="flex -space-x-2" dir="ltr">
-                  {users.map(({ fallback }, index) => (
+                  {users?.map(({ fallback }, index) => (
                     <Avatar
                       key={index}
-                      className="h-6 w-6 rounded-full border-4 border-white bg-primary"
+                      className="h-8 w-8 rounded-full border-4 border-white bg-primary"
                     >
                       <AvatarFallback className="text-xs">
                         {fallback}
@@ -92,8 +95,8 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-6 md:w-1/2">
-            <h1 className="text-4xl font-extrabold !leading-snug text-white lg:text-6xl">
+          <div className="flex flex-col justify-center gap-6 md:w-1/2">
+            <h1 className="text-4xl font-extrabold !leading-snug text-white lg:text-5xl">
               استثمر في مجال الزراعة في السودان
             </h1>
             <p className="text-lg text-gray-200 lg:max-w-[80%]">
@@ -109,10 +112,12 @@ export default function Hero() {
                 className="group flex items-center gap-2 text-white hover:bg-transparent"
                 onClick={() => setIsVideoOpen(true)}
               >
-                <div className="flex h-10 w-10 rounded-full bg-orange-500 transition-transform group-hover:scale-110">
+                <div className="flex h-10 w-10 rounded-full bg-secondary transition-transform group-hover:scale-110">
                   <Play className="m-auto h-5 w-5 fill-white stroke-white" />
                 </div>
-                <span>فيديو الاستثمار</span>
+                <span className="group-hover:text-primary">
+                  فيديو الاستثمار
+                </span>
               </Button>
             </div>
           </div>

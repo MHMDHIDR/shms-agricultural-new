@@ -12,8 +12,8 @@
     --popover-foreground: 240 10% 3.9%;
     --primary: 142.1 76.2% 36.3%;
     --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    --secondary: 50 97% 24%;
+    --secondary-foreground: 50 97% 90%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
     --accent: 240 4.8% 95.9%;
@@ -40,7 +40,7 @@
     --popover-foreground: 0 0% 95%;
     --primary: 142.1 70.6% 45.3%;
     --primary-foreground: 144.9 80.4% 10%;
-    --secondary: 240 3.7% 15.9%;
+    --secondary: 50 97% 18%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 15%;
     --muted-foreground: 240 5% 64.9%;
@@ -70,7 +70,7 @@
 
 @layer components {
   .pressable {
-    @apply ring-offset-background focus-visible:ring-ring inline-flex h-10 min-w-[7rem] items-center justify-center whitespace-nowrap rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-[0_7px] shadow-green-700 transition-all hover:translate-y-1 hover:bg-green-700 hover:shadow-[0_5px] hover:shadow-green-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex h-10 min-w-[7rem] items-center justify-center whitespace-nowrap rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-[0_7px] shadow-green-700 ring-offset-background transition-all hover:translate-y-1 hover:bg-green-700 hover:shadow-[0_5px] hover:shadow-green-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
   }
 
   .animate-float {
