@@ -11,12 +11,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ContactFormData, contactSchema, services } from "@/schemas/contact";
+import {
+  type ContactFormData,
+  contactSchema,
+  services,
+} from "@/schemas/contact";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { redirect } from "next/navigation";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 
 export default function Contact() {
   const {
