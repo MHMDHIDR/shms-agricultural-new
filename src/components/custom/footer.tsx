@@ -75,7 +75,7 @@ export default function Footer() {
         </div>
       </div>
       <Divider className="my-5" />
-      <div className="flex select-none flex-col justify-between gap-4 pt-4 text-center text-sm font-medium text-muted-foreground lg:flex-row lg:items-center lg:text-right">
+      <div className="flex select-none flex-col justify-between gap-4 pt-4 text-center text-xs font-medium text-muted-foreground lg:flex-row lg:items-center lg:text-right">
         <p>
           <span>&copy; 2023 - {new Date().getFullYear()} </span> شمــس للخمات
           الزراعية | جميع الحقوق محفوظة.

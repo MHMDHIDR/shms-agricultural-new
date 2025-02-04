@@ -35,11 +35,7 @@ export default async function RootLayout({
     >
       <body className="bg-slate-50 font-noto-kufi text-slate-900 dark:bg-slate-900 dark:text-slate-50">
         <Providers>
-          <ThemeProvider
-            attribute="class"
-            disableTransitionOnChange
-            enableSystem
-          >
+          <ThemeProvider attribute="class" disableTransitionOnChange>
             <Nav />
             {children}
             <Footer />
