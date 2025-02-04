@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { auth, signOut } from "@/server/auth";
 import { MenuIcon, User2Icon } from "lucide-react";
-import Link from "next/link";
 import { NavWrapper } from "@/components/custom/nav/nav-wrapper";
 
 export async function Nav() {
