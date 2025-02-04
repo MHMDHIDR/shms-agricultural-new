@@ -15,6 +15,7 @@ export const env = createEnv({
     AWS_BUCKET_NAME: z.string(),
     AWS_REGION: z.string(),
     AWS_SECRET: z.string(),
+    RESEND_API_KEY: z.string(),
   },
   client: {},
   runtimeEnv: {
@@ -25,6 +26,7 @@ export const env = createEnv({
     AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
     AWS_REGION: process.env.AWS_REGION,
     AWS_SECRET: process.env.AWS_SECRET,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,

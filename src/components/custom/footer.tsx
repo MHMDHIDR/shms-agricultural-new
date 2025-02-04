@@ -1,4 +1,5 @@
-import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import Divider from "@/components/custom/divider";
+import { Instagram } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -15,7 +16,7 @@ const sections = [
     title: "الشركة",
     links: [
       { name: "من نحن", href: "about" },
-      { name: "الفريق", href: "#" },
+      { name: "الفريق", href: "/" },
     ],
   },
   {
@@ -29,7 +30,7 @@ const sections = [
 
 export default function Footer() {
   return (
-    <footer className="container mx-auto overflow-clip px-4 py-20 md:max-w-[70rem] md:px-0">
+    <footer className="container mx-auto overflow-clip px-4 py-10 pb-5 md:max-w-[70rem] md:px-0">
       <div className="flex flex-col items-center justify-between gap-10 text-center lg:flex-row lg:text-right">
         <div className="flex w-full max-w-96 shrink flex-col items-center justify-between gap-6 lg:items-start">
           <div>
@@ -37,11 +38,13 @@ export default function Footer() {
               <Image
                 src="/logo.svg"
                 alt="logo"
-                className="h-11"
-                width={44}
-                height={44}
+                className="h-8 w-8 md:h-20 md:w-20"
+                width={56}
+                height={56}
               />
-              <p className="text-3xl font-semibold">شمــس</p>
+              <p className="select-none text-xl font-semibold md:text-3xl">
+                شمــس
+              </p>
             </span>
             <p className="mt-6 text-sm leading-loose text-muted-foreground">
               منصة استثمارية زراعية توفر مشاريع متنوعة لتعزيز الإنتاج الزراعي
@@ -71,7 +74,8 @@ export default function Footer() {
           ))}
         </div>
       </div>
-      <div className="mt-20 flex select-none flex-col justify-between gap-4 border-t pt-8 text-center text-sm font-medium text-muted-foreground lg:flex-row lg:items-center lg:text-right">
+      <Divider className="my-5" />
+      <div className="flex select-none flex-col justify-between gap-4 pt-4 text-center text-sm font-medium text-muted-foreground lg:flex-row lg:items-center lg:text-right">
         <p>
           <span>&copy; 2023 - {new Date().getFullYear()} </span> شمــس للخمات
           الزراعية | جميع الحقوق محفوظة.
