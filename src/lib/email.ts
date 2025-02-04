@@ -19,7 +19,8 @@ export async function sendContactEmail({
     const resend = new Resend(env.RESEND_API_KEY);
     const { data, error } = await resend.emails.send({
       from: `${name} <${ADMIN_EMAIL}>`,
-      to: "Mr.hamood277@gmail.com",
+      to: ADMIN_EMAIL,
+      cc: ["mo.b2shir@gmail.com", "mr.hamood277@gmail.com"],
       subject: `${subject} من <${contact}>`,
       html: `
       <p><strong>الموضوع:</strong> ${subject}</p>

@@ -1,19 +1,11 @@
-import { z } from "zod";
+import { sendContactEmail } from "@/lib/email";
+import { contactSchema } from "@/schemas/contact";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { sendContactEmail } from "@/lib/email";
 
 export const contactRouter = createTRPCRouter({
   sendMessage: publicProcedure
-    .input(
-      z.object({
-        phoneOrEmail: z
-          .string()
-          .min(1, "يجب إدخال البريد الإلكتروني أو رقم الهاتف"),
-        subject: z.string().min(1, "يجب اختيار نوع الخدمة"),
-        message: z.string().min(1, "يجب إدخال الرسالة"),
-      }),
-    )
+    .input(contactSchema)
     .mutation(async ({ input }) => {
       try {
         const result = await sendContactEmail({
