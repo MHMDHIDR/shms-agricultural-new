@@ -33,11 +33,11 @@ export default async function RootLayout({
       suppressHydrationWarning
       dir="rtl"
     >
-      <body className="bg-slate-50 font-noto-kufi text-slate-900 dark:bg-slate-900 dark:text-slate-50">
+      <body className="flex min-h-screen flex-col bg-slate-50 font-noto-kufi text-slate-900 dark:bg-slate-900 dark:text-slate-50">
         <Providers>
           <ThemeProvider attribute="class" disableTransitionOnChange>
             <Nav />
-            {children}
+            <main className="flex-1">{children}</main>
             <Footer />
           </ThemeProvider>
         </Providers>
