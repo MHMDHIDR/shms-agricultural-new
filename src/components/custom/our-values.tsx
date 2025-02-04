@@ -7,7 +7,7 @@ export default function OurValues() {
     <section className="container mx-auto overflow-clip px-4 py-20 md:max-w-[70rem] md:px-0">
       <div className="flex flex-col justify-center gap-7 text-center">
         <h2 className="text-2xl md:text-3xl">رؤيتنا</h2>
-        <p className="text-sm !leading-loose text-muted-foreground dark:text-secondary-foreground md:text-base">
+        <p className="text-sm leading-loose! text-muted-foreground dark:text-secondary-foreground md:text-base">
           أن يكون السودان هو فعلياً سلة غذاء العالم وأن يكون رائداً بين الدول
           العربية في مجال الزراعة وتطوير الأدوات الزراعية وتحسين جودة المزروعات،
           مما يسهم بشكل كبير في النمو الاقتصادي للفرد وللدولة على حد سواء. كما
@@ -15,7 +15,7 @@ export default function OurValues() {
           الزراعية، مع دعم المجتمعات المحلية لخلق بيئة زراعية متطورة ومستدامة.
         </p>
       </div>
-      <div className="mt-14 grid max-w-screen-lg grid-cols-1 items-center gap-10 md:grid-cols-2 lg:px-16">
+      <div className="mt-14 grid max-w-(--breakpoint-lg) grid-cols-1 items-center gap-10 md:grid-cols-2 lg:px-16">
         {[
           {
             title: "روح الفريق",
@@ -45,11 +45,11 @@ export default function OurValues() {
               transition={{ duration: 0.5, delay: index * 0.2 }}
             >
               <div className="flex flex-col items-center gap-1">
-                <span className="h-20 w-[3px] bg-gradient-to-b from-transparent to-primary opacity-70"></span>
+                <span className="h-20 w-[3px] bg-linear-to-b from-transparent to-primary opacity-70"></span>
                 <span className="flex size-10 select-none items-center justify-center rounded-full border bg-muted/50 font-mono text-lg">
                   {index + 1}
                 </span>
-                <span className="h-20 w-[3px] bg-gradient-to-b from-primary to-transparent opacity-70"></span>
+                <span className="h-20 w-[3px] bg-linear-to-b from-primary to-transparent opacity-70"></span>
               </div>
               <div className="flex flex-col justify-center gap-5 px-4 py-4">
                 <h3 className="text-xl lg:text-2xl">{item.title}</h3>

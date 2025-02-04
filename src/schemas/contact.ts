@@ -4,6 +4,7 @@ import { isValidPhoneNumber } from "libphonenumber-js";
 // List of services to validate against
 export const services = [
   "خدمات استشارية زراعية",
+  "احجز عرضًا تجريبيًا",
   "تمويل المشاريع الزراعية",
   "تسويق المنتجات الزراعية",
   "تأجير المعدات الزراعية",

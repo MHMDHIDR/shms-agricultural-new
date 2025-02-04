@@ -1,19 +1,22 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { services } from "@/schemas/contact";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function OurServices() {
+  const serviceIndex = 1;
+
   return (
     <section className="container mx-auto overflow-clip px-4 py-20 md:max-w-[70rem] md:px-0">
       <div className="relative grid gap-16 md:grid-cols-2">
         <div className="top-40 h-fit md:sticky">
-          <h2 className="mb-6 mt-4 text-4xl font-semibold md:text-5xl">
+          <h2 className="mt-4 mb-6 text-4xl font-semibold md:text-5xl">
             اختبر الفرق معنا
           </h2>
-          <p className="font-medium text-muted-foreground dark:text-secondary-foreground md:text-xl">
+          <p className="text-muted-foreground dark:text-secondary-foreground font-medium md:text-xl">
             نحن نؤمن بإنشاء شراكات دائمة مع مستثمرينا مع التركيز على النجاح طويل
             الأمد من خلال الابتكار التعاوني والدعم المخصص.
           </p>
@@ -22,8 +25,8 @@ export default function OurServices() {
               <Link href="/signup">ابدأ الآن</Link>
             </Button>
             <Button variant="outline" size="lg" className="gap-2" asChild>
-              <Link href="/signup" className="dark:text-secondary">
-                احجز عرضًا تجريبيًا
+              <Link href={`/contact?service=${serviceIndex}`}>
+                {services[serviceIndex]}
               </Link>
             </Button>
           </div>
@@ -68,6 +71,7 @@ export default function OurServices() {
                   className="aspect-video w-full rounded-xl border border-dashed object-cover"
                   width={400}
                   height={200}
+                  priority
                 />
                 <div className="p-6">
                   <h3 className="mb-1 text-2xl font-semibold">

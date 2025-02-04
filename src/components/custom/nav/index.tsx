@@ -52,7 +52,7 @@ export async function Nav() {
               <NavigationMenuLink
                 key={item.href}
                 href={item.href}
-                className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+                className="group hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-hidden disabled:pointer-events-none disabled:opacity-50"
               >
                 {item.title}
               </NavigationMenuLink>
@@ -109,12 +109,12 @@ export async function Nav() {
                     <NavigationMenuLink
                       key={item.href}
                       href={item.href}
-                      className="block select-none space-y-1 rounded-md p-3 text-right leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block space-y-1 rounded-md p-3 text-right leading-none no-underline outline-hidden transition-colors select-none"
                     >
-                      <div className="text-sm font-medium leading-none">
+                      <div className="text-sm leading-none font-medium">
                         {item.title}
                       </div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                      <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
                         {item.description}
                       </p>
                     </NavigationMenuLink>

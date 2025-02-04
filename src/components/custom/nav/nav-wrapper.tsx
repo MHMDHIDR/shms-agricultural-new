@@ -3,9 +3,13 @@ import { useEffect, useState } from "react";
 import { ShmsIcon } from "@/components/custom/icons";
 import Link from "next/link";
 import clsx from "clsx";
+import { usePathname } from "next/navigation";
 
 export function NavWrapper({ children }: { children: React.ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+
+  console.log(pathname);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,7 +29,7 @@ export function NavWrapper({ children }: { children: React.ReactNode }) {
       )}
       dir="ltr"
     >
-      <div className="container mx-auto flex h-full select-none items-center justify-between px-4 text-black">
+      <div className="container mx-auto flex h-full items-center justify-between px-4 text-black select-none">
         <div className="flex items-center">
           <Link href="/">
             <ShmsIcon
