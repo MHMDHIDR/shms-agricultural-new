@@ -123,7 +123,7 @@ export default function Hero() {
             </p>
             <div className="relative z-10 flex flex-wrap items-center gap-6">
               <Button asChild variant="default">
-                <Link href="/signup">ابدأ الاستثمار</Link>
+                <Link href="/projects">ابدأ الاستثمار</Link>
               </Button>
               <Button
                 variant="ghost"
