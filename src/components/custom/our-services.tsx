@@ -25,7 +25,7 @@ export default function OurServices() {
               <Link href="/signup">ابدأ الآن</Link>
             </Button>
             <Button variant="outline" size="lg" className="gap-2" asChild>
-              <Link href={`/contact?service=${serviceIndex}`}>
+              <Link href={`/contact?service=${services[serviceIndex]}`}>
                 {services[serviceIndex]}
               </Link>
             </Button>

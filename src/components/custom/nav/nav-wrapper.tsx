@@ -9,8 +9,6 @@ export function NavWrapper({ children }: { children: React.ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  console.log(pathname);
-
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 50;

@@ -106,7 +106,10 @@ export default function Contact() {
               name="subject"
               control={control}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={service ? service : field.value}
+                >
                   <SelectTrigger
                     className="rtl w-full border border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
                     id="subject"
