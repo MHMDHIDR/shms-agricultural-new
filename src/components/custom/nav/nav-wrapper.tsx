@@ -1,13 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+
 import { ShmsIcon } from "@/components/custom/icons";
-import Link from "next/link";
 import clsx from "clsx";
-import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export function NavWrapper({ children }: { children: React.ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {

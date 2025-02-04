@@ -91,9 +91,9 @@ export async function Nav() {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Link href="/signin">
-          <Button variant="ghost">تسجيل الدخول</Button>
-        </Link>
+        <NavigationMenu>
+          <NavigationMenuLink href="/signin">تسجيل الدخول</NavigationMenuLink>
+        </NavigationMenu>
       )}
 
       <div className="sm:hidden">

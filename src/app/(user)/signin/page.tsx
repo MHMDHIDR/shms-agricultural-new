@@ -9,8 +9,8 @@ export default async function SignInPage() {
   return user ? (
     redirect("/")
   ) : (
-    <div className="container mx-auto max-w-md py-12">
-      <h1 className="mb-14 select-none text-center text-2xl font-bold">
+    <div className="container mx-auto max-w-md px-2.5 py-20">
+      <h1 className="mb-14 text-center text-2xl font-bold select-none">
         تسجيل الدخول
       </h1>
       <SignInForm />

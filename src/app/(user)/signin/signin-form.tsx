@@ -62,7 +62,9 @@ export function SignInForm() {
           name="emailOrPhone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>رقم الهاتف او البريد الالكتروني</FormLabel>
+              <FormLabel className="text-xs select-none">
+                رقم الهاتف او البريد الالكتروني
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder="البريد الالكتروني أو رقم الهاتف"
@@ -78,7 +80,7 @@ export function SignInForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>كلمة المرور</FormLabel>
+              <FormLabel className="text-xs select-none">كلمة المرور</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="كلمة المرور" {...field} />
               </FormControl>
