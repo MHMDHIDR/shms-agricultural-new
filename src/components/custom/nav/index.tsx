@@ -25,6 +25,10 @@ export async function Nav() {
 
   const menuItems = [
     {
+      title: "المشاريع الاستثمارية",
+      href: "/projects",
+    },
+    {
       title: "تحضير",
       href: "/preparation",
     },
