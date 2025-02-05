@@ -46,7 +46,7 @@ export async function Nav() {
     <NavWrapper>
       <div className="hidden sm:block">
         <NavigationMenu>
-          <NavigationMenuList>
+          <NavigationMenuList className="rtl:rtl" dir="auto">
             {menuItems.map((item) => (
               <NavigationMenuLink
                 key={item.href}
