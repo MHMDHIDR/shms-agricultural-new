@@ -25,15 +25,15 @@ export function NavigateTop({
     <MyTooltip text="الى الأعلى">
       <Button
         variant={"outline"}
-        className={`group fixed bottom-2.5 right-2.5 w-fit opacity-80 transition duration-700 hover:opacity-100 ${
+        className={`group fixed right-2.5 bottom-2.5 w-fit cursor-pointer opacity-80 transition duration-700 hover:opacity-100 dark:bg-slate-700 ${
           isScrolled ? `translate-x-0` : `translate-x-20`
         }`}
         onClick={() => scrollToView(400)}
         aria-label="الى الأعلى"
       >
         <ChevronUp
-          strokeWidth={1.5}
-          className="stroke-green-600 opacity-75 transition-transform group-hover:-translate-y-1 group-hover:scale-110 group-hover:opacity-100"
+          strokeWidth={2}
+          className="stroke-green-600 opacity-75 transition-transform group-hover:-translate-y-1 group-hover:scale-110 group-hover:opacity-100 dark:stroke-green-400"
         />
       </Button>
     </MyTooltip>

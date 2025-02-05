@@ -68,6 +68,7 @@ export function SignInForm() {
               <FormControl>
                 <Input
                   placeholder="البريد الالكتروني أو رقم الهاتف"
+                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
                   {...field}
                 />
               </FormControl>
@@ -82,7 +83,12 @@ export function SignInForm() {
             <FormItem>
               <FormLabel className="text-xs select-none">كلمة المرور</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="كلمة المرور" {...field} />
+                <Input
+                  type="password"
+                  placeholder="كلمة المرور"
+                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

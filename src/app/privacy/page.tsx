@@ -1,4 +1,3 @@
-import { NavigateTop } from "@/components/custom/navigate-top";
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <main className="rtl flex min-h-screen flex-col gap-y-10 p-2.5 md:p-16">
-      <h1 className="select-none text-xl font-bold">سياسة الخصوصية</h1>
+      <h1 className="text-xl font-bold select-none">سياسة الخصوصية</h1>
       <section className="leading-loose md:text-justify">
         <h2 className="text-sm font-semibold text-gray-600">
           آخر تحديث في 6 فبراير 2024
@@ -354,7 +353,6 @@ export default function PrivacyPage() {
           </Link>
         </p>
       </section>
-      <NavigateTop />
     </main>
   );
 }

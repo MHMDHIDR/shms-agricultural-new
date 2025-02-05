@@ -21,7 +21,7 @@ export function NavWrapper({ children }: { children: React.ReactNode }) {
   return (
     <nav
       className={clsx(
-        "sticky top-0 z-50 w-full bg-white transition-all duration-200",
+        "sticky top-0 z-50 w-full bg-white shadow transition-all duration-200",
         { "h-12": scrolled, "h-16": !scrolled },
       )}
       dir="ltr"

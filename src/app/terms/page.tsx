@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { NavigateTop } from "@/components/custom/navigate-top";
 import type { Metadata } from "next";
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
 
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <main className="rtl flex min-h-screen flex-col justify-between p-2.5 md:p-16">
-      <h1 className="select-none text-xl font-bold">الشروط والأحكام</h1>
+      <h1 className="text-xl font-bold select-none">الشروط والأحكام</h1>
       <section className="text-justify leading-loose">
         <h2 className="mt-4 text-lg font-semibold">مقدمة</h2>
         <p>
@@ -116,7 +115,6 @@ export default function TermsPage() {
           </Link>
         </p>
       </section>
-      <NavigateTop />
     </main>
   );
 }

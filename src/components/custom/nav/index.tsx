@@ -1,3 +1,4 @@
+import { NavWrapper } from "@/components/custom/nav/nav-wrapper";
 import { Button } from "@/components/ui/button";
 import {
   DropdownLinkItem,
@@ -17,7 +18,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { auth, signOut } from "@/server/auth";
 import { MenuIcon, User2Icon } from "lucide-react";
-import { NavWrapper } from "@/components/custom/nav/nav-wrapper";
 
 export async function Nav() {
   const session = await auth();
