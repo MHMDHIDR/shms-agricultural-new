@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @plugin 'tailwindcss-animate';
 
@@ -6,7 +6,7 @@
 
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-noto-kufi: var(--font-noto-kufi);
 
   --radius-lg: var(--radius);
@@ -68,14 +68,6 @@
   }
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
@@ -87,7 +79,7 @@
 }
 
 @utility pressable {
-  @apply inline-flex h-10 min-w-[7rem] items-center justify-center whitespace-nowrap rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-[0_7px] shadow-green-700 ring-offset-background transition-all hover:translate-y-1 hover:bg-green-700 hover:shadow-[0_5px] hover:shadow-green-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  @apply ring-offset-background focus-visible:ring-ring inline-flex h-10 min-w-[7rem] items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium whitespace-nowrap text-white shadow-[0_7px] shadow-green-700 transition-all hover:translate-y-1 hover:bg-green-700 hover:shadow-[0_5px] hover:shadow-green-900 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50;
 }
 
 @utility animate-float {
@@ -161,7 +153,7 @@
   }
 
   body {
-    @apply overscroll-none bg-background text-foreground;
+    @apply bg-background text-foreground overscroll-none;
   }
 
   .rtl {
@@ -171,10 +163,33 @@
   .ltr {
     direction: ltr;
   }
+
+  ::-webkit-scrollbar {
+    --scrollbar-size: 0.5rem;
+    @apply h-[var(--scrollbar-size)] w-[calc(var(--scrollbar-size)*0.7)];
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-green-400;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-green-800;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply cursor-pointer bg-green-900;
+  }
+
+  /* hide input number increment buttons */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }
 
 @layer components {
-
   @keyframes float {
     0% {
       transform: translateY(0px);
