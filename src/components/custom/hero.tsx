@@ -55,7 +55,7 @@ export default function Hero() {
 
       <div className="relative z-20 container mx-auto md:max-w-[70rem]">
         <div className="flex flex-col-reverse gap-4 md:flex-row">
-          <div className="flex justify-center md:w-1/2">
+          <div className="flex flex-col items-center justify-center gap-6 md:w-1/2">
             <div className="bg-secondary relative mx-auto h-[16rem] w-[16rem] rounded-full shadow-2xl transition-transform duration-300 hover:-translate-y-2 md:mx-0 md:mt-0 md:h-[21.25rem] md:w-[21.25rem] lg:h-[25rem] lg:w-[25rem]">
               <div className="absolute inset-0 overflow-hidden rounded-full">
                 <Image
@@ -105,6 +105,9 @@ export default function Hero() {
                 <NutIcon className="m-auto h-[3.5rem] w-[3.5rem] -rotate-90 fill-white lg:h-[4.5rem] lg:w-[4.5rem]" />
               </div>
             </div>
+            <div className="flex md:hidden">
+              <StartInvestingCTA />
+            </div>
           </div>
 
           <div className="flex flex-col items-center px-4 text-center md:hidden">
@@ -121,23 +124,7 @@ export default function Hero() {
             <p className="text-lg text-gray-200 lg:max-w-[80%]">
               {SUB_HEADLINE}
             </p>
-            <div className="relative z-10 flex flex-wrap items-center gap-6">
-              <Button asChild variant="default">
-                <Link href="/projects">ابدأ الاستثمار</Link>
-              </Button>
-              <Button
-                variant="ghost"
-                className="group flex items-center gap-2 text-white hover:bg-transparent"
-                onClick={() => setIsVideoOpen(true)}
-              >
-                <div className="bg-secondary flex h-10 w-10 rounded-full transition-transform group-hover:scale-110">
-                  <Play className="m-auto h-5 w-5 fill-white stroke-white" />
-                </div>
-                <span className="group-hover:text-primary">
-                  فيديو الاستثمار
-                </span>
-              </Button>
-            </div>
+            <StartInvestingCTA />
           </div>
         </div>
 
@@ -188,5 +175,18 @@ export default function Hero() {
         </DialogContent>
       </Dialog>
     </section>
+  );
+}
+
+function StartInvestingCTA() {
+  return (
+    <div className="relative z-10 flex flex-wrap items-center gap-6">
+      <Button asChild variant="default">
+        <Link href="/signup">ابدأ الاستثمار</Link>
+      </Button>
+      <Button variant="ghost" asChild>
+        <Link href="/projects">عرض المشاريع</Link>
+      </Button>
+    </div>
   );
 }
