@@ -27,18 +27,14 @@ export async function Nav() {
     {
       title: "تحضير",
       href: "/preparation",
-      description:
-        "شمس هي منصة إستثمراية زراعية تهدف إلى زيادة المفهوم الزراعي لدى المستثمرين وذلك بعرض مشاريع متنوعة في مجال الزراعة...أقرأ المزيد.",
     },
     {
       title: "زراعة",
       href: "/farming",
-      description: "مشاريعنا الحالية والمستقبلية...أستكشف",
     },
     {
       title: "حصاد",
       href: "/harvest",
-      description: "موسم الحصاد...أقرأ المزيد",
     },
   ];
 
@@ -99,26 +95,22 @@ export async function Nav() {
         <NavigationMenu className="z-50">
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger>
+              <NavigationMenuTrigger className="dark:bg-accent-foreground dark:text-accent">
                 <MenuIcon />
               </NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <div className="mx-auto grid w-[90vw] max-w-sm gap-3 p-4">
+              <NavigationMenuContent className="bg-background">
+                <ul className="flex w-100 flex-col gap-2 p-2.5">
                   {menuItems.map((item) => (
-                    <NavigationMenuLink
-                      key={item.href}
-                      href={item.href}
-                      className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block space-y-1 rounded-md p-3 text-right leading-none no-underline outline-hidden transition-colors select-none"
+                    <li
+                      key={item.title}
+                      className="hover:bg-accent rounded-md p-2"
                     >
-                      <div className="text-sm leading-none font-medium">
+                      <NavigationMenuLink href={item.href} className="w-full">
                         {item.title}
-                      </div>
-                      <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
-                        {item.description}
-                      </p>
-                    </NavigationMenuLink>
+                      </NavigationMenuLink>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
           </NavigationMenuList>

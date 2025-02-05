@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function Farming() {
   return (
     <main className="flex flex-col items-center justify-between">
-      <h1 className="mb-2 mt-10 text-2xl">الزراعة</h1>
+      <h1 className="mt-10 mb-2 text-2xl">الزراعة</h1>
 
       <div dir="rtl" className="mt-3 justify-center">
         <div className="m-12 flex justify-center">
@@ -23,9 +23,10 @@ export default function Farming() {
             height={500}
             className="w-svw rounded-md shadow-md"
             alt="الزراعة"
+            priority
           />
         </div>
-        <div className="mx-5 px-20 text-right">
+        <div className="mx-5 px-5 text-right">
           <p className="text-lg">
             تُعتبر مرحلة رمي البذور والزراعة أحد أهم مراحل عملية الزراعة، حيث
             يتم فيها زراعة البذور في التربة بطريقة تسهل نموها وتطورها لتنتج
@@ -74,7 +75,7 @@ export default function Farming() {
         </div>
 
         <Link className="mt-8 text-xl" href="/contact">
-          <Button variant={"pressable"} className="mr-24 mt-10">
+          <Button variant={"pressable"} className="mt-10 mr-24">
             طلب الخــدمة
           </Button>
         </Link>

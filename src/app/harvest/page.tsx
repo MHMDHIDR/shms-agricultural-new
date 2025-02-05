@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function Harvest() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
-      <h1 className="mb-2 mt-10 text-2xl">موسم الحصاد</h1>
+      <h1 className="mt-10 mb-2 text-2xl">موسم الحصاد</h1>
 
       <div dir="rtl" style={{ marginTop: 10, justifyContent: "center" }}>
         <div style={{ margin: 50, display: "flex", justifyContent: "center" }}>
@@ -23,9 +23,10 @@ export default function Harvest() {
             height={500}
             alt="موسم الحصاد"
             className="w-svw rounded-md shadow-md"
+            priority
           />
         </div>
-        <div className="mx-5 px-20 text-right">
+        <div className="mx-5 px-5 text-right">
           <p style={{ fontSize: 20 }}>
             يعتبر الحصاد إحدى المراحل الحاسمة في عملية الزراعة، حيث يتم فيها جني
             المحاصيل الناضجة وجمعها بعد جهد وعناء عملية الزراعة. يشمل الحصاد عدة
@@ -90,7 +91,7 @@ export default function Harvest() {
         </div>
 
         <Link className="mt-8 text-xl" href="/contact">
-          <Button variant={"pressable"} className="mr-24 mt-10">
+          <Button variant={"pressable"} className="mt-10 mr-24">
             طلب الخــدمة
           </Button>
         </Link>
