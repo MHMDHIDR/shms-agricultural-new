@@ -82,7 +82,7 @@ export default function Footer() {
         <div className="text-muted-foreground flex flex-col justify-between gap-4 pt-4 text-center text-xs font-medium select-none lg:flex-row lg:items-center lg:text-right">
           <p>
             <span>&copy; 2023 - {new Date().getFullYear()} </span> شمــس للخمات
-            الزراعية | جميع الحقوق محفوظة.
+            الزراعية
           </p>
           <ul className="flex justify-center gap-4 lg:justify-start">
             <li className="hover:text-primary">
