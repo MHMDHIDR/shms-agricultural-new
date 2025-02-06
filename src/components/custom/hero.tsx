@@ -184,7 +184,11 @@ function StartInvestingCTA() {
       <Button asChild variant="default">
         <Link href="/signup">ابدأ الاستثمار</Link>
       </Button>
-      <Button variant="ghost" asChild>
+      <Button
+        variant="ghost"
+        className="not-dark:bg-accent hover:bg-accent-foreground hover:text-accent dark:bg-accent dark:hover:bg-accent-foreground dark:hover:text-accent"
+        asChild
+      >
         <Link href="/projects">عرض المشاريع</Link>
       </Button>
     </div>
