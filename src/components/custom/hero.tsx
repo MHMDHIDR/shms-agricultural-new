@@ -16,6 +16,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { LoadingCard } from "./loading";
+import Video from "./video";
 
 export default function Hero() {
   const { data: usersData, isLoading: isLoadingUsers } =
@@ -43,14 +44,7 @@ export default function Hero() {
     <section className="bg-background relative overflow-hidden py-12 select-none md:py-32">
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 z-10 bg-black/70" />
-        <video
-          src="/hero.mp4"
-          loop
-          muted
-          autoPlay
-          controls={false}
-          className="block h-full w-full object-cover object-center"
-        />
+        <Video src="/hero.mp4" />
       </div>
 
       <div className="relative z-20 container mx-auto md:max-w-[70rem]">
