@@ -1,4 +1,5 @@
 import Divider from "@/components/custom/divider";
+import { APP_TITLE } from "@/lib/constants";
 import { Instagram } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -81,15 +82,14 @@ export default function Footer() {
         <Divider className="my-5" />
         <div className="text-muted-foreground flex flex-col justify-between gap-4 pt-4 text-center text-xs font-medium select-none lg:flex-row lg:items-center lg:text-right">
           <p>
-            <span>&copy; 2023 - {new Date().getFullYear()} </span> شمــس للخمات
-            الزراعية
+            <span>&copy; 2023 - {new Date().getFullYear()} </span> {APP_TITLE}
           </p>
-          <ul className="flex justify-center gap-4 lg:justify-start">
-            <li className="hover:text-primary">
-              <Link href="/terms"> الشروط والأحكام</Link>
+          <ul className="divide-primary flex justify-center divide-x divide-dotted">
+            <li className="hover:text-primary px-3">
+              <Link href="/terms">الشروط والأحكام</Link>
             </li>
-            <li className="hover:text-primary">
-              <Link href="/privacy"> سياسة الخصوصية</Link>
+            <li className="hover:text-primary px-3">
+              <Link href="/privacy">الخصوصية</Link>
             </li>
           </ul>
         </div>
