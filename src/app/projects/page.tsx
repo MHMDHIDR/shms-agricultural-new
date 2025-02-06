@@ -9,8 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: `مشاريعنا الاستثمارية | ${APP_TITLE}
-}`,
+  title: `مشاريعنا الاستثمارية | ${APP_TITLE}`,
   description: APP_DESCRIPTION,
 };
 
@@ -30,19 +29,19 @@ export default async function ProjectsPage() {
             <Link
               href={`projects/${project.id}/${slugify(project.projectName)}`}
               key={index}
-              className={clsx(
-                "rtl block overflow-clip transition-transform duration-300 hover:-translate-y-3",
-                {
-                  "col-span-full": count === 1,
-                },
-              )}
+              className={clsx("rtl group block overflow-clip", {
+                "col-span-full": count === 1,
+              })}
             >
               <Card
-                className={`m-5 mx-auto w-4/5 max-w-screen-md min-w-72 overflow-hidden${
-                  count === 1 ? "w-full" : ""
-                }`}
+                className={clsx(
+                  "relative m-5 mx-auto w-4/5 max-w-screen-md min-w-72 overflow-clip rounded-lg shadow-md",
+                  {
+                    "w-full": count === 1,
+                  },
+                )}
               >
-                <CardContent className="relative flex flex-col gap-y-2 p-0 shadow-md">
+                <CardContent className="relative flex flex-col p-0">
                   {role === "admin" ? (
                     <span
                       className={`absolute top-20 -left-4 z-10 origin-top-left -rotate-45 transform px-14 py-1 text-center text-xs font-bold text-white ${
@@ -61,16 +60,18 @@ export default async function ProjectsPage() {
                     alt={`Project ${index + 1}`}
                     width={400}
                     height={250}
-                    className="h-56 w-full cursor-pointer rounded-lg object-cover md:h-72"
+                    className="h-56 w-full object-cover md:h-72"
                   />
-                  <CardDescription className="mx-3 flex flex-col gap-y-2 pb-2 md:mx-6 md:gap-y-4">
-                    <span className="w-fit text-sm transition-colors hover:text-green-500 md:text-lg md:font-bold">
-                      {project.projectName}
-                    </span>
-                    <span className="text-sm md:text-lg md:font-bold">
-                      <strong>{project.projectLocation}</strong>
-                    </span>
-                  </CardDescription>
+                  <div className="absolute bottom-0 w-full bg-gradient-to-t from-black via-black/50 to-transparent p-4 transition-[padding] group-hover:pb-6">
+                    <CardDescription className="flex flex-col gap-y-1.5 text-white">
+                      <strong className="w-fit text-sm transition-colors group-hover:text-green-500 md:text-base">
+                        {project.projectName}
+                      </strong>
+                      <span className="text-xs text-gray-300 md:text-sm">
+                        {project.projectLocation}
+                      </span>
+                    </CardDescription>
+                  </div>
                 </CardContent>
               </Card>
             </Link>

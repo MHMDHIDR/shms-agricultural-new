@@ -5,6 +5,27 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "shmsagricultural.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "shms-uploads.s3.eu-west-2.amazonaws.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "dev-shms-uploads.s3.eu-west-2.amazonaws.com",
+        pathname: "/**",
+      },
+    ],
+  },
+};
 
 export default config;
