@@ -29,7 +29,7 @@ export default function Video({
     const video = videoRef.current;
     if (!video) return;
 
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: NodeJS.Timeout | null = null;
 
     const captureThumbnail = () => {
       if (video.videoWidth === 0 || video.videoHeight === 0) return;
@@ -44,7 +44,7 @@ export default function Video({
       const imageData = canvas.toDataURL("image/jpeg");
       setThumbnail(imageData);
       setIsLoaded(true);
-      clearTimeout(timeoutId);
+      if (timeoutId) clearTimeout(timeoutId);
     };
 
     const handleLoadedData = () => {
@@ -54,13 +54,13 @@ export default function Video({
     const handleError = () => {
       console.error("Video failed to load");
       setShowFallback(true);
-      clearTimeout(timeoutId);
+      if (timeoutId) clearTimeout(timeoutId);
     };
 
-    // Show fallback if video doesn't load within 2 seconds
+    // Show fallback if video doesn't load within 3 seconds
     timeoutId = setTimeout(() => {
       setShowFallback(true);
-    }, 2000);
+    }, 3000);
 
     video.addEventListener("loadeddata", handleLoadedData);
     video.addEventListener("error", handleError);
@@ -70,7 +70,7 @@ export default function Video({
     return () => {
       video.removeEventListener("loadeddata", handleLoadedData);
       video.removeEventListener("error", handleError);
-      clearTimeout(timeoutId);
+      if (timeoutId) clearTimeout(timeoutId);
     };
   }, []);
 
@@ -78,7 +78,7 @@ export default function Video({
     <div className="relative h-full w-full">
       {!isLoaded && (showFallback || thumbnail) && (
         <Image
-          src={thumbnail || placeholder}
+          src={thumbnail ?? placeholder}
           alt="Video placeholder"
           fill
           className="absolute inset-0 h-full w-full object-cover blur-md filter"
