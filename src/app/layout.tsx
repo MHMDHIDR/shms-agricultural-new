@@ -36,7 +36,7 @@ export default async function RootLayout({
     >
       <body className="font-noto-kufi flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50">
         <Providers>
-          <ThemeProvider attribute="class" disableTransitionOnChange>
+          <ThemeProvider attribute="class">
             <Nav />
             <main className="flex-1">{children}</main>
             <NavigateTop />
