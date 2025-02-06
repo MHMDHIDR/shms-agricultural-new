@@ -87,12 +87,12 @@ model User {
     sessions        Session[]
     password        String
     phone           String
-    theme           UserTheme          @default(light)
     doc             String
     stocks          Stocks[]
     stockLimit      Int                @default(20)
     credits         Int                @default(0)
     role            UserType           @default(user)
+    theme           UserTheme          @default(light)
     accountStatus   UserStatus         @default(active)
     resetToken      String?
     isDeleted       Boolean            @default(false)
