@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { useCountUp } from "@/hooks/use-count-up";
 import { api } from "@/trpc/react";
-import { NutIcon, Play, TreePineIcon } from "lucide-react";
+import { NutIcon, TreePineIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";

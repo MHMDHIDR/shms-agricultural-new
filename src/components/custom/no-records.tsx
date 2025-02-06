@@ -36,7 +36,7 @@ export default function NoRecords({
         />
       </div>
       <p className="my-2 max-w-lg text-center text-lg font-bold text-red-500 md:leading-10 md:tracking-wider">
-        {msg ? msg : `لم يتم العثور على أي مشاريع استثمارية في الوقت الحالي`}
+        {msg ?? `لم يتم العثور على أي مشاريع استثمارية في الوقت الحالي`}
       </p>
       <div className="flex gap-3">
         {links?.map((link: { to: string; label: string }, idx) => (
