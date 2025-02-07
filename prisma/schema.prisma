@@ -168,9 +168,9 @@ enum SocialType {
 }
 
 model SocialLinks {
-    id          String     @id @default(auto()) @map("_id") @db.ObjectId
-    social_link String
-    social_type SocialType
+    id         String     @id @default(auto()) @map("_id") @db.ObjectId
+    socialLink String
+    socialType SocialType
 
     @@map("social_links")
 }

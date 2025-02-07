@@ -47,12 +47,12 @@ export function NavUser({ user }: { user: Session["user"] }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="rtl w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? "bottom" : "top"}
             align="start"
-            sideOffset={2}
+            sideOffset={3}
           >
             <DropdownMenuItem onClick={handleSignout}>
-              <LogOut />
+              <LogOut className="text-red-400" />
               تسجيل الخروج
             </DropdownMenuItem>
           </DropdownMenuContent>

@@ -10,7 +10,7 @@ export function NavWrapper({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 50;
+      const isScrolled = window.scrollY > 90;
       setScrolled(isScrolled);
     };
 

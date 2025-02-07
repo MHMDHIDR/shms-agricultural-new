@@ -1,8 +1,11 @@
+"use client";
+
 import Divider from "@/components/custom/divider";
 import { APP_TITLE } from "@/lib/constants";
 import { Instagram } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const sections = [
   {
@@ -30,7 +33,10 @@ const sections = [
 ];
 
 export default function Footer() {
-  return (
+  const pathname = usePathname();
+  const NotToRenderPaths = ["/admin"];
+
+  return NotToRenderPaths.some((path) => pathname.includes(path)) ? null : (
     <footer className="mt-auto bg-slate-50 dark:bg-slate-900">
       <div className="container mx-auto overflow-clip px-4 pt-10 pb-5 md:max-w-[70rem] md:px-0">
         <div className="flex flex-col items-center justify-between gap-10 text-center lg:flex-row lg:text-right">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
+import { ADMIN_EMAIL, APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "شروط الاستخدام | " + APP_TITLE,
@@ -49,10 +49,10 @@ export default function TermsPage() {
           لأية استفسارات أو مخاوف بشأن هذه الشروط والأحكام، يرجى الاتصال بنا عبر
           البريد الإلكتروني على{" "}
           <Link
-            href="mailto:info@shmsagricultural.com"
+            href={`mailto:${ADMIN_EMAIL}`}
             className="underline-hover mx-3 text-blue-500 hover:text-blue-700"
           >
-            info@shmsagricultural.com.
+            {ADMIN_EMAIL}.
           </Link>
         </p>
         <h2 className="mt-4 text-lg font-semibold">التسوية للنزاعات</h2>
@@ -108,10 +108,10 @@ export default function TermsPage() {
           لأية استفسارات أو مخاوف بشأن هذه الشروط والأحكام، يرجى الاتصال بنا عبر
           البريد الإلكتروني على{" "}
           <Link
-            href="mailto:info@shmsagricultural.com"
+            href={`mailto:${ADMIN_EMAIL}`}
             className="underline-hover mx-3 text-blue-500 hover:text-blue-700"
           >
-            info@shmsagricultural.com.
+            {ADMIN_EMAIL}
           </Link>
         </p>
       </section>
