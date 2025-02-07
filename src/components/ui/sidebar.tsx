@@ -644,7 +644,6 @@ SidebarMenuButton.displayName = "SidebarMenuButton";
 const SidebarMenuLink = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button"> & {
-    asChild?: boolean;
     isActive?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
     href?: string;
@@ -652,7 +651,6 @@ const SidebarMenuLink = React.forwardRef<
 >(
   (
     {
-      asChild = false,
       isActive = false,
       variant = "default",
       size = "default",

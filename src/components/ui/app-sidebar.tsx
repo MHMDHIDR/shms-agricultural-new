@@ -37,9 +37,9 @@ export function AppSidebar({
   projects: Projects[];
   user: Session["user"];
 }) {
-  if (!user) return null;
-
   const { open, isMobile } = useSidebar();
+
+  if (!user) return null;
 
   const data = {
     user: {
@@ -100,7 +100,7 @@ export function AppSidebar({
         icon: PercentIcon,
       },
       {
-        title: "إعدادات",
+        title: "إعدادات",
         url: open || isMobile ? "" : "/admin/social-links",
         icon: Settings2,
         items: [
