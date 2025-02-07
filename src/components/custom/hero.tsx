@@ -84,7 +84,7 @@ export default function Hero() {
                         key={index}
                         className="bg-primary h-8 w-8 rounded-full border-4 border-white"
                       >
-                        <AvatarFallback className="text-secondary text-xs">
+                        <AvatarFallback className="text-secondary text-xs dark:text-white">
                           {fallback}
                         </AvatarFallback>
                       </Avatar>
