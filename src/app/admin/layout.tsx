@@ -1,9 +1,12 @@
-import { DashboardSidebar } from "@/components/custom/dashboard-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { auth } from "@/server/auth";
-import type { User } from "@prisma/client";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/ui/app-sidebar";
+import { cookies } from "next/headers";
 
 export default async function DashboardLayout({
   children,
@@ -11,7 +14,6 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-
   if (!session?.user) notFound();
 
   const cookieStore = await cookies();
@@ -20,14 +22,15 @@ export default async function DashboardLayout({
 
   return (
     <SidebarProvider defaultOpen={initialSidebarOpen}>
-      <DashboardSidebar user={session?.user as User} />
-
-      <main className="container mx-auto w-full max-w-screen-lg flex-1 px-2.5">
-        <h1 className="relative z-20 mx-auto my-6 bg-gradient-to-b from-neutral-800 via-neutral-700 to-neutral-700 bg-clip-text py-2 text-center text-2xl font-semibold dark:from-neutral-800 dark:via-white dark:to-white">
-          مـــرحـــباً، {session.user.name}
-        </h1>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+          <div className="flex w-full items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+          </div>
+        </header>
         <section>{children}</section>
-      </main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }
