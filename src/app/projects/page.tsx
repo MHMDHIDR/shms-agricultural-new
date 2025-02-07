@@ -17,7 +17,7 @@ export default async function ProjectsPage() {
   const { projects, count, role } = await api.projects.getAll();
 
   return (
-    <main className="flex min-h-screen flex-col items-center pt-24">
+    <main className="flex min-h-screen flex-col items-center pt-8 md:pt-14">
       <h1 className="mb-10 text-center md:text-lg md:font-bold lg:text-2xl">
         المشاريع الاستثمارية
       </h1>
