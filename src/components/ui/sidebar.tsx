@@ -15,7 +15,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import { cva, VariantProps } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
@@ -33,7 +33,7 @@ const getCookieValue = (name: string): string | null => {
   try {
     if (typeof window === "undefined") return null;
     const value = document.cookie.match(`(^|;)\\s*${name}\\s*=\\s*([^;]+)`);
-    return value ? (value.pop() as string) : null;
+    return value ? value.pop()! : null;
   } catch {
     return null;
   }
@@ -640,7 +640,6 @@ SidebarMenuButton.displayName = "SidebarMenuButton";
 const SidebarMenuLink = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button"> & {
-    asChild?: boolean;
     isActive?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
     href?: string;
@@ -648,7 +647,6 @@ const SidebarMenuLink = React.forwardRef<
 >(
   (
     {
-      asChild = false,
       isActive = false,
       variant = "default",
       size = "default",

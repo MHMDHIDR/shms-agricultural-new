@@ -1,10 +1,9 @@
-import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
-import { auth } from "@/server/auth";
 import { DashboardSidebar } from "@/components/custom/dashboard-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { auth } from "@/server/auth";
 import type { User } from "@prisma/client";
-import { api } from "@/trpc/server";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 
 export default async function DashboardLayout({
   children,
@@ -13,17 +12,15 @@ export default async function DashboardLayout({
 }) {
   const session = await auth();
 
-  if (!session || !session.user) notFound();
+  if (!session?.user) notFound();
 
   const cookieStore = await cookies();
   const sidebarState = cookieStore.get("sidebar:state")?.value;
   const initialSidebarOpen = sidebarState === "true";
 
-  const { projects } = await api.projects.getAll();
-
   return (
     <SidebarProvider defaultOpen={initialSidebarOpen}>
-      <DashboardSidebar user={session?.user as User} projects={projects} />
+      <DashboardSidebar user={session?.user as User} />
 
       <main className="container mx-auto w-full max-w-screen-lg flex-1 px-2.5">
         <h1 className="relative z-20 mx-auto my-6 bg-gradient-to-b from-neutral-800 via-neutral-700 to-neutral-700 bg-clip-text py-2 text-center text-2xl font-semibold dark:from-neutral-800 dark:via-white dark:to-white">

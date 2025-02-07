@@ -19,7 +19,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { fallbackUsername } from "@/lib/fallback-username";
-import { User } from "@prisma/client";
+import type { User } from "@prisma/client";
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();

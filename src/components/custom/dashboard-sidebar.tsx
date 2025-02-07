@@ -9,7 +9,7 @@ import {
   SidebarFooter,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { Projects, User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import {
   Frame,
   PackagePlusIcon,
@@ -23,11 +23,9 @@ import {
 
 export function DashboardSidebar({
   user,
-  projects,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   user: User;
-  projects: Projects[] | null;
 }) {
   const sidebarItems = {
     pinned: [

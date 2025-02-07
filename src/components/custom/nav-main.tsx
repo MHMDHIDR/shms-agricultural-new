@@ -1,7 +1,5 @@
 "use client";
 
-import { ChevronRight, Link2Icon } from "lucide-react";
-import { ReactElement } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -18,10 +16,12 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
-import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import type { LucideIcon } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import type { ReactElement } from "react";
 
 type IconType = LucideIcon | ReactElement;
 
