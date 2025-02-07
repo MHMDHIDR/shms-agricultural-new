@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { VariantProps, cva } from "class-variance-authority";
+import { type VariantProps, cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -29,7 +29,7 @@ const getCookieValue = (name: string): string | null => {
   try {
     if (typeof window === "undefined") return null;
     const value = document.cookie.match(`(^|;)\\s*${name}\\s*=\\s*([^;]+)`);
-    return value ? (value.pop() as string) : null;
+    return value ? value.pop()! : null;
   } catch {
     return null;
   }
