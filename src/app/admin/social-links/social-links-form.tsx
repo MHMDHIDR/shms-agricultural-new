@@ -78,12 +78,16 @@ export default function SocialLinksForm() {
                   setSelectedType(type)
                 }
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full cursor-pointer">
                   <SelectValue placeholder="اختر المنصة" />
                 </SelectTrigger>
                 <SelectContent>
                   {socialTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
+                    <SelectItem
+                      key={type}
+                      value={type}
+                      className="cursor-pointer"
+                    >
                       <span className="flex items-center gap-x-2">
                         {type === "facebook" ? (
                           <FacebookIcon className="h-4 w-4 rounded-md" />
@@ -125,6 +129,7 @@ export default function SocialLinksForm() {
             <Button
               type="submit"
               disabled={isUpdating || !selectedType || !socialLink}
+              className="cursor-pointer"
             >
               {isUpdating ? (
                 <>
