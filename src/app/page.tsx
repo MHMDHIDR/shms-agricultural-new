@@ -1,4 +1,4 @@
-import FAQ from "@/components/custom/faq";
+import FAQ from "@/components/custom/faqs";
 import Hero from "@/components/custom/hero";
 import OurServices from "@/components/custom/our-services";
 import OurValues from "@/components/custom/our-values";
@@ -10,7 +10,7 @@ export default async function Home() {
       <Hero />
       <OurValues />
       <OurServices />
-      <FAQ />
+      <FAQ pathname="/" />
     </HydrateClient>
   );
 }

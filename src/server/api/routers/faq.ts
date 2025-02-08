@@ -7,7 +7,12 @@ import { z } from "zod";
 
 export const faqRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.db.faq.findMany({ orderBy: { createdAt: "desc" } });
+    const [faqs, count] = await Promise.all([
+      ctx.db.faq.findMany({ orderBy: { createdAt: "desc" } }),
+      ctx.db.faq.count(),
+    ]);
+
+    return { faqs, count };
   }),
 
   create: protectedProcedure
