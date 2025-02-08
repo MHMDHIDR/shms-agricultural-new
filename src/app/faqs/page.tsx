@@ -1,5 +1,28 @@
 import FAQ from "@/components/custom/faqs";
+import Link from "next/link";
 
 export default async function page() {
-  return <FAQ pathname="/faqs" />;
+  return (
+    <>
+      <FAQ pathname="/faqs" />
+
+      <div className="flex flex-col items-center justify-center gap-y-14 select-none md:gap-y-20">
+        <Link
+          href="/projects"
+          className="bg-primary hover:bg-primary/90 rounded-md px-4 py-2 font-extrabold text-white"
+        >
+          إبدأ الاستثمار الآن
+        </Link>
+        <div className="flex items-center gap-x-6">
+          <h2 className="text-lg">لديك استفسار؟</h2>
+          <Link
+            href="/contact"
+            className="bg-secondary hover:bg-secondary/90 rounded-md px-4 py-2 text-white"
+          >
+            يمكننا مساعدتك
+          </Link>
+        </div>
+      </div>
+    </>
+  );
 }
