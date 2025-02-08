@@ -32,7 +32,7 @@ const sections = [
 ];
 
 export default async function Footer() {
-  const socialLinks = await api.settings.getSocialLinks();
+  const socialLinks = await api.socialLinks.getSocialLinks();
   const IconMap = {
     facebook: <Facebook className="size-6" />,
     instagram: <Instagram className="size-6" />,

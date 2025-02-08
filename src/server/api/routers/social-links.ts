@@ -7,7 +7,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-export const settingsRouter = createTRPCRouter({
+export const socialLinksRouter = createTRPCRouter({
   getSocialLinks: publicProcedure.query(async ({ ctx }) => {
     const socialLinks = await ctx.db.socialLinks.findMany();
 

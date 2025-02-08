@@ -20,13 +20,13 @@ export default function DeleteSocialLink({ link }: DeleteSocialLinkProps) {
   const router = useRouter();
 
   const { mutate: deleteSocialLink } =
-    api.settings.deleteSocialLinks.useMutation({
+    api.socialLinks.deleteSocialLinks.useMutation({
       onMutate: () => {
         setIsDeleting(true);
       },
       onSuccess: async () => {
         toast.success("تم حذف الرابط بنجاح");
-        await utils.settings.getSocialLinks.invalidate();
+        await utils.socialLinks.getSocialLinks.invalidate();
         router.refresh();
       },
       onError: (error) => {

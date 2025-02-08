@@ -18,7 +18,7 @@ import SocialLinksForm from "./social-links-form";
 import DeleteSocialLink from "./delete-social-link";
 
 export default async function SocialLinksPage() {
-  const socialLinks = await api.settings.getSocialLinks();
+  const socialLinks = await api.socialLinks.getSocialLinks();
 
   return (
     <>

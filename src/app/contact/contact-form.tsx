@@ -110,13 +110,14 @@ export function ContactForm() {
                 defaultValue={service ?? field.value}
               >
                 <SelectTrigger
-                  className="rtl w-full border border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+                  className="w-full border border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
                   id="subject"
+                  dir="auto"
                 >
                   <SelectValue placeholder="اختر نوع الخدمة" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup className="rtl">
+                <SelectContent dir="auto">
+                  <SelectGroup>
                     <SelectLabel>اختر نوع الخدمة</SelectLabel>
                     {services.map((service) => (
                       <SelectItem key={service} value={service}>

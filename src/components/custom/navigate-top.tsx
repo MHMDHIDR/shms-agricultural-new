@@ -7,7 +7,7 @@ import { ChevronUp } from "lucide-react";
 import { scrollToView } from "@/lib/scroll-to-view";
 
 export function NavigateTop({
-  scrolledHeight = 200,
+  scrolledHeight = 300,
 }: {
   scrolledHeight?: number;
 }) {
