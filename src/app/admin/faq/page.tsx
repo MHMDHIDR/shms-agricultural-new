@@ -3,7 +3,7 @@ import FaqForm from "./faq-form";
 import FaqTable from "./faq-table";
 
 export default async function FaqPage() {
-  const faqs = await api.faq.getAll();
+  const { faqs } = await api.faq.getAll();
 
   return (
     <section className="container mx-auto">
