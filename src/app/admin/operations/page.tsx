@@ -1,3 +1,9 @@
 export default function OperationsPage() {
-  return <div>OperationsPage</div>;
+  return (
+    <section className="container mx-auto">
+      <h1 className="my-10 text-center text-xl font-bold select-none">
+        العمليات المالية
+      </h1>
+    </section>
+  );
 }
