@@ -7,7 +7,7 @@ export default async function FaqPage() {
 
   return (
     <section className="container mx-auto">
-      <h1 className="mt-20 mb-10 text-center text-2xl font-bold select-none">
+      <h1 className="my-10 text-center text-xl font-bold select-none">
         الأسئلة الشائعة
       </h1>
       <FaqForm />

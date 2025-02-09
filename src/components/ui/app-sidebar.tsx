@@ -106,7 +106,12 @@ export function AppSidebar({
   };
 
   return (
-    <Sidebar side="right" collapsible="icon" dir="" {...props}>
+    <Sidebar
+      side="right"
+      collapsible="icon"
+      className="bg-background"
+      {...props}
+    >
       <SidebarHeader className="pt-20">
         <ProjectsSwitcher projects={navItems.projects} />
       </SidebarHeader>
