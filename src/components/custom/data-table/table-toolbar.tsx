@@ -103,7 +103,7 @@ export function TableToolbar<TData>({
           <Button
             variant="ghost"
             onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
+            className="h-8 cursor-pointer px-2 lg:px-3"
           >
             إلغاء الفلترة
             <X className="ml-2 h-4 w-4" />

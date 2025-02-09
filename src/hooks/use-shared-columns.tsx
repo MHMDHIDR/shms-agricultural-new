@@ -103,10 +103,16 @@ export function useSharedColumns<T extends BaseEntity>({
       ? [
           {
             id: "projectStatus",
-            label: "Status",
+            label: translateSring("projectStatus"),
             options: [
-              { label: "Active", value: "active" },
-              { label: "Pending", value: "pending" },
+              {
+                label: translateSring("Active".toLocaleLowerCase()),
+                value: "active",
+              },
+              {
+                label: translateSring("Pending".toLocaleLowerCase()),
+                value: "pending",
+              },
             ],
           },
         ]
@@ -227,8 +233,9 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
-          اسم المشروع
+          {translateSring("projectName")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -239,8 +246,9 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
-          حالة المشروع
+          {translateSring("projectStatus")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -265,8 +273,35 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
-          موقع المشروع
+          {translateSring("projectLocation")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+    {
+      accessorKey: "projectSpecialPercentageCode",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("projectSpecialPercentageCode")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+    {
+      accessorKey: "projectSpecialPercentage",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("projectSpecialPercentage")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -277,8 +312,9 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
-          تاريخ البدء
+          {translateSring("projectStartDate")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -293,8 +329,9 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
-          تاريخ الانتهاء
+          {translateSring("projectEndDate")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -367,20 +404,22 @@ export function useSharedColumns<T extends BaseEntity>({
 
   const actionsColumn: ColumnDef<T> = {
     id: "actions",
-    header: "الإجراءات",
+    header: translateSring("actions"),
     cell: ({ row }) => {
       const entity = row.original;
 
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="h-8 w-8 cursor-pointer p-0">
               <span className="sr-only">إفتح القائمة</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="rtl">
-            <DropdownMenuLabel>الإجراءات</DropdownMenuLabel>
+            <DropdownMenuLabel className="sr-only">
+              {translateSring("actions")}
+            </DropdownMenuLabel>
             <DropdownMenuItem asChild>
               <Link href={`/admin${actions.basePath}/${entity.id}`}>
                 <Pencil className="mr-2 h-4 w-4" />

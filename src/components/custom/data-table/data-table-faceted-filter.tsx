@@ -61,7 +61,11 @@ export function DataTableFacetedFilter<TData, TValue>({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 border-dashed">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 cursor-pointer border-dashed"
+        >
           <PlusCircleIcon className="mr-2 h-4 w-4" />
           {title}
           {selectedValues?.size > 0 && (
@@ -111,6 +115,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                   <CommandItem
                     key={option.value}
                     onSelect={() => handleSelect(option.value)}
+                    className="cursor-pointer"
                   >
                     <div
                       className={cn(
@@ -141,9 +146,9 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <CommandGroup>
                   <CommandItem
                     onSelect={() => column?.setFilterValue(undefined)}
-                    className="justify-center text-center"
+                    className="cursor-pointer justify-center text-center"
                   >
-                    Clear filters
+                    إلغاء الفلترة
                   </CommandItem>
                 </CommandGroup>
               </>

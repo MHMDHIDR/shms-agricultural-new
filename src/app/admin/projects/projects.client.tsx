@@ -179,7 +179,7 @@ export default function ProjectsClientPage({
 
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="select-none">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
