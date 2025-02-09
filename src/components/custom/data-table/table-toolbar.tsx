@@ -1,8 +1,8 @@
 import {
   DataTableFacetedFilter,
-  DataTableFilterField,
+  type DataTableFilterField,
 } from "@/components/custom/data-table/data-table-faceted-filter";
-import { Button, ButtonProps } from "@/components/ui/button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Table } from "@tanstack/react-table";
+import type { Table } from "@tanstack/react-table";
 import { ChevronDown, SettingsIcon, X } from "lucide-react";
 import { useMemo } from "react";
 
@@ -27,10 +27,10 @@ type TableToolbarProps<TData> = {
   table: Table<TData>;
   filtering: string;
   setFiltering: (value: string) => void;
-  selectedRows: any[];
+  selectedRows: TData[];
   bulkActions?: BulkAction[];
   searchPlaceholder?: string;
-  filterFields?: DataTableFilterField<TData>[];
+  filterFields?: DataTableFilterField[];
 };
 
 export function TableToolbar<TData>({

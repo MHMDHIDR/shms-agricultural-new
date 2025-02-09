@@ -1,5 +1,5 @@
-import { Column } from "@tanstack/react-table";
-import { CheckIcon, LucideIcon, PlusCircleIcon } from "lucide-react";
+import type { Column } from "@tanstack/react-table";
+import { CheckIcon, type LucideIcon, PlusCircleIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,8 +26,8 @@ export type FilterOption = {
   count?: number;
 };
 
-export type DataTableFilterField<TData> = {
-  id: keyof TData | string;
+export type DataTableFilterField = {
+  id: string;
   label: string;
   placeholder?: string;
   options?: FilterOption[];

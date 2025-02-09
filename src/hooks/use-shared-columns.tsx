@@ -1,4 +1,4 @@
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   ArrowUpDown,
   Ban,
@@ -20,20 +20,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import clsx from "clsx";
 import { formatDate } from "@/lib/format-date";
+import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter";
 
 // Types
 type DateTime = Date | string;
-
-interface DataTableFilterFieldOption {
-  label: string;
-  value: string;
-}
-
-interface DataTableFilterField<TData> {
-  id: keyof TData | string;
-  label: string;
-  options: DataTableFilterFieldOption[];
-}
 
 type BaseEntity = {
   id: string;
@@ -74,7 +64,7 @@ type TableActions = {
   basePath: "/projects" | "/users" | "/withdraw-actions";
 };
 
-type SharedColumnsProps<T> = {
+type SharedColumnsProps = {
   entityType: "users" | "projects" | "withdraw_actions";
   actions: TableActions;
 };
@@ -82,12 +72,11 @@ type SharedColumnsProps<T> = {
 export function useSharedColumns<T extends BaseEntity>({
   entityType,
   actions,
-}: SharedColumnsProps<T>): {
+}: SharedColumnsProps): {
   columns: ColumnDef<T>[];
-  filterFields: DataTableFilterField<T>[];
+  filterFields: DataTableFilterField[];
 } {
-  const filterFields: DataTableFilterField<T>[] = [
-    // For users
+  const filterFields: DataTableFilterField[] = [
     ...(entityType === "users"
       ? [
           {
@@ -109,7 +98,6 @@ export function useSharedColumns<T extends BaseEntity>({
           },
         ]
       : []),
-    // For projects
     ...(entityType === "projects"
       ? [
           {

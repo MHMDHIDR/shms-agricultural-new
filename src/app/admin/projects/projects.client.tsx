@@ -13,16 +13,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useSharedColumns } from "@/hooks/use-shared-columns";
-import { Projects } from "@prisma/client";
+import type { Projects } from "@prisma/client";
 import {
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
+} from "@tanstack/react-table";
+import type {
+  ColumnFiltersState,
+  SortingState,
   VisibilityState,
 } from "@tanstack/react-table";
 import Link from "next/link";
@@ -41,19 +43,25 @@ export default function ProjectsClientPage({
   const [filtering, setFiltering] = useState("");
 
   // Handle project actions
-  const handleDeleteProject = async (id: string) => {
-    // Implement delete functionality
-    toast.error("Delete functionality not implemented yet");
+  const handleDeleteProject = (_id: string) => {
+    void (async () => {
+      // Implement delete functionality
+      toast.error("Delete functionality not implemented yet");
+    })();
   };
 
-  const handleActivateProject = async (id: string) => {
-    // Implement activate functionality
-    toast.success("Activate functionality not implemented yet");
+  const handleActivateProject = (_id: string) => {
+    void (async () => {
+      // Implement activate functionality
+      toast.success("Activate functionality not implemented yet");
+    })();
   };
 
-  const handleDeactivateProject = async (id: string) => {
-    // Implement deactivate functionality
-    toast.warning("Deactivate functionality not implemented yet");
+  const handleDeactivateProject = (_id: string) => {
+    void (async () => {
+      // Implement deactivate functionality
+      toast.warning("Deactivate functionality not implemented yet");
+    })();
   };
 
   const { columns, filterFields } = useSharedColumns<Projects>({
@@ -66,7 +74,7 @@ export default function ProjectsClientPage({
     },
   });
 
-  const table = useReactTable({
+  const table = useReactTable<Projects>({
     data: projects,
     columns,
     onSortingChange: setSorting,
@@ -87,7 +95,9 @@ export default function ProjectsClientPage({
     },
   });
 
-  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const selectedRows = table
+    .getFilteredSelectedRowModel()
+    .rows.map((row) => row.original);
 
   // Define bulk actions
   const getBulkActions = (): BulkAction[] => {
@@ -95,7 +105,7 @@ export default function ProjectsClientPage({
       {
         label: "حذف المحدد",
         onClick: () => {
-          const ids = selectedRows.map((row) => row.original.id);
+          const ids = selectedRows.map((row) => row.id);
           toast.error("Bulk delete not implemented yet", {
             description: `Selected IDs: ${ids.join(", ")}`,
           });
@@ -106,17 +116,17 @@ export default function ProjectsClientPage({
 
     if (selectedRows.length > 0) {
       const hasPendingProjects = selectedRows.some(
-        (row) => row.original.projectStatus === "pending",
+        (row) => row.projectStatus === "pending",
       );
       const hasActiveProjects = selectedRows.some(
-        (row) => row.original.projectStatus === "active",
+        (row) => row.projectStatus === "active",
       );
 
       if (hasPendingProjects) {
         actions.push({
           label: "تفعيل المحدد",
           onClick: () => {
-            const ids = selectedRows.map((row) => row.original.id);
+            const ids = selectedRows.map((row) => row.id);
             toast.success("Bulk activate not implemented yet", {
               description: `Selected IDs: ${ids.join(", ")}`,
             });
@@ -129,7 +139,7 @@ export default function ProjectsClientPage({
         actions.push({
           label: "تعطيل المحدد",
           onClick: () => {
-            const ids = selectedRows.map((row) => row.original.id);
+            const ids = selectedRows.map((row) => row.id);
             toast.warning("Bulk deactivate not implemented yet", {
               description: `Selected IDs: ${ids.join(", ")}`,
             });

@@ -93,7 +93,7 @@ export function formatDate({
  * @param sub Number of days to subtract from the current date (optional, default is 0)
  * @returns Formatted date string in 'dd/MM/yyyy' format
  */
-export function getDate(sub: number = 0): string {
+export function getDate(sub = 0): string {
   const date = new Date();
   date.setDate(date.getDate() - sub);
   return formatDateToString(date);
