@@ -5,11 +5,13 @@
  * */
 export const translateSring = (string: string) => {
   switch (string) {
-    case "projectName": {
-      return "اسم المشروع";
+    case "projectName":
+    case "name": {
+      return "الاسم";
     }
-    case "projectStatus": {
-      return "حالة المشروع";
+    case "projectStatus":
+    case "status": {
+      return "الحالة";
     }
     case "projectLocation": {
       return "موقع المشروع";
@@ -64,6 +66,21 @@ export const translateSring = (string: string) => {
     }
     case "pending": {
       return "معلق";
+    }
+    case "block": {
+      return "محظور";
+    }
+    case "email": {
+      return "البريد الإلكتروني";
+    }
+    case "role": {
+      return "الدور";
+    }
+    case "admin": {
+      return "مدير";
+    }
+    case "user": {
+      return "مستخدم";
     }
     default: {
       return string;

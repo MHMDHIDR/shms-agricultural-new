@@ -90,11 +90,11 @@ export function useSharedColumns<T extends BaseEntity>({
           },
           {
             id: "accountStatus",
-            label: "Status",
+            label: translateSring("status"),
             options: [
-              { label: "Active", value: "active" },
-              { label: "Blocked", value: "block" },
-              { label: "Pending", value: "pending" },
+              { label: translateSring("active"), value: "active" },
+              { label: translateSring("block"), value: "block" },
+              { label: translateSring("pending"), value: "pending" },
             ],
           },
         ]
@@ -155,8 +155,9 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
-          Name
+          {translateSring("name")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -167,8 +168,9 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
-          Email
+          {translateSring("email")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -179,8 +181,9 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
-          Role
+          {translateSring("role")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -193,7 +196,7 @@ export function useSharedColumns<T extends BaseEntity>({
               "bg-blue-50 text-blue-600": user.role === "user",
             })}
           >
-            {user.role}
+            {translateSring(user.role)}
           </span>
         );
       },
@@ -204,8 +207,9 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
-          Status
+          {translateSring("status")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -219,7 +223,7 @@ export function useSharedColumns<T extends BaseEntity>({
               "bg-yellow-50 text-yellow-600": user.accountStatus === "pending",
             })}
           >
-            {user.accountStatus}
+            {translateSring(user.accountStatus)}
           </span>
         );
       },

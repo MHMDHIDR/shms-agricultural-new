@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useSharedColumns } from "@/hooks/use-shared-columns";
-import type { Projects } from "@prisma/client";
+import type { User } from "@prisma/client";
 import {
   flexRender,
   getCoreRowModel,
@@ -27,15 +27,14 @@ import type {
   SortingState,
   VisibilityState,
 } from "@tanstack/react-table";
-import Link from "next/link";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
-export default function ProjectsClientPage({
-  projects,
+export default function UsersClientPage({
+  users,
   count,
 }: {
-  projects: Projects[];
+  users: User[];
   count: number;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -45,40 +44,40 @@ export default function ProjectsClientPage({
   const [filtering, setFiltering] = useState("");
   const toast = useToast();
 
-  // Handle project actions
-  const handleDeleteProject = (_id: string) => {
+  // Handle user actions
+  const handleDeleteUser = (_id: string) => {
     void (async () => {
       // Implement delete functionality
       toast.error("Delete functionality not implemented yet");
     })();
   };
 
-  const handleActivateProject = (_id: string) => {
+  const handleBlockUser = (_id: string) => {
     void (async () => {
-      // Implement activate functionality
-      toast.success("Activate functionality not implemented yet");
+      // Implement block functionality
+      toast.loading("Block functionality not implemented yet");
     })();
   };
 
-  const handleDeactivateProject = (_id: string) => {
+  const handleUnblockUser = (_id: string) => {
     void (async () => {
-      // Implement deactivate functionality
-      toast.success("Deactivate functionality not implemented yet");
+      // Implement unblock functionality
+      toast.success("Unblock functionality not implemented yet");
     })();
   };
 
-  const { columns, filterFields } = useSharedColumns<Projects>({
-    entityType: "projects",
+  const { columns, filterFields } = useSharedColumns<User>({
+    entityType: "users",
     actions: {
-      onDelete: handleDeleteProject,
-      onActivate: handleActivateProject,
-      onDeactivate: handleDeactivateProject,
-      basePath: "/projects",
+      onDelete: handleDeleteUser,
+      onBlock: handleBlockUser,
+      onUnblock: handleUnblockUser,
+      basePath: "/users",
     },
   });
 
-  const table = useReactTable<Projects>({
-    data: projects,
+  const table = useReactTable<User>({
+    data: users,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -116,27 +115,27 @@ export default function ProjectsClientPage({
     ];
 
     if (selectedRows.length > 0) {
-      const hasPendingProjects = selectedRows.some(
-        (row) => row.projectStatus === "pending",
+      const hasBlockedUsers = selectedRows.some(
+        (row) => row.accountStatus === "block",
       );
-      const hasActiveProjects = selectedRows.some(
-        (row) => row.projectStatus === "active",
+      const hasActiveUsers = selectedRows.some(
+        (row) => row.accountStatus === "active",
       );
 
-      if (hasPendingProjects) {
+      if (hasActiveUsers) {
         actions.push({
-          label: "تفعيل المحدد",
+          label: "حظر المحدد",
           onClick: () => {
             const ids = selectedRows.map((row) => row.id);
             toast.success(`Selected IDs: ${ids.join(", ")}`);
           },
-          variant: "success",
+          variant: "destructive",
         });
       }
 
-      if (hasActiveProjects) {
+      if (hasBlockedUsers) {
         actions.push({
-          label: "تعطيل المحدد",
+          label: "إلغاء حظر المحدد",
           onClick: () => {
             const ids = selectedRows.map((row) => row.id);
             toast.success(`Selected IDs: ${ids.join(", ")}`);
@@ -149,25 +148,16 @@ export default function ProjectsClientPage({
     return actions;
   };
 
-  return !projects || count === 0 ? (
-    <NoRecords
-      msg="لم يتم العثور على أي مشاريع استثمارية في الوقت الحالي"
-      links={[{ to: "/admin/projects/new", label: "إضافة مشروع جديد" }]}
-    />
+  return !users || count === 0 ? (
+    <NoRecords msg="لم يتم العثور على أي مستخدمين في الوقت الحالي" />
   ) : (
     <div className="space-y-4">
-      <div className="flex items-center justify-end">
-        <Link href="/admin/projects/new">
-          <Button variant={"pressable"}>مشروع جديد</Button>
-        </Link>
-      </div>
-
-      <TableToolbar<Projects>
+      <TableToolbar<User>
         table={table}
         filtering={filtering}
         setFiltering={setFiltering}
         selectedRows={selectedRows}
-        searchPlaceholder="ابحث عن مشروع"
+        searchPlaceholder="ابحث عن مستخدم"
         bulkActions={getBulkActions()}
         filterFields={filterFields}
       />
