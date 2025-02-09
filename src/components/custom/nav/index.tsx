@@ -63,7 +63,7 @@ export async function Nav() {
       {user ? (
         <DropdownMenu dir="rtl">
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="gap-1.5">
+            <Button variant="ghost" className="cursor-pointer gap-1.5">
               <User2Icon className="h-5 w-5" />
               {user.name}
             </Button>
@@ -82,7 +82,11 @@ export async function Nav() {
                 }}
                 className="w-full"
               >
-                <Button variant="destructive" type="submit" className="w-full">
+                <Button
+                  variant="destructive"
+                  type="submit"
+                  className="w-full cursor-pointer"
+                >
                   تسجيل الخروج
                 </Button>
               </form>

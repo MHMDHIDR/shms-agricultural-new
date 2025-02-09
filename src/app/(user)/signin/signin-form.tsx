@@ -94,7 +94,7 @@ export function SignInForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} className="cursor-pointer">
           {isLoading && <Loader2 className="animate-spin text-green-500" />}
           تسجيل الدخول
         </Button>
