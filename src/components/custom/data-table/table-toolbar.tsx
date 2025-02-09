@@ -89,10 +89,10 @@ export function TableToolbar<TData>({
         )}
         {filterableColumns.map(
           (column) =>
-            table.getColumn(column.id as string) && (
+            table.getColumn(column.id) && (
               <DataTableFacetedFilter
-                key={column.id as string}
-                column={table.getColumn(column.id as string)}
+                key={column.id}
+                column={table.getColumn(column.id)}
                 title={column.label}
                 options={column.options ?? []}
               />
