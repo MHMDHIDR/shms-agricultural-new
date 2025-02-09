@@ -9,9 +9,7 @@ import {
   Plus,
   Settings2,
   Tractor,
-  UserPlus,
   Users,
-  UserSquare2,
 } from "lucide-react";
 import * as React from "react";
 
@@ -41,7 +39,7 @@ export function AppSidebar({
 
   if (!user) return null;
 
-  const data = {
+  const navItems = {
     user: {
       name: user?.name,
       email: user?.email,
@@ -74,20 +72,8 @@ export function AppSidebar({
       },
       {
         title: "المستخدمين",
-        url: open || isMobile ? "" : "/admin/users",
+        url: "/admin/users",
         icon: Users,
-        items: [
-          {
-            title: "عرض المستخدمين",
-            url: "/admin/users",
-            icon: UserSquare2,
-          },
-          {
-            title: "أضف مستخدم جديد",
-            url: "/admin/users/new",
-            icon: UserPlus,
-          },
-        ],
       },
       {
         title: "العمليات المالية",
@@ -122,10 +108,10 @@ export function AppSidebar({
   return (
     <Sidebar side="right" collapsible="icon" dir="" {...props}>
       <SidebarHeader className="pt-20">
-        <ProjectsSwitcher projects={data.projects} />
+        <ProjectsSwitcher projects={navItems.projects} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navItems.navMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

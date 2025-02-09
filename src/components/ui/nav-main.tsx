@@ -17,6 +17,8 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import clsx from "clsx";
 
 export function NavMain({
   items,
@@ -33,19 +35,24 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const pathname = usePathname();
+
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
             key={item.title}
-            asChild
             defaultOpen={item.isActive}
             className="group/collapsible"
+            asChild
           >
             <SidebarMenuItem>
               <CollapsibleTrigger
-                className="dark:hover:bg-background/95 cursor-pointer hover:bg-slate-200"
+                className={clsx(
+                  "dark:hover:bg-background/95 cursor-pointer hover:bg-slate-200",
+                  { "bg-slate-200": item.url === pathname },
+                )}
                 asChild
               >
                 <SidebarMenuLink tooltip={item.title} href={item.url}>
@@ -62,7 +69,10 @@ export function NavMain({
                     {item.items?.map((subItem) => (
                       <SidebarMenuSubItem
                         key={subItem.title}
-                        className="dark:hover:bg-background/95 rounded-md hover:bg-slate-200"
+                        className={clsx(
+                          "dark:hover:bg-background/95 rounded-md hover:bg-slate-200",
+                          { "bg-slate-200": subItem.url === pathname },
+                        )}
                       >
                         <SidebarMenuSubButton asChild>
                           <Link href={subItem.url}>
