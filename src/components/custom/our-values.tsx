@@ -6,8 +6,8 @@ export default function OurValues() {
   return (
     <section className="container mx-auto overflow-clip px-4 py-20 md:max-w-[70rem] md:px-0">
       <div className="flex flex-col justify-center gap-7 text-center">
-        <h2 className="text-2xl md:text-3xl">رؤيتنا</h2>
-        <p className="text-sm leading-loose! text-muted-foreground dark:text-secondary-foreground md:text-base">
+        <h2 className="text-2xl font-semibold">رؤيتنا</h2>
+        <p className="text-muted-foreground dark:text-secondary-foreground text-sm leading-loose! md:text-base">
           أن يكون السودان هو فعلياً سلة غذاء العالم وأن يكون رائداً بين الدول
           العربية في مجال الزراعة وتطوير الأدوات الزراعية وتحسين جودة المزروعات،
           مما يسهم بشكل كبير في النمو الاقتصادي للفرد وللدولة على حد سواء. كما
@@ -45,15 +45,15 @@ export default function OurValues() {
               transition={{ duration: 0.5, delay: index * 0.2 }}
             >
               <div className="flex flex-col items-center gap-1">
-                <span className="h-20 w-[3px] bg-linear-to-b from-transparent to-primary opacity-70"></span>
-                <span className="flex size-10 select-none items-center justify-center rounded-full border bg-muted/50 font-mono text-lg">
+                <span className="to-primary h-20 w-[3px] bg-linear-to-b from-transparent opacity-70"></span>
+                <span className="bg-muted/50 flex size-10 items-center justify-center rounded-full border font-mono text-lg select-none">
                   {index + 1}
                 </span>
-                <span className="h-20 w-[3px] bg-linear-to-b from-primary to-transparent opacity-70"></span>
+                <span className="from-primary h-20 w-[3px] bg-linear-to-b to-transparent opacity-70"></span>
               </div>
               <div className="flex flex-col justify-center gap-5 px-4 py-4">
                 <h3 className="text-xl lg:text-2xl">{item.title}</h3>
-                <p className="text-justify text-sm text-muted-foreground dark:text-secondary-foreground lg:text-base">
+                <p className="text-muted-foreground dark:text-secondary-foreground text-justify text-sm lg:text-base">
                   {item.text}
                 </p>
               </div>

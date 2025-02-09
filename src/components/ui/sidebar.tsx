@@ -338,16 +338,16 @@ const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button">
 >(({ className, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, open } = useSidebar();
 
   return (
     <button
       ref={ref}
       data-sidebar="rail"
-      aria-label="إفتح وأغلق الشريط الجانبي"
+      aria-label={`${open ? "أغلق" : "إفتح"} الشريط الجانبي`}
       tabIndex={-1}
       onClick={toggleSidebar}
-      title="إفتح وأغلق الشريط الجانبي"
+      title={`${open ? "أغلق" : "إفتح"} الشريط الجانبي`}
       className={cn(
         "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex",
         "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",

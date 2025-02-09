@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   TableBody,
   TableCell,
-  Table as TableComponent,
+  Table,
   TableHead,
   TableHeader,
   TableRow,
@@ -33,8 +33,10 @@ import { toast } from "sonner";
 
 export default function ProjectsClientPage({
   projects,
+  count,
 }: {
   projects: Projects[];
+  count: number;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -152,26 +154,16 @@ export default function ProjectsClientPage({
     return actions;
   };
 
-  if (!projects.length) {
-    return (
-      <NoRecords
-        msg="لم يتم العثور على أي مشاريع استثمارية في الوقت الحالي"
-        links={[
-          {
-            to: "/admin/projects/new",
-            label: "إضافة مشروع جديد",
-          },
-        ]}
-      />
-    );
-  }
-
-  return (
+  return !projects || count === 0 ? (
+    <NoRecords
+      msg="لم يتم العثور على أي مشاريع استثمارية في الوقت الحالي"
+      links={[{ to: "/admin/projects/new", label: "إضافة مشروع جديد" }]}
+    />
+  ) : (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">المشاريع</h2>
+      <div className="flex items-center justify-end">
         <Link href="/admin/projects/new">
-          <Button>إضافة مشروع جديد</Button>
+          <Button variant={"pressable"}>مشروع جديد</Button>
         </Link>
       </div>
 
@@ -180,13 +172,13 @@ export default function ProjectsClientPage({
         filtering={filtering}
         setFiltering={setFiltering}
         selectedRows={selectedRows}
-        searchPlaceholder="البحث في المشاريع..."
+        searchPlaceholder="ابحث عن مشروع"
         bulkActions={getBulkActions()}
         filterFields={filterFields}
       />
 
       <div className="rounded-md border">
-        <TableComponent>
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -231,7 +223,7 @@ export default function ProjectsClientPage({
               </TableRow>
             )}
           </TableBody>
-        </TableComponent>
+        </Table>
       </div>
     </div>
   );

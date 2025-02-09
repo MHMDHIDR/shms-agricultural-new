@@ -89,19 +89,21 @@ const NavigationMenuLink = React.forwardRef<
   const isActive = pathname === href;
 
   return (
-    <NavigationMenuPrimitive.Link
-      ref={ref}
-      className={cn(
-        "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-hidden disabled:pointer-events-none disabled:opacity-50",
-        {
-          "bg-accent text-accent-foreground": isActive,
-          "hover:bg-accent hover:text-accent-foreground": !isActive,
-        },
-        className,
-      )}
-      href={href}
-      {...props}
-    />
+    <NavigationMenuItem>
+      <NavigationMenuPrimitive.Link
+        ref={ref}
+        className={cn(
+          "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-hidden disabled:pointer-events-none disabled:opacity-50",
+          {
+            "bg-accent text-accent-foreground": isActive,
+            "hover:bg-accent hover:text-accent-foreground": !isActive,
+          },
+          className,
+        )}
+        href={href}
+        {...props}
+      />
+    </NavigationMenuItem>
   );
 });
 NavigationMenuLink.displayName = NavigationMenuPrimitive.Link.displayName;

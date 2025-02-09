@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { translateSring } from "@/lib/translate-string";
 import type { Table } from "@tanstack/react-table";
 import { ChevronDown, SettingsIcon, X } from "lucide-react";
 import { useMemo } from "react";
@@ -57,7 +58,7 @@ export function TableToolbar<TData>({
           placeholder={searchPlaceholder || "إبحث عن بيانات ..."}
           value={filtering}
           onChange={(event) => setFiltering(event.target.value)}
-          className="max-w-md"
+          className="rtl max-w-md"
         />
         {selectedRows.length > 0 && hasBulkActions && (
           <DropdownMenu>
@@ -104,7 +105,7 @@ export function TableToolbar<TData>({
             onClick={() => table.resetColumnFilters()}
             className="h-8 px-2 lg:px-3"
           >
-            Reset
+            إلغاء الفلترة
             <X className="ml-2 h-4 w-4" />
           </Button>
         )}
@@ -112,9 +113,9 @@ export function TableToolbar<TData>({
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="ml-auto">
+          <Button variant="outline" className="mr-auto cursor-pointer">
+            <ChevronDown className="mr-2 h-4 w-4" />
             الأعمدة
-            <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -127,8 +128,9 @@ export function TableToolbar<TData>({
                 className="capitalize"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                dir="auto"
               >
-                {column.id}
+                {translateSring(column.id)}
               </DropdownMenuCheckboxItem>
             ))}
         </DropdownMenuContent>

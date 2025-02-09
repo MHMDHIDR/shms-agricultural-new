@@ -2,7 +2,7 @@ import { api } from "@/trpc/server";
 import ProjectsClientPage from "./projects.client";
 
 export default async function ProjectsPage() {
-  const { projects } = await api.projects.getAll();
+  const { projects, count } = await api.projects.getAll();
 
   return (
     <section className="container mx-auto">
@@ -10,7 +10,7 @@ export default async function ProjectsPage() {
         المشاريع
       </h1>
 
-      <ProjectsClientPage projects={projects} />
+      <ProjectsClientPage projects={projects} count={count} />
     </section>
   );
 }

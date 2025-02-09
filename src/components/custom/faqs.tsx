@@ -16,9 +16,9 @@ export default async function FAQ({ pathname }: { pathname: "/faqs" | "/" }) {
     <section className="container mx-auto overflow-clip px-4 py-20 md:max-w-[70rem] md:px-0">
       {count > 0 && (
         <>
-          <h1 className="mb-4 text-center text-3xl font-semibold select-none md:mb-14">
+          <h2 className="mb-4 text-center text-2xl font-semibold select-none md:mb-14">
             الأسئلة الشائعة
-          </h1>
+          </h2>
           {faqs.slice(0, FAQS_TO_RENDER).map((item, index) => (
             <Accordion key={index} type="single" collapsible>
               <AccordionItem value={`item-${index}`}>
@@ -32,7 +32,7 @@ export default async function FAQ({ pathname }: { pathname: "/faqs" | "/" }) {
             </Accordion>
           ))}
           {count > FAQS_TO_RENDER && (
-            <div className="flex justify-center">
+            <div className="mt-12 flex justify-center">
               <LoadMore href="/faqs" />
             </div>
           )}

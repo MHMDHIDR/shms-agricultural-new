@@ -21,6 +21,7 @@ import {
 import clsx from "clsx";
 import { formatDate } from "@/lib/format-date";
 import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter";
+import { translateSring } from "@/lib/translate-string";
 
 // Types
 type DateTime = Date | string;
@@ -125,6 +126,7 @@ export function useSharedColumns<T extends BaseEntity>({
             table.toggleAllPageRowsSelected(!!value)
           }
           aria-label="Select all"
+          className="cursor-pointer"
         />
       ),
       cell: ({ row }) => (
@@ -132,6 +134,7 @@ export function useSharedColumns<T extends BaseEntity>({
           checked={row.getIsSelected()}
           onCheckedChange={(value: boolean) => row.toggleSelected(!!value)}
           aria-label="Select row"
+          className="cursor-pointer"
         />
       ),
       enableSorting: false,
@@ -225,7 +228,7 @@ export function useSharedColumns<T extends BaseEntity>({
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          اسم المشروع
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -237,7 +240,7 @@ export function useSharedColumns<T extends BaseEntity>({
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Status
+          حالة المشروع
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -251,14 +254,22 @@ export function useSharedColumns<T extends BaseEntity>({
                 project.projectStatus === "pending",
             })}
           >
-            {project.projectStatus}
+            {translateSring(project.projectStatus)}
           </span>
         );
       },
     },
     {
       accessorKey: "projectLocation",
-      header: "Location",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          موقع المشروع
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
     },
     {
       accessorKey: "projectStartDate",
@@ -267,7 +278,7 @@ export function useSharedColumns<T extends BaseEntity>({
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Start Date
+          تاريخ البدء
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -283,7 +294,7 @@ export function useSharedColumns<T extends BaseEntity>({
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          End Date
+          تاريخ الانتهاء
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -356,7 +367,7 @@ export function useSharedColumns<T extends BaseEntity>({
 
   const actionsColumn: ColumnDef<T> = {
     id: "actions",
-    header: "Actions",
+    header: "الإجراءات",
     cell: ({ row }) => {
       const entity = row.original;
 
@@ -364,16 +375,16 @@ export function useSharedColumns<T extends BaseEntity>({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">إفتح القائمة</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="rtl">
+            <DropdownMenuLabel>الإجراءات</DropdownMenuLabel>
             <DropdownMenuItem asChild>
               <Link href={`/admin${actions.basePath}/${entity.id}`}>
                 <Pencil className="mr-2 h-4 w-4" />
-                View / Edit
+                تعديل
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -405,8 +416,8 @@ export function useSharedColumns<T extends BaseEntity>({
                   <CheckCircle className="mr-2 h-4 w-4" />
                   {(row.original as unknown as Project).projectStatus ===
                   "pending"
-                    ? "Activate"
-                    : "Deactivate"}
+                    ? "تفعيل"
+                    : "تعطيل"}
                 </DropdownMenuItem>
               )}
             <DropdownMenuItem
@@ -414,7 +425,7 @@ export function useSharedColumns<T extends BaseEntity>({
               onClick={() => actions.onDelete?.(entity.id)}
             >
               <Trash className="mr-2 h-4 w-4" />
-              Delete
+              حذف
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
