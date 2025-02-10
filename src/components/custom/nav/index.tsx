@@ -95,7 +95,9 @@ export async function Nav() {
         </DropdownMenu>
       ) : (
         <NavigationMenu>
-          <NavigationMenuLink href="/signin">تسجيل الدخول</NavigationMenuLink>
+          <NavigationMenuList>
+            <NavigationMenuLink href="/signin">تسجيل الدخول</NavigationMenuLink>
+          </NavigationMenuList>
         </NavigationMenu>
       )}
 
