@@ -52,14 +52,14 @@ export function TableToolbar<TData>({
   }, [filterFields]);
 
   return (
-    <div className="flex items-center justify-between gap-x-2 py-2.5">
-      <div className="flex w-full items-center gap-x-2">
-        <Input
-          placeholder={searchPlaceholder || "إبحث عن بيانات ..."}
-          value={filtering}
-          onChange={(event) => setFiltering(event.target.value)}
-          className="rtl max-w-md"
-        />
+    <div className="flex w-full flex-col gap-2 py-2.5 sm:flex-row">
+      <Input
+        placeholder={searchPlaceholder || "إبحث عن بيانات ..."}
+        value={filtering}
+        onChange={(event) => setFiltering(event.target.value)}
+        className="rtl w-full sm:max-w-md"
+      />
+      <div className="flex flex-wrap items-center gap-2">
         {selectedRows.length > 0 && hasBulkActions && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -88,6 +88,7 @@ export function TableToolbar<TData>({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
+
         {filterableColumns.map(
           (column) =>
             table.getColumn(column.id) && (
@@ -99,6 +100,7 @@ export function TableToolbar<TData>({
               />
             ),
         )}
+
         {isFiltered && (
           <Button
             variant="ghost"
@@ -109,32 +111,32 @@ export function TableToolbar<TData>({
             <X className="ml-2 h-4 w-4" />
           </Button>
         )}
-      </div>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="mr-auto cursor-pointer">
-            <ChevronDown className="mr-2 h-4 w-4" />
-            الأعمدة
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {table
-            .getAllColumns()
-            .filter((column) => column.getCanHide())
-            .map((column) => (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                className="capitalize"
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                dir="auto"
-              >
-                {translateSring(column.id)}
-              </DropdownMenuCheckboxItem>
-            ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="mr-auto cursor-pointer">
+              <ChevronDown className="mr-2 h-4 w-4" />
+              الأعمدة
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  dir="auto"
+                >
+                  {translateSring(column.id)}
+                </DropdownMenuCheckboxItem>
+              ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 }

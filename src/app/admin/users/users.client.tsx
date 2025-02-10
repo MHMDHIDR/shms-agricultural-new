@@ -3,17 +3,22 @@
 import type { BulkAction } from "@/components/custom/data-table/table-toolbar";
 import { TableToolbar } from "@/components/custom/data-table/table-toolbar";
 import NoRecords from "@/components/custom/no-records";
-import { Button } from "@/components/ui/button";
 import {
+  Table,
   TableBody,
   TableCell,
-  Table,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { useSharedColumns } from "@/hooks/use-shared-columns";
+import { useToast } from "@/hooks/use-toast";
 import type { User } from "@prisma/client";
+import type {
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+} from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -22,13 +27,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import type {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-} from "@tanstack/react-table";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 
 export default function UsersClientPage({
   users,
@@ -162,7 +161,7 @@ export default function UsersClientPage({
         filterFields={filterFields}
       />
 
-      <div className="rounded-md border">
+      <div className="rounded-md border px-2.5">
         <Table>
           <TableHeader className="select-none">
             {table.getHeaderGroups().map((headerGroup) => (

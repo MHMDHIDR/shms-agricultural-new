@@ -32,7 +32,7 @@ export default async function DashboardLayout({
             <SidebarTrigger className="mr-2 cursor-pointer" />
           </div>
         </header>
-        <section className="ltr mx-auto max-w-sm sm:max-w-screen-sm md:max-w-screen-md xl:max-w-screen-xl">
+        <section className="mx-auto max-w-sm sm:max-w-screen-sm md:max-w-screen-md xl:max-w-screen-xl">
           {children}
         </section>
       </SidebarInset>

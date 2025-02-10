@@ -22,8 +22,9 @@ import clsx from "clsx";
 import { formatDate } from "@/lib/format-date";
 import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter";
 import { translateSring } from "@/lib/translate-string";
+import { Projects } from "@prisma/client";
+import { CopyText } from "@/components/custom/copy";
 
-// Types
 type DateTime = Date | string;
 
 type BaseEntity = {
@@ -32,21 +33,13 @@ type BaseEntity = {
   email?: string;
 };
 
-// Define specific interfaces based on schema
 type User = BaseEntity & {
   role: "admin" | "user";
   emailVerified: DateTime | null;
   accountStatus: "active" | "block" | "pending";
 };
 
-type Project = BaseEntity & {
-  projectName: string;
-  projectStatus: "pending" | "active";
-  projectLocation: string;
-  projectStartDate: DateTime;
-  projectEndDate: DateTime;
-  projectDescription: string;
-};
+type Project = BaseEntity & Projects;
 
 type WithdrawAction = BaseEntity & {
   withdraw_amount: number;
@@ -55,7 +48,6 @@ type WithdrawAction = BaseEntity & {
   message?: string;
 };
 
-// Define the actions that can be performed
 type TableActions = {
   onDelete?: (id: string) => void;
   onBlock?: (id: string) => void;
@@ -82,10 +74,10 @@ export function useSharedColumns<T extends BaseEntity>({
       ? [
           {
             id: "role",
-            label: "Role",
+            label: translateSring("role"),
             options: [
-              { label: "Admin", value: "admin" },
-              { label: "User", value: "user" },
+              { label: translateSring("admin"), value: "admin" },
+              { label: translateSring("user"), value: "user" },
             ],
           },
           {
@@ -200,6 +192,10 @@ export function useSharedColumns<T extends BaseEntity>({
           </span>
         );
       },
+      filterFn: (row, _id, filterValues: string[]) => {
+        const value = (row.original as unknown as User).role;
+        return filterValues.includes(value);
+      },
     },
     {
       accessorKey: "accountStatus",
@@ -227,6 +223,10 @@ export function useSharedColumns<T extends BaseEntity>({
           </span>
         );
       },
+      filterFn: (row, _id, filterValues: string[]) => {
+        const value = (row.original as unknown as User).accountStatus;
+        return filterValues.includes(value);
+      },
     },
   ];
 
@@ -243,6 +243,10 @@ export function useSharedColumns<T extends BaseEntity>({
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
+      cell: ({ row }) => {
+        const project = row.original as unknown as Project;
+        return <span className="whitespace-nowrap">{project.projectName}</span>;
+      },
     },
     {
       accessorKey: "projectStatus",
@@ -270,6 +274,10 @@ export function useSharedColumns<T extends BaseEntity>({
           </span>
         );
       },
+      filterFn: (row, _id, filterValues: string[]) => {
+        const value = (row.original as unknown as Project).projectStatus;
+        return filterValues.includes(value);
+      },
     },
     {
       accessorKey: "projectLocation",
@@ -296,6 +304,18 @@ export function useSharedColumns<T extends BaseEntity>({
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
+      cell: ({ row }) => {
+        const project = row.original as unknown as Project;
+        return (
+          <span>
+            <CopyText
+              text={project.projectSpecialPercentageCode ?? ""}
+              className="ml-2 inline h-4 w-4"
+            />
+            {project.projectSpecialPercentageCode}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "projectSpecialPercentage",
@@ -309,6 +329,10 @@ export function useSharedColumns<T extends BaseEntity>({
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
+      cell: ({ row }) => {
+        const project = row.original as unknown as Project;
+        return <span>{project.projectSpecialPercentage}%</span>;
+      },
     },
     {
       accessorKey: "projectStartDate",
@@ -420,7 +444,7 @@ export function useSharedColumns<T extends BaseEntity>({
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="rtl">
+          <DropdownMenuContent align="center" className="rtl">
             <DropdownMenuLabel className="sr-only">
               {translateSring("actions")}
             </DropdownMenuLabel>
@@ -441,8 +465,8 @@ export function useSharedColumns<T extends BaseEntity>({
               >
                 <Ban className="mr-2 h-4 w-4" />
                 {(row.original as unknown as User).accountStatus === "block"
-                  ? "Unblock User"
-                  : "Block User"}
+                  ? "الغاء حظر المستخدم"
+                  : "حظر المستخدم"}
               </DropdownMenuItem>
             )}
             {entityType === "projects" &&

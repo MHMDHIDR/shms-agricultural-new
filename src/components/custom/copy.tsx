@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export default function CopyText({
+export function CopyText({
   text,
   className,
 }: {

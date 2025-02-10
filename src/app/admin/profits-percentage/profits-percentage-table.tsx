@@ -25,8 +25,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Loader2 } from "lucide-react";
+import { CopyText } from "@/components/custom/copy";
 import type { Projects } from "@prisma/client";
-import Copy from "@/components/custom/copy";
 
 export default function ProfitsPercentageTable({
   projects,
@@ -92,7 +92,7 @@ export default function ProfitsPercentageTable({
             <TableRow key={project.id}>
               <TableCell>{project.projectName}</TableCell>
               <TableCell>
-                <Copy
+                <CopyText
                   text={project.projectSpecialPercentageCode ?? ""}
                   className="ml-2 inline h-4 w-4"
                 />

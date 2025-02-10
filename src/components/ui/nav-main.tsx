@@ -50,8 +50,8 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger
                 className={clsx(
-                  "dark:hover:bg-background/95 cursor-pointer hover:bg-slate-200",
-                  { "bg-slate-200": item.url === pathname },
+                  "cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800",
+                  { "bg-slate-200 dark:bg-slate-800": item.url === pathname },
                 )}
                 asChild
               >
@@ -70,8 +70,11 @@ export function NavMain({
                       <SidebarMenuSubItem
                         key={subItem.title}
                         className={clsx(
-                          "dark:hover:bg-background/95 rounded-md hover:bg-slate-200",
-                          { "bg-slate-200": subItem.url === pathname },
+                          "rounded-md hover:bg-slate-200 dark:hover:dark:bg-slate-800",
+                          {
+                            "bg-slate-200 dark:bg-slate-800":
+                              subItem.url === pathname,
+                          },
                         )}
                       >
                         <SidebarMenuSubButton asChild>

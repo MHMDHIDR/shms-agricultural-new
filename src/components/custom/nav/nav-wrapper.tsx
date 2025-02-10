@@ -7,10 +7,11 @@ import { useEffect, useState } from "react";
 
 export function NavWrapper({ children }: { children: React.ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
+  const SCROLL_THRESHOLD = 130;
 
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 90;
+      const isScrolled = window.scrollY > SCROLL_THRESHOLD;
       setScrolled(isScrolled);
     };
 
@@ -21,12 +22,13 @@ export function NavWrapper({ children }: { children: React.ReactNode }) {
   return (
     <nav
       className={clsx(
-        "sticky top-0 z-50 w-full bg-white shadow transition-all duration-200",
+        "sticky top-0 z-50 w-full shadow-md backdrop-blur-md transition-all duration-200",
+        "dark:bg-background/55 bg-white/55",
         { "h-12": scrolled, "h-16": !scrolled },
       )}
       dir="ltr"
     >
-      <div className="container mx-auto flex h-full items-center justify-between px-4 text-black select-none">
+      <div className="container mx-auto flex h-full items-center justify-between px-4 text-black select-none dark:text-white">
         <div className="flex items-center">
           <Link href="/">
             <ShmsIcon

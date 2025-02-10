@@ -122,7 +122,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="mt-20 rounded-3xl border border-white/10 bg-black/30 p-6 backdrop-blur-xs">
+        <div className="mt-20 rounded-3xl border border-white/10 bg-black/30 p-6 backdrop-blur-sm">
           <div className="flex w-full flex-col md:flex-row">
             <div className="flex flex-1 flex-col gap-3 border-b-[1px] border-white/10 p-6 text-center md:border-b-0 md:border-l-[1px]">
               <div className="text-primary text-2xl font-medium lg:text-4xl">

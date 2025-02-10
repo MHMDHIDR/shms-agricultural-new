@@ -33,11 +33,11 @@ export type DataTableFilterField = {
   options?: FilterOption[];
 };
 
-interface DataTableFacetedFilterProps<TData, TValue> {
+type DataTableFacetedFilterProps<TData, TValue> = {
   column?: Column<TData, TValue>;
   title?: string;
   options: FilterOption[];
-}
+};
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
@@ -107,7 +107,7 @@ export function DataTableFacetedFilter<TData, TValue>({
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>لا يوجد نتائج.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value);

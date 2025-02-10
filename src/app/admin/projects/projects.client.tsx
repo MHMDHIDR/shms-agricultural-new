@@ -156,7 +156,7 @@ export default function ProjectsClientPage({
     />
   ) : (
     <div className="space-y-4">
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-start">
         <Link href="/admin/projects/new">
           <Button variant={"pressable"}>مشروع جديد</Button>
         </Link>
@@ -172,7 +172,7 @@ export default function ProjectsClientPage({
         filterFields={filterFields}
       />
 
-      <div className="rounded-md border">
+      <div className="rounded-md border px-2.5">
         <Table>
           <TableHeader className="select-none">
             {table.getHeaderGroups().map((headerGroup) => (
