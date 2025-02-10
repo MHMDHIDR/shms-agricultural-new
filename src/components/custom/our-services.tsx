@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function OurServices() {
-  const serviceIndex = 1;
+  const serviceIndex = 4;
 
   return (
     <section className="container mx-auto overflow-clip px-4 py-20 md:max-w-[70rem] md:px-0">

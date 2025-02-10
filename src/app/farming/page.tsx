@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
 import { env } from "@/env";
 import { api } from "@/trpc/server";
+import { services } from "@/schemas/contact";
 
 export const metadata: Metadata = {
   title: `الـــزراعة | ${APP_TITLE}`,
@@ -17,8 +18,10 @@ export default async function Farming() {
     imageSrc: MAIN_IMAGE,
   });
 
+  const serviceIndex = 1;
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">
+    <main className="flex min-h-screen flex-col items-center">
       <h1 className="mt-10 text-2xl select-none">الزراعة</h1>
 
       <div className="flex w-full flex-col items-center">
@@ -36,21 +39,24 @@ export default async function Farming() {
 
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
-          <div className="absolute inset-0 flex items-center">
-            <p className="px-12 text-right text-xl leading-12 text-white">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-y-7">
+            <p className="px-5 text-right text-lg leading-10 text-white md:px-10 md:leading-12">
               خطوة الزراعة وتتم أولاً بتحديد طريقة الزراعة إما يدوية أو آلية.
               ثانياً، تخطيط المسافات. ثالثاً، يتم وضع البذور أو الشتلات في
               التربة ثم يليها الري المنتظم، وإضافة الأسمدة وتكتمل بمكافحة
               الآفات.
             </p>
+
+            <Link
+              className="my-5 text-xl"
+              href={`/contact?service=${services[serviceIndex]}`}
+            >
+              <Button variant={"pressable"} className="px-10">
+                طلب الخــدمة
+              </Button>
+            </Link>
           </div>
         </div>
-
-        <Link className="my-5 text-xl" href="/contact">
-          <Button variant={"pressable"} className="px-12">
-            طلب الخــدمة
-          </Button>
-        </Link>
       </div>
     </main>
   );
