@@ -22,7 +22,7 @@ import clsx from "clsx";
 import { formatDate } from "@/lib/format-date";
 import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter";
 import { translateSring } from "@/lib/translate-string";
-import { Projects } from "@prisma/client";
+import type { Projects } from "@prisma/client";
 import { CopyText } from "@/components/custom/copy";
 
 type DateTime = Date | string;
