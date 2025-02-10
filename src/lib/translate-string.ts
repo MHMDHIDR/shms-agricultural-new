@@ -5,6 +5,15 @@
  * */
 export const translateSring = (string: string) => {
   switch (string) {
+    case "sn": {
+      return "الرقم التسلسلي";
+    }
+    case "id": {
+      return "الرقم المعرف";
+    }
+    case "amount": {
+      return "المبلغ المراد سحبه";
+    }
     case "projectName":
     case "name": {
       return "الاسم";
@@ -62,6 +71,10 @@ export const translateSring = (string: string) => {
     case "stocks": {
       return "عدد الأسهم";
     }
+    case "createdAt":
+    case "created_at": {
+      return "تاريخ الإنشاء";
+    }
     case "actions": {
       return "الإجراءات";
     }
@@ -74,8 +87,20 @@ export const translateSring = (string: string) => {
     case "block": {
       return "محظور";
     }
+    case "completed": {
+      return "مكتمل";
+    }
+    case "rejected": {
+      return "مرفوض";
+    }
     case "email": {
       return "البريد الإلكتروني";
+    }
+    case "phone": {
+      return "رقم الهاتف";
+    }
+    case "address": {
+      return "العنوان";
     }
     case "role": {
       return "الدور";
@@ -85,6 +110,15 @@ export const translateSring = (string: string) => {
     }
     case "user": {
       return "مستخدم";
+    }
+    case "type": {
+      return "النوع";
+    }
+    case "withdraw": {
+      return "ســـحب رصيد";
+    }
+    case "deposit": {
+      return "إيـــــــداع رصيد";
     }
     default: {
       return string;

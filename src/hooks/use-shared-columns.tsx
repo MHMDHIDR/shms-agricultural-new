@@ -1,4 +1,3 @@
-import type { ColumnDef } from "@tanstack/react-table";
 import {
   ArrowUpDown,
   Ban,
@@ -20,12 +19,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import clsx from "clsx";
 import { formatDate } from "@/lib/format-date";
-import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter";
 import { translateSring } from "@/lib/translate-string";
-import type { Projects, User } from "@prisma/client";
 import { CopyText } from "@/components/custom/copy";
-
-type DateTime = Date | string;
+import type { Projects, User, withdraw_actions } from "@prisma/client";
+import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter";
+import type { ColumnDef } from "@tanstack/react-table";
 
 type BaseEntity = {
   id: string;
@@ -37,12 +35,7 @@ type UserType = BaseEntity & User;
 
 type Project = BaseEntity & Projects;
 
-type WithdrawAction = BaseEntity & {
-  withdraw_amount: number;
-  accounting_operation_status: string;
-  created_at: DateTime;
-  message?: string;
-};
+type WithdrawAction = BaseEntity & withdraw_actions;
 
 type TableActions = {
   onDelete?: (id: string) => void;
@@ -50,7 +43,7 @@ type TableActions = {
   onUnblock?: (id: string) => void;
   onActivate?: (id: string) => void;
   onDeactivate?: (id: string) => void;
-  basePath: "/projects" | "/users" | "/withdraw-actions";
+  basePath: "/projects" | "/users" | "/operations";
 };
 
 type SharedColumnsProps = {
@@ -459,13 +452,89 @@ export function useSharedColumns<T extends BaseEntity>({
 
   const withdrawActionColumns: ColumnDef<T>[] = [
     {
+      accessorKey: "id",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {translateSring("id")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction;
+        return (
+          <span className="whitespace-nowrap">
+            <CopyText
+              text={withdrawAction.id}
+              className="ml-2 inline h-4 w-4"
+            />
+            {withdrawAction.id}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {translateSring("name")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction & {
+          user: Pick<UserType, "name">;
+        };
+        return (
+          <span className="whitespace-nowrap">
+            <CopyText
+              text={withdrawAction.user.name}
+              className="ml-2 inline h-4 w-4"
+            />
+            {withdrawAction.user.name}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "sn",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {translateSring("sn")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction & {
+          user: Pick<UserType, "sn">;
+        };
+        return (
+          <span className="whitespace-nowrap">
+            <CopyText
+              text={withdrawAction.user.sn.toString()}
+              className="ml-2 inline h-4 w-4"
+            />
+            {withdrawAction.user.sn}
+          </span>
+        );
+      },
+    },
+    {
       accessorKey: "withdraw_amount",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Amount
+          {translateSring("amount")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -477,7 +546,7 @@ export function useSharedColumns<T extends BaseEntity>({
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Status
+          {translateSring("status")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -494,7 +563,99 @@ export function useSharedColumns<T extends BaseEntity>({
                 withdrawAction.accounting_operation_status === "rejected",
             })}
           >
-            {withdrawAction.accounting_operation_status}
+            {translateSring(withdrawAction.accounting_operation_status)}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "action_type",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {translateSring("type")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction;
+        return <span>{translateSring(withdrawAction.action_type)}</span>;
+      },
+    },
+    {
+      accessorKey: "phone",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {translateSring("phone")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction & {
+          user: Pick<UserType, "phone">;
+        };
+        return (
+          <Link
+            href={`tel:${withdrawAction.user.phone}`}
+            className="text-primary whitespace-nowrap"
+          >
+            {withdrawAction.user.phone}
+          </Link>
+        );
+      },
+    },
+    {
+      accessorKey: "email",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {translateSring("email")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction & {
+          user: Pick<UserType, "email">;
+        };
+        return (
+          <Link
+            href={`mailto:${withdrawAction.user.email}`}
+            className="text-primary whitespace-nowrap"
+          >
+            {withdrawAction.user.email}
+          </Link>
+        );
+      },
+    },
+    {
+      accessorKey: "address",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {translateSring("address")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction & {
+          user: Pick<UserType, "address">;
+        };
+        return (
+          <span className="whitespace-nowrap">
+            <CopyText
+              text={withdrawAction.user.address}
+              className="ml-2 inline h-4 w-4"
+            />
+            {withdrawAction.user.address}
           </span>
         );
       },
@@ -506,7 +667,7 @@ export function useSharedColumns<T extends BaseEntity>({
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Date
+          {translateSring("created_at")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
