@@ -3,16 +3,23 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
+import { api } from "@/trpc/server";
+import { env } from "@/env";
 
 export const metadata: Metadata = {
   title: `التحضيــــــر | ${APP_TITLE}`,
   description: APP_DESCRIPTION,
 };
 
-export default function Preparation() {
+export default async function Preparation() {
+  const MAIN_IMAGE = `${env.NEXT_PUBLIC_APP_URL}/our-services/preparation.webp`;
+  const blurImage = await api.optimizeImage.getBlurPlaceholder({
+    imageSrc: MAIN_IMAGE,
+  });
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
-      <h1 className="mt-10 text-2xl">التحضير للموسم الزراعي</h1>
+      <h1 className="mt-10 text-2xl select-none">التحضير للموسم الزراعي</h1>
 
       <div className="flex w-full flex-col items-center">
         <div className="relative my-12 w-full min-w-screen">
@@ -22,6 +29,8 @@ export default function Preparation() {
             height={800}
             alt="تحضير التربة"
             className="h-[600px] w-full object-cover"
+            placeholder="blur"
+            blurDataURL={blurImage ?? MAIN_IMAGE}
             priority
           />
 

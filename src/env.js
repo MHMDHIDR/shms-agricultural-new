@@ -17,7 +17,9 @@ export const env = createEnv({
     AWS_SECRET: z.string(),
     RESEND_API_KEY: z.string(),
   },
-  client: {},
+  client: {
+    NEXT_PUBLIC_APP_URL: z.string().url(),
+  },
   runtimeEnv: {
     AUTH_SECRET: process.env.AUTH_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
@@ -27,6 +29,7 @@ export const env = createEnv({
     AWS_REGION: process.env.AWS_REGION,
     AWS_SECRET: process.env.AWS_SECRET,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,
