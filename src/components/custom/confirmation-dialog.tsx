@@ -30,7 +30,7 @@ export function ConfirmationDialog({
 }: ConfirmationDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="rtl:text-right">
+      <AlertDialogContent className="select-none">
         <AlertDialogHeader>
           <AlertDialogTitle className="rtl:text-right">
             {title}
