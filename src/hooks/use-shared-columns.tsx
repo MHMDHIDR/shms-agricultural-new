@@ -22,7 +22,7 @@ import clsx from "clsx";
 import { formatDate } from "@/lib/format-date";
 import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter";
 import { translateSring } from "@/lib/translate-string";
-import type { Projects } from "@prisma/client";
+import type { Projects, User } from "@prisma/client";
 import { CopyText } from "@/components/custom/copy";
 
 type DateTime = Date | string;
@@ -33,11 +33,7 @@ type BaseEntity = {
   email?: string;
 };
 
-type User = BaseEntity & {
-  role: "admin" | "user";
-  emailVerified: DateTime | null;
-  accountStatus: "active" | "block" | "pending";
-};
+type UserType = BaseEntity & User;
 
 type Project = BaseEntity & Projects;
 
@@ -153,6 +149,27 @@ export function useSharedColumns<T extends BaseEntity>({
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
+      cell: ({ row }) => {
+        const user = row.original as unknown as UserType;
+        return <span className="whitespace-nowrap">{user.name}</span>;
+      },
+    },
+    {
+      accessorKey: "stocks",
+      header: () => {
+        return (
+          <span className="whitespace-nowrap">{translateSring("stocks")}</span>
+        );
+      },
+      cell: ({ row }) => {
+        const userStocks = (row.original as unknown as UserType).stocks;
+        const totalStocks = userStocks.reduce(
+          (acc, stock) => acc + stock.stocks,
+          0,
+        );
+
+        return <span>{totalStocks}</span>;
+      },
     },
     {
       accessorKey: "email",
@@ -180,7 +197,7 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const user = row.original as unknown as User;
+        const user = row.original as unknown as UserType;
         return (
           <span
             className={clsx("rounded-full border px-2.5 py-0.5 select-none", {
@@ -193,7 +210,7 @@ export function useSharedColumns<T extends BaseEntity>({
         );
       },
       filterFn: (row, _id, filterValues: string[]) => {
-        const value = (row.original as unknown as User).role;
+        const value = (row.original as unknown as UserType).role;
         return filterValues.includes(value);
       },
     },
@@ -210,7 +227,7 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const user = row.original as unknown as User;
+        const user = row.original as unknown as UserType;
         return (
           <span
             className={clsx("rounded-full border px-2.5 py-0.5 select-none", {
@@ -224,7 +241,7 @@ export function useSharedColumns<T extends BaseEntity>({
         );
       },
       filterFn: (row, _id, filterValues: string[]) => {
-        const value = (row.original as unknown as User).accountStatus;
+        const value = (row.original as unknown as UserType).accountStatus;
         return filterValues.includes(value);
       },
     },
@@ -458,13 +475,14 @@ export function useSharedColumns<T extends BaseEntity>({
             {entityType === "users" && actions.onBlock && actions.onUnblock && (
               <DropdownMenuItem
                 onClick={() =>
-                  (row.original as unknown as User).accountStatus === "block"
+                  (row.original as unknown as UserType).accountStatus ===
+                  "block"
                     ? actions.onUnblock?.(entity.id)
                     : actions.onBlock?.(entity.id)
                 }
               >
                 <Ban className="mr-2 h-4 w-4" />
-                {(row.original as unknown as User).accountStatus === "block"
+                {(row.original as unknown as UserType).accountStatus === "block"
                   ? "الغاء حظر المستخدم"
                   : "حظر المستخدم"}
               </DropdownMenuItem>

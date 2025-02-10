@@ -10,6 +10,7 @@ export const translateSring = (string: string) => {
       return "الاسم";
     }
     case "projectStatus":
+    case "accountStatus":
     case "status": {
       return "الحالة";
     }
@@ -57,6 +58,9 @@ export const translateSring = (string: string) => {
     }
     case "projectTerms": {
       return "شروط المشروع";
+    }
+    case "stocks": {
+      return "عدد الأسهم";
     }
     case "actions": {
       return "الإجراءات";

@@ -83,7 +83,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     variant="secondary"
                     className="rounded-sm px-1 font-normal"
                   >
-                    {selectedValues.size} selected
+                    {selectedValues.size} فلاتر محددة
                   </Badge>
                 ) : (
                   options
