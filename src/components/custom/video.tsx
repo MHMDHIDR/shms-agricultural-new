@@ -9,7 +9,8 @@ type VideoProps = {
   autoPlay?: boolean;
   loop?: boolean;
   muted?: boolean;
-  placeholder?: string; // Add a static placeholder prop
+  placeholder?: string;
+  videoDescription?: string;
 };
 
 export default function Video({
@@ -18,7 +19,8 @@ export default function Video({
   autoPlay = true,
   loop = true,
   muted = true,
-  placeholder = "/default-placeholder.jpg", // Default static placeholder
+  placeholder = "/logo-slogan.png",
+  videoDescription = "The above video shows a tractor plowing a field. If you can't see the video.",
 }: VideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -97,6 +99,7 @@ export default function Video({
         playsInline // Improves mobile behavior
         preload="auto"
       />
+      <p className="sr-only">{videoDescription}</p>
     </div>
   );
 }
