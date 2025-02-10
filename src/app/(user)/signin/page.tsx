@@ -2,9 +2,9 @@ import { redirect } from "next/navigation";
 import { auth } from "@/server/auth";
 import { SignInForm } from "./signin-form";
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
-import type { Metadata } from "next";
 import Divider from "@/components/custom/divider";
 import Link from "next/link";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: `تسجيل الدخول | ${APP_TITLE}`,

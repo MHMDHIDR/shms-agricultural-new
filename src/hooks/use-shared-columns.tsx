@@ -310,6 +310,57 @@ export function useSharedColumns<T extends BaseEntity>({
       ),
     },
     {
+      accessorKey: "projectAvailableStocks",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("projectAvailableStocks")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const project = row.original as unknown as Project;
+        return <span>{project.projectAvailableStocks}</span>;
+      },
+    },
+    {
+      accessorKey: "projectTotalStocks",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("projectTotalStocks")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const project = row.original as unknown as Project;
+        return <span>{project.projectTotalStocks}</span>;
+      },
+    },
+    {
+      accessorKey: "projectStockPrice",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("projectStockPrice")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const project = row.original as unknown as Project;
+        return <span>{project.projectStockPrice}</span>;
+      },
+    },
+    {
       accessorKey: "projectSpecialPercentageCode",
       header: ({ column }) => (
         <Button
@@ -383,6 +434,25 @@ export function useSharedColumns<T extends BaseEntity>({
       cell: ({ row }) =>
         formatDate({
           date: String((row.original as unknown as Project).projectEndDate),
+        }),
+    },
+    {
+      accessorKey: "projectProfitsCollectDate",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("projectProfitsCollectDate")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) =>
+        formatDate({
+          date: String(
+            (row.original as unknown as Project).projectProfitsCollectDate,
+          ),
         }),
     },
   ];
