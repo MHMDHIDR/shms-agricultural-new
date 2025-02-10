@@ -15,7 +15,6 @@ import Image from "next/image";
 import { useState } from "react";
 import { LoadingCard } from "../loading";
 import Video from "../video";
-import { StartInvestingCTA } from "./start-investing-cta";
 
 export default function Hero({ children }: { children: React.ReactNode }) {
   const { data: usersData, isLoading: isLoadingUsers } =

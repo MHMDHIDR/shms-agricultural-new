@@ -44,7 +44,7 @@ export default function OperationsClientPage({
   const toast = useToast();
 
   // Handle operation actions
-  const handleDeleteOperation = (id: string) => {
+  const handleDeleteOperation = () => {
     void (async () => {
       toast.error("Delete functionality not implemented yet");
     })();
