@@ -1,5 +1,14 @@
 import FAQ from "@/components/custom/faqs";
+import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: `الأسئلة الشائعة | ${APP_TITLE}`,
+  authors: [{ name: "Mohammed Ibrahim", url: "https://mohammedhaydar.com" }],
+  description: APP_DESCRIPTION,
+  icons: [{ rel: "icon", url: "/favicon.ico" }],
+};
 
 export default async function page() {
   return (

@@ -1,28 +1,29 @@
 import "@/styles/globals.css";
 import { Noto_Kufi_Arabic } from "next/font/google";
 import { Nav } from "@/components/custom/nav";
-import type { Metadata, Viewport } from "next";
 import { Providers } from "@/providers";
 import { ThemeProvider } from "@/providers/theme-provider";
 import Footer from "@/components/custom/footer";
 import { NavigateTop } from "@/components/custom/navigate-top";
-
-const notoKufiArabic = Noto_Kufi_Arabic({
-  subsets: ["arabic"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-noto-kufi",
-});
+import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
+import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
-  title: "Shms Agricultural",
+  title: APP_TITLE,
   authors: [{ name: "Mohammed Ibrahim", url: "https://mohammedhaydar.com" }],
-  description: "Shms Agricultural",
+  description: APP_DESCRIPTION,
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 export const viewport: Viewport = {
   themeColor: "#22c55f",
 };
+
+const notoKufiArabic = Noto_Kufi_Arabic({
+  subsets: ["arabic"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-noto-kufi",
+});
 
 export default async function RootLayout({
   children,

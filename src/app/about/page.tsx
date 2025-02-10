@@ -2,8 +2,7 @@ import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: `نبذة عــــن ${APP_TITLE}
-}`,
+  title: `نبذة عــن | ${APP_TITLE}`,
   description: APP_DESCRIPTION,
 };
 

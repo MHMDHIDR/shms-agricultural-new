@@ -1,9 +1,9 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import { ADMIN_EMAIL, APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "شروط الاستخدام | " + APP_TITLE,
+  title: `شروط الإستخدام | ${APP_TITLE}`,
   description: APP_DESCRIPTION,
 };
 

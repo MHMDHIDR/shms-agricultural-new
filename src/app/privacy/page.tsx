@@ -1,9 +1,9 @@
-import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
 import Link from "next/link";
+import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "سياسة الخصوصية | " + APP_TITLE,
+  title: `سياسة الخصوصية | ${APP_TITLE}`,
   description: APP_DESCRIPTION,
 };
 

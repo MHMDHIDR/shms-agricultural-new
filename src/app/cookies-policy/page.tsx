@@ -3,14 +3,14 @@ import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "سياسة استخدام ملفات تعريف الارتباط | " + APP_TITLE,
+  title: `سياسة استخدام ملفات تعريف الارتباط | ${APP_TITLE}`,
   description: APP_DESCRIPTION,
 };
 
 export default function CookiesPolicyPage() {
   return (
     <main className="rtl flex min-h-screen flex-col justify-start p-24">
-      <h1 className="select-none text-xl font-bold">
+      <h1 className="text-xl font-bold select-none">
         سياسة استخدام ملفات تعريف الارتباط
       </h1>
       <section className="mt-10 leading-loose md:text-justify">

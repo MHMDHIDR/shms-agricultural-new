@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
 import { env } from "@/env";
 import { api } from "@/trpc/server";
 import { services } from "@/schemas/contact";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: `الحصـــــــــاد | ${APP_TITLE}`,

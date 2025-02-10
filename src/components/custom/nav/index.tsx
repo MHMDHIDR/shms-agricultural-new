@@ -109,16 +109,15 @@ export async function Nav() {
                 <MenuIcon />
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-background">
-                <ul className="flex w-100 flex-col gap-2 p-2.5">
+                <ul className="divide-accent flex w-60 flex-col gap-2 divide-y py-2.5">
                   {menuItems.map((item) => (
-                    <li
+                    <NavigationMenuLink
                       key={item.title}
-                      className="hover:bg-accent rounded-md p-2"
+                      href={item.href}
+                      className="hover:bg-accent w-full rounded-md p-2"
                     >
-                      <NavigationMenuLink href={item.href} className="w-full">
-                        {item.title}
-                      </NavigationMenuLink>
-                    </li>
+                      {item.title}
+                    </NavigationMenuLink>
                   ))}
                 </ul>
               </NavigationMenuContent>

@@ -81,6 +81,7 @@ export function ContactForm() {
             id="contact"
             type="text"
             placeholder="رقم الهاتف أو البريد الالكتروني"
+            required
           />
           {errors.phoneOrEmail && (
             <p className="mt-1 text-xs text-red-500">
@@ -108,6 +109,7 @@ export function ContactForm() {
               <Select
                 onValueChange={field.onChange}
                 defaultValue={service ?? field.value}
+                required
               >
                 <SelectTrigger
                   className="w-full border border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
@@ -116,7 +118,7 @@ export function ContactForm() {
                 >
                   <SelectValue placeholder="اختر نوع الخدمة" />
                 </SelectTrigger>
-                <SelectContent dir="auto">
+                <SelectContent dir="auto" className="select-none">
                   <SelectGroup>
                     <SelectLabel>اختر نوع الخدمة</SelectLabel>
                     {services.map((service) => (
@@ -155,6 +157,7 @@ export function ContactForm() {
             rows={10}
             cols={50}
             id="message"
+            required
           />
           {errors.message && (
             <p className="mt-1 text-xs text-red-500">
@@ -167,7 +170,11 @@ export function ContactForm() {
       <div className="md:flex md:items-center">
         <div className="md:w-1/3"></div>
         <div className="md:w-2/3">
-          <Button type="submit" disabled={isSubmitting} className="w-full">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full cursor-pointer"
+          >
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
