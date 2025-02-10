@@ -48,19 +48,21 @@ export default async function SocialLinksPage() {
           ) : (
             socialLinks.map((link) => (
               <TableRow key={link.id}>
-                <TableCell className="flex items-center justify-center gap-x-2 font-semibold capitalize">
-                  {link.socialType === "facebook" ? (
-                    <FacebookIcon className="h-5 w-5 md:h-6 md:w-6" />
-                  ) : link.socialType === "instagram" ? (
-                    <InstagramIcon className="h-5 w-5 md:h-6 md:w-6" />
-                  ) : link.socialType === "youtube" ? (
-                    <YoutubeIcon className="h-5 w-5 md:h-6 md:w-6" />
-                  ) : (
-                    <TwitterIcon className="h-5 w-5 md:h-6 md:w-6" />
-                  )}
-                  {link.socialType}
+                <TableCell className="p-2 text-center align-middle">
+                  <div className="flex items-center justify-center gap-x-2 font-semibold capitalize">
+                    {link.socialType === "facebook" ? (
+                      <FacebookIcon className="h-5 w-5 md:h-6 md:w-6" />
+                    ) : link.socialType === "instagram" ? (
+                      <InstagramIcon className="h-5 w-5 md:h-6 md:w-6" />
+                    ) : link.socialType === "youtube" ? (
+                      <YoutubeIcon className="h-5 w-5 md:h-6 md:w-6" />
+                    ) : (
+                      <TwitterIcon className="h-5 w-5 md:h-6 md:w-6" />
+                    )}
+                    {link.socialType}
+                  </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="p-2 text-center align-middle">
                   {link.socialLink ? (
                     <Link
                       href={link.socialLink}
@@ -74,7 +76,7 @@ export default async function SocialLinksPage() {
                     <span className="text-gray-500">لا يوجد رابط</span>
                   )}
                 </TableCell>
-                <TableCell>
+                <TableCell className="p-2 text-center align-middle">
                   <DeleteSocialLink link={link} />
                 </TableCell>
               </TableRow>
