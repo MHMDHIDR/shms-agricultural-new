@@ -1,4 +1,3 @@
-// src/app/admin/social-links/delete-social-link.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -6,13 +5,26 @@ import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  AlertDialogHeader,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
-interface DeleteSocialLinkProps {
+type DeleteSocialLinkProps = {
   link: {
     id: string;
     socialType: string;
   };
-}
+};
 
 export default function DeleteSocialLink({ link }: DeleteSocialLinkProps) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -44,13 +56,43 @@ export default function DeleteSocialLink({ link }: DeleteSocialLinkProps) {
   };
 
   return (
-    <Button
+    <>
+      {/* <Button
       variant="destructive"
+      className="cursor-pointer"
       size="sm"
       onClick={handleDelete}
       disabled={isDeleting}
     >
       {isDeleting ? "جاري الحذف..." : "حذف"}
-    </Button>
+    </Button> */}
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" className="cursor-pointer">
+            حذف
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent dir="auto">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              هل أنت متأكد من حذف رابط {link.socialType}؟
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {isDeleting ? "جاري الحذف..." : "حذف"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

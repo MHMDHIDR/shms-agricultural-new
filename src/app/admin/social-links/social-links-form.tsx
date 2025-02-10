@@ -63,7 +63,7 @@ export default function SocialLinksForm() {
   return (
     <form dir="rtl" onSubmit={handleSubmit} className="mb-10">
       <div className="flex items-center justify-center">
-        <div className="mx-3 w-full md:w-2/3">
+        <div className="mx-1.5 w-full">
           <div className="mb-6 md:flex md:items-center">
             <div className="md:w-1/3">
               <label className="mb-1 block font-bold text-gray-500 md:mb-0 md:text-right">
