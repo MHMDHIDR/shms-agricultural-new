@@ -1,7 +1,6 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,12 +12,12 @@ import { useCountUp } from "@/hooks/use-count-up";
 import { api } from "@/trpc/react";
 import { NutIcon, TreePineIcon } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
-import { LoadingCard } from "./loading";
-import Video from "./video";
+import { LoadingCard } from "../loading";
+import Video from "../video";
+import { StartInvestingCTA } from "./start-investing-cta";
 
-export default function Hero() {
+export default function Hero({ children }: { children: React.ReactNode }) {
   const { data: usersData, isLoading: isLoadingUsers } =
     api.user.getAll.useQuery();
   const YEAR_IN_INDUSTRY = Math.abs(2020 - new Date().getFullYear());
@@ -99,9 +98,7 @@ export default function Hero() {
                 <NutIcon className="m-auto h-[3.5rem] w-[3.5rem] -rotate-90 fill-white lg:h-[4.5rem] lg:w-[4.5rem]" />
               </div>
             </div>
-            <div className="flex md:hidden">
-              <StartInvestingCTA />
-            </div>
+            <div className="flex md:hidden">{children}</div>
           </div>
 
           <div className="flex flex-col items-center px-4 text-center md:hidden">
@@ -118,7 +115,7 @@ export default function Hero() {
             <p className="text-lg text-gray-200 lg:max-w-[80%]">
               {SUB_HEADLINE}
             </p>
-            <StartInvestingCTA />
+            {children}
           </div>
         </div>
 
@@ -169,22 +166,5 @@ export default function Hero() {
         </DialogContent>
       </Dialog>
     </section>
-  );
-}
-
-function StartInvestingCTA() {
-  return (
-    <div className="relative z-10 flex flex-wrap items-center gap-6">
-      <Button asChild variant="default">
-        <Link href="/signup">ابدأ الاستثمار</Link>
-      </Button>
-      <Button
-        variant="ghost"
-        className="not-dark:bg-accent hover:bg-accent-foreground hover:text-accent dark:bg-accent dark:hover:bg-accent-foreground dark:hover:text-accent"
-        asChild
-      >
-        <Link href="/projects">عرض المشاريع</Link>
-      </Button>
-    </div>
   );
 }
