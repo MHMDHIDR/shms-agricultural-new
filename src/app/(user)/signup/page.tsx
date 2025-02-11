@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/server/auth";
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
-import SignupForm from "./signup-form";
+import { SignUpForm } from "./signup-form";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export default async function SignInPage() {
       <h1 className="mb-14 text-center text-2xl font-bold select-none">
         تسجيل حساب جديد
       </h1>
-      <SignupForm />
+      <SignUpForm />
     </div>
   );
 }

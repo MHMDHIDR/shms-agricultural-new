@@ -4,8 +4,9 @@ import { contactRouter } from "./routers/contact";
 import { projectRouter } from "./routers/projects";
 import { socialLinksRouter } from "./routers/social-links";
 import { faqRouter } from "./routers/faq";
-import { optimizeImageRouter } from "./routers/optimize-image";
 import { operationsRouter } from "./routers/operations";
+import { optimizeImageRouter } from "./routers/optimize-image";
+import { S3Router } from "./routers/s3";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
@@ -13,8 +14,9 @@ export const appRouter = createTRPCRouter({
   projects: projectRouter,
   socialLinks: socialLinksRouter,
   faq: faqRouter,
-  optimizeImage: optimizeImageRouter,
   operations: operationsRouter,
+  optimizeImage: optimizeImageRouter,
+  S3: S3Router,
 });
 
 export type AppRouter = typeof appRouter;

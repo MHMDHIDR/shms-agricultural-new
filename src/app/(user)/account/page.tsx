@@ -1,3 +1,28 @@
-export default function AccounPage() {
-  return <div>AccounPage</div>
+import { notFound, redirect } from "next/navigation";
+import { auth } from "@/server/auth";
+import { AccountForm } from "./account-form";
+import { api } from "@/trpc/server";
+import NoRecords from "@/components/custom/no-records";
+
+export default async function AccountPage() {
+  const session = await auth();
+  const user = session?.user;
+
+  if (!user?.id) {
+    notFound();
+  }
+
+  const userData = await api.user.getUserById({ id: user.id });
+
+  return !userData ? (
+    <NoRecords
+      msg="عفواً لم يتم العثور على المستخدم!"
+      links={[{ to: `/`, label: "الصفحة الرئيسية" }]}
+    />
+  ) : (
+    <div className="container max-w-2xl py-8">
+      <h1 className="mb-8 text-2xl font-bold">إدارة الحساب</h1>
+      <AccountForm user={userData} />
+    </div>
+  );
 }

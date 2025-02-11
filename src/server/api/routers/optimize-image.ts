@@ -1,13 +1,9 @@
 import sharp from "sharp";
 import { z } from "zod";
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "@/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 export const optimizeImageRouter = createTRPCRouter({
-  optimizeImage: protectedProcedure
+  optimizeImage: publicProcedure
     .input(z.object({ base64: z.string(), quality: z.number() }))
     .mutation(async ({ input }) => {
       const { base64, quality } = input;
