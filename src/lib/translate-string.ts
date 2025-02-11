@@ -11,7 +11,8 @@ export const translateSring = (string: string) => {
     case "id": {
       return "الرقم المعرف";
     }
-    case "amount": {
+    case "amount":
+    case "withdraw_amount": {
       return "المبلغ المراد سحبه";
     }
     case "projectName":
@@ -20,7 +21,8 @@ export const translateSring = (string: string) => {
     }
     case "projectStatus":
     case "accountStatus":
-    case "status": {
+    case "status":
+    case "accounting_operation_status": {
       return "الحالة";
     }
     case "projectLocation": {
@@ -111,7 +113,8 @@ export const translateSring = (string: string) => {
     case "user": {
       return "مستخدم";
     }
-    case "type": {
+    case "type":
+    case "action_type": {
       return "النوع";
     }
     case "withdraw": {

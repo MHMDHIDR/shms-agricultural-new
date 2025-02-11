@@ -40,7 +40,7 @@ export default function UsersClientPage({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [filtering, setFiltering] = useState("");
+  const [globalFilter, setGlobalFilter] = useState("");
   const toast = useToast();
 
   // Handle user actions
@@ -86,13 +86,13 @@ export default function UsersClientPage({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setFiltering,
+    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      globalFilter: filtering,
+      globalFilter,
     },
   });
 
@@ -153,8 +153,8 @@ export default function UsersClientPage({
     <div className="space-y-4">
       <TableToolbar<User>
         table={table}
-        filtering={filtering}
-        setFiltering={setFiltering}
+        filtering={globalFilter}
+        setFiltering={setGlobalFilter}
         selectedRows={selectedRows}
         searchPlaceholder="ابحث عن مستخدم"
         bulkActions={getBulkActions()}

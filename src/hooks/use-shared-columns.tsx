@@ -474,6 +474,7 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
           {translateSring("id")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -498,6 +499,7 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
           {translateSring("name")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -524,6 +526,7 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
           {translateSring("sn")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -550,6 +553,7 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
           {translateSring("amount")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -562,6 +566,7 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
           {translateSring("status")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -591,6 +596,7 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
           {translateSring("type")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -607,6 +613,7 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
           {translateSring("phone")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -632,6 +639,7 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
           {translateSring("email")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -657,6 +665,7 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
           {translateSring("address")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -683,6 +692,7 @@ export function useSharedColumns<T extends BaseEntity>({
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
         >
           {translateSring("created_at")}
           <ArrowUpDown className="ml-2 h-4 w-4" />

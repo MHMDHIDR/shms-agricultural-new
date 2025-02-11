@@ -40,7 +40,7 @@ export default function OperationsClientPage({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [filtering, setFiltering] = useState("");
+  const [globalFilter, setGlobalFilter] = useState("");
   const toast = useToast();
 
   // Handle operation actions
@@ -69,13 +69,13 @@ export default function OperationsClientPage({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setFiltering,
+    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      globalFilter: filtering,
+      globalFilter,
     },
   });
 
@@ -103,8 +103,8 @@ export default function OperationsClientPage({
     <div className="space-y-4">
       <TableToolbar<withdraw_actions>
         table={table}
-        filtering={filtering}
-        setFiltering={setFiltering}
+        filtering={globalFilter}
+        setFiltering={setGlobalFilter}
         selectedRows={selectedRows}
         searchPlaceholder="ابحث عن عملية"
         bulkActions={getBulkActions()}

@@ -42,7 +42,7 @@ export default function ProjectsClientPage({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [filtering, setFiltering] = useState("");
+  const [globalFilter, setGlobalFilter] = useState("");
   const toast = useToast();
 
   // Handle project actions
@@ -88,13 +88,13 @@ export default function ProjectsClientPage({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setFiltering,
+    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      globalFilter: filtering,
+      globalFilter,
     },
   });
 
@@ -164,8 +164,8 @@ export default function ProjectsClientPage({
 
       <TableToolbar<Projects>
         table={table}
-        filtering={filtering}
-        setFiltering={setFiltering}
+        filtering={globalFilter}
+        setFiltering={setGlobalFilter}
         selectedRows={selectedRows}
         searchPlaceholder="ابحث عن مشروع"
         bulkActions={getBulkActions()}
