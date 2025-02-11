@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { File, X } from "lucide-react";
+import Image from "next/image";
 
 type FileUploadProps = {
   onFilesSelected: (files: Array<File>) => void;
@@ -73,13 +74,15 @@ export function FileUpload({
         )}
       </div>
 
-      {(preview || fileName) && (
+      {(preview ?? fileName) && (
         <div className="relative mt-4 flex items-center gap-4 rounded-lg border p-4">
           {preview ? (
-            <img
+            <Image
               src={preview}
               alt="Preview"
               className="h-20 w-20 rounded-lg object-cover"
+              width={80}
+              height={80}
             />
           ) : (
             <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-100">

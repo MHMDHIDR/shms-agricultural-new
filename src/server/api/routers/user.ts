@@ -6,6 +6,11 @@ import {
 import { z } from "zod";
 import { hash } from "bcryptjs";
 import { signupSchema } from "@/schemas/signup";
+import { Prisma } from "@prisma/client";
+
+const updateUserSchema = signupSchema
+  .omit({ confirmPassword: true, doc: true })
+  .partial();
 
 export const userRouter = createTRPCRouter({
   getUserThemeByCredentials: publicProcedure
@@ -55,8 +60,11 @@ export const userRouter = createTRPCRouter({
           },
         });
         return user.id;
-      } catch (error: any) {
-        if (error.code === "P2002") {
+      } catch (error) {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === "P2002"
+        ) {
           throw new Error("البريد الإلكتروني أو رقم الهاتف مستخدم بالفعل");
         }
         throw new Error("حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى");
@@ -67,28 +75,21 @@ export const userRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        name: z.string().optional(),
-        phone: z.string().optional(),
-        nationality: z.string().optional(),
-        dateOfBirth: z.date().optional(),
-        theme: z.enum(["light", "dark"]).optional(),
-        image: z.string().optional(),
-        doc: z.string().optional(),
-        password: z.string().optional(),
+        ...updateUserSchema.shape, // Spread the shape of the update schema
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const data: any = {};
+      const data: Partial<Prisma.UserUpdateInput> = {}; // Use Prisma's UserUpdateInput type
 
       // Only include defined fields
       Object.entries(input).forEach(([key, value]) => {
         if (value !== undefined && key !== "id") {
-          data[key] = value;
+          data[key as keyof Prisma.UserUpdateInput] = value; // Assign the value
         }
       });
 
       if (input.password) {
-        data.password = await hash(input.password, 12);
+        data.password = await hash(input.password, 12); // Ensure this is assigned correctly
       }
 
       return ctx.db.user.update({

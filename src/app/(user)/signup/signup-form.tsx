@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useToast } from "@/hooks/use-toast";
-import { SignupInput, signupSchema } from "@/schemas/signup";
+import { type SignupInput, signupSchema } from "@/schemas/signup";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -35,7 +35,12 @@ export function SignUpForm() {
   const router = useRouter();
 
   const form = useForm<SignupInput>({
-    resolver: zodResolver(signupSchema),
+    resolver: zodResolver(
+      signupSchema.refine((data) => data.password === data.confirmPassword, {
+        message: "كلمات المرور غير متطابقة",
+        path: ["confirmPassword"],
+      }),
+    ),
     defaultValues: {
       name: "",
       email: "",

@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { auth } from "@/server/auth";
 import { AccountForm } from "./account-form";
 import { api } from "@/trpc/server";

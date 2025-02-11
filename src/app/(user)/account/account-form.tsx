@@ -24,7 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { FileUpload } from "@/components/custom/file-upload";
 import { api } from "@/trpc/react";
 import type { User } from "@prisma/client";
-import { signupSchema, accountFormSchema } from "@/schemas/signup";
+import { accountFormSchema } from "@/schemas/account";
 
 type AccountFormValues = {
   name: string;
