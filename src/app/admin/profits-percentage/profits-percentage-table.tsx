@@ -12,21 +12,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Loader2 } from "lucide-react";
-import { CopyText } from "@/components/custom/copy";
+import { useSharedColumns } from "@/hooks/use-shared-columns";
 import type { Projects } from "@prisma/client";
+import {
+  type ColumnFiltersState,
+  type SortingState,
+  type VisibilityState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { TableToolbar } from "@/components/custom/data-table/table-toolbar";
+import NoRecords from "@/components/custom/no-records";
+import { flexRender } from "@tanstack/react-table";
 
 export default function ProfitsPercentageTable({
   projects,
@@ -37,135 +37,124 @@ export default function ProfitsPercentageTable({
   const router = useRouter();
   const utils = api.useUtils();
 
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
-    null,
-  );
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const { mutate: deleteProfitsPercentage, isPending: isDeleting } =
     api.projects.deleteProfitsPercentage.useMutation({
       onSuccess: async () => {
         toast.success("تم حذف نسبة الربح بنجاح");
-        setSelectedProjectId(null);
         await utils.projects.getAll.invalidate();
         router.refresh();
       },
       onError: (error) => {
         toast.error(error.message || "حدث خطأ ما");
-        setSelectedProjectId(null);
       },
     });
-
-  const handleDelete = (projectId: string) => {
-    setSelectedProjectId(projectId);
-    deleteProfitsPercentage({ projectId });
-  };
 
   const projectsWithPercentage = projects.filter(
     (project) => project.projectSpecialPercentageCode,
   );
 
-  return (
-    <Table className="rtl mt-8 table min-h-full min-w-full divide-y divide-gray-200 text-center">
-      <TableHeader>
-        <TableRow>
-          <TableHead className="text-center font-bold">اسم المشروع</TableHead>
-          <TableHead className="text-center font-bold">
-            رمز زيادة نسبة الربح
-          </TableHead>
-          <TableHead className="text-center font-bold">
-            النسبة المئوية
-          </TableHead>
-          <TableHead className="text-center font-bold">الربح الحالي</TableHead>
-          <TableHead className="text-center font-bold">الربح الجديد</TableHead>
-          <TableHead className="text-center font-bold">الإجراءات</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {projectsWithPercentage.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={6} className="text-center text-gray-500">
-              لا توجد رموز زيادة نسبة الربح
-            </TableCell>
-          </TableRow>
-        ) : (
-          projectsWithPercentage.map((project) => (
-            <TableRow key={project.id}>
-              <TableCell>{project.projectName}</TableCell>
-              <TableCell>
-                <CopyText
-                  text={project.projectSpecialPercentageCode ?? ""}
-                  className="ml-2 inline h-4 w-4"
-                />
-                {project.projectSpecialPercentageCode}
-              </TableCell>
-              <TableCell>{project.projectSpecialPercentage}%</TableCell>
-              <TableCell>{project.projectStockProfits}</TableCell>
-              <TableCell>
-                {project.projectStockProfits +
-                  (project.projectStockProfits *
-                    (project.projectSpecialPercentage ?? 0)) /
-                    100}
-              </TableCell>
-              <TableCell>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      disabled={isDeleting && selectedProjectId === project.id}
-                      onClick={() => setSelectedProjectId(project.id)}
-                      className="cursor-pointer"
-                    >
-                      {isDeleting && selectedProjectId === project.id ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          جاري الحذف...
-                        </>
-                      ) : (
-                        "حذف"
-                      )}
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader className="rtl:text-right">
-                      <AlertDialogTitle>
-                        هل أنت متأكد من حذف رمز زيادة نسبة الربح؟
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        لا يمكن التراجع عن هذا الإجراء بعد تنفيذه.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-2 rtl:justify-start!">
-                      <AlertDialogCancel
-                        onClick={() => setSelectedProjectId(null)}
-                      >
-                        إلغاء
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        onClick={() => {
-                          if (selectedProjectId) {
-                            handleDelete(selectedProjectId);
-                          }
-                        }}
-                      >
-                        {isDeleting && selectedProjectId === project.id ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            جاري الحذف...
-                          </>
-                        ) : (
-                          "حذف"
+  const { columns, filterFields } = useSharedColumns<Projects>({
+    entityType: "profits_percentage",
+    actions: {
+      onDelete: (id: string) => {
+        deleteProfitsPercentage({ projectId: id });
+      },
+      basePath: "/profits-percentage",
+    },
+  });
+
+  const table = useReactTable({
+    data: projectsWithPercentage,
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+      globalFilter,
+    },
+  });
+
+  const selectedRows = table
+    .getFilteredSelectedRowModel()
+    .rows.map((row) => row.original);
+
+  return projectsWithPercentage.length === 0 ? (
+    <NoRecords msg="لا توجد رموز زيادة نسبة الربح" />
+  ) : (
+    <div className="space-y-4">
+      <TableToolbar
+        table={table}
+        filtering={globalFilter}
+        setFiltering={setGlobalFilter}
+        selectedRows={selectedRows}
+        searchPlaceholder="ابحث عن نسبة ربح"
+        filterFields={filterFields}
+      />
+
+      <div className="rounded-md border px-2.5">
+        <Table>
+          <TableHeader className="select-none">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className="text-center">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
                         )}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </TableCell>
-            </TableRow>
-          ))
-        )}
-      </TableBody>
-    </Table>
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="text-center">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  لم يتم العثور على نتائج
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 }

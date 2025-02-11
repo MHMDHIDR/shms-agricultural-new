@@ -1,8 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -12,9 +19,20 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/trpc/react";
-import { Loader2 } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { Projects } from "@prisma/client";
-import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+const profitsPercentageSchema = z.object({
+  projectId: z.string().min(1, "الرجاء اختيار المشروع"),
+  percentage: z.number().min(0).max(100),
+  percentageCode: z.string().min(1),
+});
+
+type ProfitsPercentageFormValues = z.infer<typeof profitsPercentageSchema>;
 
 export default function ProfitsPercentageForm({
   projects,
@@ -25,17 +43,20 @@ export default function ProfitsPercentageForm({
   const router = useRouter();
   const utils = api.useUtils();
 
-  const [selectedProject, setSelectedProject] = useState<string | null>(null);
-  const [percentage, setPercentage] = useState<number>(0);
-  const [percentageCode, setPercentageCode] = useState<string>("");
+  const form = useForm<ProfitsPercentageFormValues>({
+    resolver: zodResolver(profitsPercentageSchema),
+    defaultValues: {
+      projectId: "",
+      percentage: 0,
+      percentageCode: "",
+    },
+  });
 
   const { mutate: updateProfitsPercentage, isPending: isUpdating } =
     api.projects.updateProfitsPercentage.useMutation({
       onSuccess: async () => {
         toast.success("تم تحديث نسبة الربح بنجاح");
-        setSelectedProject(null);
-        setPercentage(0);
-        setPercentageCode("");
+        form.reset();
         await utils.projects.getAll.invalidate();
         router.refresh();
       },
@@ -44,50 +65,45 @@ export default function ProfitsPercentageForm({
       },
     });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!selectedProject || !percentage || !percentageCode) {
-      toast.error("الرجاء ملء جميع الحقول المطلوبة");
-      return;
-    }
-
-    updateProfitsPercentage({
-      projectId: selectedProject,
-      percentage,
-      percentageCode,
-    });
-  };
-
   const generatePercentageCode = () => {
     return Math.random().toString(36).substring(2, 9).toUpperCase();
   };
 
-  const selectedProjectData = selectedProject
-    ? projects.find((p) => p.id === selectedProject)
+  const selectedProjectData = form.watch("projectId")
+    ? projects.find((project) => project.id === form.watch("projectId"))
     : null;
 
+  const onSubmit = (values: ProfitsPercentageFormValues) => {
+    updateProfitsPercentage(values);
+  };
+
   return (
-    <form dir="rtl" onSubmit={handleSubmit} className="mb-10">
-      <div className="flex items-center justify-center">
-        <div className="mx-3 w-full md:w-2/3">
-          <div className="mb-6 md:flex md:items-center">
-            <div className="md:w-1/3">
-              <label className="mb-1 block font-bold text-gray-500 md:mb-0 md:text-right">
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mx-3.5 space-y-6"
+        dir="rtl"
+      >
+        <FormField
+          control={form.control}
+          name="projectId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs select-none">
                 اختر المشروع
-              </label>
-            </div>
-            <div className="md:w-2/3">
+              </FormLabel>
               <Select
-                value={selectedProject ?? ""}
+                value={field.value}
                 onValueChange={(value) => {
-                  setSelectedProject(value);
-                  setPercentageCode(generatePercentageCode());
+                  field.onChange(value);
+                  form.setValue("percentageCode", generatePercentageCode());
                 }}
               >
-                <SelectTrigger className="w-full cursor-pointer" dir="auto">
-                  <SelectValue placeholder="اختر المشروع" />
-                </SelectTrigger>
+                <FormControl>
+                  <SelectTrigger className="cursor-pointer" dir="auto">
+                    <SelectValue placeholder="اختر المشروع" />
+                  </SelectTrigger>
+                </FormControl>
                 <SelectContent dir="auto">
                   {projects.map((project) => (
                     <SelectItem
@@ -100,89 +116,78 @@ export default function ProfitsPercentageForm({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-          </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <div className="mb-6 md:flex md:items-center">
-            <div className="md:w-1/3">
-              <label className="mb-1 block font-bold text-gray-500 md:mb-0 md:text-right">
-                رمز زيادة النسبة
-              </label>
-            </div>
-            <div className="md:w-2/3">
-              <span className="inline-block min-h-8 w-full rounded border border-gray-900 bg-white px-4 py-2 leading-tight font-bold text-gray-700 select-none dark:bg-gray-800 dark:text-gray-300">
-                {percentageCode}
-              </span>
-            </div>
-          </div>
+        <FormItem>
+          <FormLabel className="text-xs select-none">
+            رمز زيادة النسبة
+          </FormLabel>
+          <span className="inline-block min-h-8 w-full rounded border border-gray-900 bg-white px-4 py-2 leading-tight font-bold text-gray-700 select-none dark:bg-gray-800 dark:text-gray-300">
+            {form.watch("percentageCode")}
+          </span>
+        </FormItem>
 
-          <div className="mb-6 md:flex md:items-center">
-            <div className="md:w-1/3">
-              <label className="mb-1 block font-bold text-gray-500 md:mb-0 md:text-right">
+        <FormField
+          control={form.control}
+          name="percentage"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs select-none">
                 النسبة المئوية
-              </label>
-            </div>
-            <div className="md:w-2/3">
-              <Input
-                type="number"
-                className="w-full rounded border border-gray-200 bg-gray-200 px-4 py-2 !text-lg leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none dark:bg-gray-800 dark:text-gray-300"
-                placeholder="15"
-                min="0"
-                max="100"
-                value={percentage || ""}
-                onChange={(e) => setPercentage(Number(e.target.value))}
-                required
-              />
-            </div>
-          </div>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="15"
+                  min="0"
+                  max="100"
+                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <div className="mb-6 md:flex md:items-center">
-            <div className="md:w-1/3">
-              <label className="mb-1 block font-bold text-gray-500 md:mb-0 md:text-right">
-                الربح الحالي
-              </label>
-            </div>
-            <div className="md:w-2/3">
-              <span className="inline-block w-full rounded border border-gray-900 bg-white px-4 py-2 leading-tight font-bold text-gray-700 select-none dark:bg-gray-800 dark:text-gray-300">
-                {selectedProjectData?.projectStockProfits ?? 0}
-              </span>
-            </div>
-          </div>
+        <FormItem>
+          <FormLabel className="text-xs select-none">الربح الحالي</FormLabel>
+          <span className="inline-block w-full rounded border border-gray-900 bg-white px-4 py-2 leading-tight font-bold text-gray-700 select-none dark:bg-gray-800 dark:text-gray-300">
+            {selectedProjectData?.projectStockProfits ?? 0}
+          </span>
+        </FormItem>
 
-          <div className="mb-6 md:flex md:items-center">
-            <div className="md:w-1/3">
-              <label className="mb-1 block font-bold text-gray-500 md:mb-0 md:text-right">
-                الربح الجديد
-              </label>
-            </div>
-            <div className="md:w-2/3">
-              <span className="inline-block w-full rounded border border-gray-900 bg-white px-4 py-2 leading-tight font-bold text-gray-700 select-none dark:bg-gray-800 dark:text-gray-300">
-                {selectedProjectData
-                  ? selectedProjectData.projectStockProfits +
-                    (selectedProjectData.projectStockProfits * percentage) / 100
-                  : 0}
-              </span>
-            </div>
-          </div>
+        <FormItem>
+          <FormLabel className="text-xs select-none">الربح الجديد</FormLabel>
+          <span className="inline-block w-full rounded border border-gray-900 bg-white px-4 py-2 leading-tight font-bold text-gray-700 select-none dark:bg-gray-800 dark:text-gray-300">
+            {selectedProjectData
+              ? selectedProjectData.projectStockProfits +
+                (selectedProjectData.projectStockProfits *
+                  form.watch("percentage")) /
+                  100
+              : 0}
+          </span>
+        </FormItem>
 
-          <div className="mb-6 md:flex md:items-center">
-            <Button
-              type="submit"
-              disabled={isUpdating || !selectedProject || !percentage}
-              className="cursor-pointer"
-            >
-              {isUpdating ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  جاري الحفظ...
-                </>
-              ) : (
-                "حفظ"
-              )}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </form>
+        <Button
+          type="submit"
+          disabled={isUpdating || !form.formState.isValid}
+          className="w-full"
+        >
+          {isUpdating ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              جاري الحفظ...
+            </>
+          ) : (
+            "حفظ"
+          )}
+        </Button>
+      </form>
+    </Form>
   );
 }

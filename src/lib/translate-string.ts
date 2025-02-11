@@ -123,6 +123,12 @@ export const translateSring = (string: string) => {
     case "deposit": {
       return "إيـــــــداع رصيد";
     }
+    case "currentProfits": {
+      return "الربح الحالي";
+    }
+    case "newProfits": {
+      return "الربح الجديد";
+    }
     default: {
       return string;
     }

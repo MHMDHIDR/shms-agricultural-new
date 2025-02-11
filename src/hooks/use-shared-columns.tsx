@@ -24,6 +24,8 @@ import { CopyText } from "@/components/custom/copy";
 import type { Projects, User, withdraw_actions } from "@prisma/client";
 import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter";
 import type { ColumnDef } from "@tanstack/react-table";
+import { ConfirmationDialog } from "@/components/custom/confirmation-dialog";
+import { useState } from "react";
 
 type BaseEntity = {
   id: string;
@@ -43,13 +45,28 @@ type TableActions = {
   onUnblock?: (id: string) => void;
   onActivate?: (id: string) => void;
   onDeactivate?: (id: string) => void;
-  basePath: "/projects" | "/users" | "/operations";
+  basePath: "/projects" | "/users" | "/operations" | "/profits-percentage";
 };
 
 type SharedColumnsProps = {
-  entityType: "users" | "projects" | "withdraw_actions";
+  entityType: "users" | "projects" | "withdraw_actions" | "profits_percentage";
   actions: TableActions;
 };
+
+function getDeleteDialogTitle(entityType: string, entity: any) {
+  switch (entityType) {
+    case "users":
+      return `هل أنت متأكد من حذف المستخدم ${entity.name}؟`;
+    case "projects":
+      return `هل أنت متأكد من حذف المشروع ${entity.projectName}؟`;
+    case "withdraw_actions":
+      return `هل أنت متأكد من حذف العملية رقم ${entity.id}؟`;
+    case "profits_percentage":
+      return `هل أنت متأكد من حذف نسبة الربح للمشروع ${entity.projectName}؟`;
+    default:
+      return "هل أنت متأكد من حذف هذا العنصر؟";
+  }
+}
 
 export function useSharedColumns<T extends BaseEntity>({
   entityType,
@@ -705,73 +722,194 @@ export function useSharedColumns<T extends BaseEntity>({
     },
   ];
 
+  const profitsPercentageColumns: ColumnDef<T>[] = [
+    {
+      accessorKey: "projectName",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("projectName")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const project = row.original as unknown as Project;
+        return <span className="whitespace-nowrap">{project.projectName}</span>;
+      },
+    },
+    {
+      accessorKey: "projectSpecialPercentageCode",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("projectSpecialPercentageCode")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const project = row.original as unknown as Project;
+        return (
+          <span>
+            <CopyText
+              text={project.projectSpecialPercentageCode ?? ""}
+              className="ml-2 inline h-4 w-4"
+            />
+            {project.projectSpecialPercentageCode}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "projectSpecialPercentage",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("projectSpecialPercentage")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const project = row.original as unknown as Project;
+        return <span>{project.projectSpecialPercentage}%</span>;
+      },
+    },
+    {
+      accessorKey: "projectStockProfits",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("currentProfits")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+    {
+      accessorKey: "newProfits",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("newProfits")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const project = row.original as unknown as Project;
+        const newProfits =
+          project.projectStockProfits +
+          (project.projectStockProfits *
+            (project.projectSpecialPercentage ?? 0)) /
+            100;
+        return <span>{newProfits}</span>;
+      },
+    },
+  ];
+
   const actionsColumn: ColumnDef<T> = {
     id: "actions",
     header: translateSring("actions"),
     cell: ({ row }) => {
       const entity = row.original;
+      const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+      const [isDeleting, setIsDeleting] = useState(false);
+
+      const handleDelete = async () => {
+        setIsDeleting(true);
+        actions.onDelete?.(entity.id);
+        setIsDeleting(false);
+        setIsDeleteDialogOpen(false);
+      };
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 cursor-pointer p-0">
-              <span className="sr-only">إفتح القائمة</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center" className="rtl">
-            <DropdownMenuLabel className="sr-only">
-              {translateSring("actions")}
-            </DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <Link href={`/admin${actions.basePath}/${entity.id}`}>
-                <Pencil className="mr-2 h-4 w-4" />
-                تعديل
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            {entityType === "users" && actions.onBlock && actions.onUnblock && (
-              <DropdownMenuItem
-                onClick={() =>
-                  (row.original as unknown as UserType).accountStatus ===
-                  "block"
-                    ? actions.onUnblock?.(entity.id)
-                    : actions.onBlock?.(entity.id)
-                }
-              >
-                <Ban className="mr-2 h-4 w-4" />
-                {(row.original as unknown as UserType).accountStatus === "block"
-                  ? "الغاء حظر المستخدم"
-                  : "حظر المستخدم"}
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 cursor-pointer p-0">
+                <span className="sr-only">إفتح القائمة</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="rtl">
+              <DropdownMenuLabel className="sr-only">
+                {translateSring("actions")}
+              </DropdownMenuLabel>
+              <DropdownMenuItem asChild>
+                <Link href={`/admin${actions.basePath}/${entity.id}`}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  تعديل
+                </Link>
               </DropdownMenuItem>
-            )}
-            {entityType === "projects" &&
-              actions.onActivate &&
-              actions.onDeactivate && (
-                <DropdownMenuItem
-                  onClick={() =>
-                    (row.original as unknown as Project).projectStatus ===
+              <DropdownMenuSeparator />
+              {entityType === "users" &&
+                actions.onBlock &&
+                actions.onUnblock && (
+                  <DropdownMenuItem
+                    onClick={() =>
+                      (row.original as unknown as UserType).accountStatus ===
+                      "block"
+                        ? actions.onUnblock?.(entity.id)
+                        : actions.onBlock?.(entity.id)
+                    }
+                  >
+                    <Ban className="mr-2 h-4 w-4" />
+                    {(row.original as unknown as UserType).accountStatus ===
+                    "block"
+                      ? "الغاء حظر المستخدم"
+                      : "حظر المستخدم"}
+                  </DropdownMenuItem>
+                )}
+              {entityType === "projects" &&
+                actions.onActivate &&
+                actions.onDeactivate && (
+                  <DropdownMenuItem
+                    onClick={() =>
+                      (row.original as unknown as Project).projectStatus ===
+                      "pending"
+                        ? actions.onActivate?.(entity.id)
+                        : actions.onDeactivate?.(entity.id)
+                    }
+                  >
+                    <CheckCircle className="mr-2 h-4 w-4" />
+                    {(row.original as unknown as Project).projectStatus ===
                     "pending"
-                      ? actions.onActivate?.(entity.id)
-                      : actions.onDeactivate?.(entity.id)
-                  }
-                >
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  {(row.original as unknown as Project).projectStatus ===
-                  "pending"
-                    ? "تفعيل"
-                    : "تعطيل"}
-                </DropdownMenuItem>
-              )}
-            <DropdownMenuItem
-              className="text-red-600"
-              onClick={() => actions.onDelete?.(entity.id)}
-            >
-              <Trash className="mr-2 h-4 w-4" />
-              حذف
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                      ? "تفعيل"
+                      : "تعطيل"}
+                  </DropdownMenuItem>
+                )}
+              <DropdownMenuItem
+                className="text-red-600"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                حذف
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <ConfirmationDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+            title={getDeleteDialogTitle(entityType, entity)}
+            description="لا يمكن التراجع عن هذا الإجراء."
+            buttonText={isDeleting ? "جاري الحذف..." : "حذف"}
+            buttonClass="bg-destructive hover:bg-destructive/90"
+            onConfirm={handleDelete}
+          />
+        </>
       );
     },
   };
@@ -785,7 +923,9 @@ export function useSharedColumns<T extends BaseEntity>({
           ? [...projectColumns, actionsColumn]
           : entityType === "withdraw_actions"
             ? [...withdrawActionColumns, actionsColumn]
-            : []),
+            : entityType === "profits_percentage"
+              ? [...profitsPercentageColumns, actionsColumn]
+              : []),
     ] as ColumnDef<T>[],
     filterFields,
   };

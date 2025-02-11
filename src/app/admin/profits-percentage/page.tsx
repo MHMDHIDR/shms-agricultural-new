@@ -6,8 +6,8 @@ export default async function ProfitsPercentagePage() {
   const { projects } = await api.projects.getAll();
 
   return (
-    <section className="container mx-auto">
-      <h1 className="my-10 text-center text-xl font-bold select-none">
+    <section className="container mx-auto my-10">
+      <h1 className="text-center text-xl font-bold select-none">
         إدارة نسب الأرباح
       </h1>
       <ProfitsPercentageForm projects={projects} />
