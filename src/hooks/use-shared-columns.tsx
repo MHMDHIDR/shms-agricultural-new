@@ -131,6 +131,23 @@ export function useSharedColumns<T extends BaseEntity>({
 
   const userColumns: ColumnDef<T>[] = [
     {
+      accessorKey: "sn",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("sn")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const user = row.original as unknown as UserType;
+        return <span className="whitespace-nowrap">{user.sn}</span>;
+      },
+    },
+    {
       accessorKey: "name",
       header: ({ column }) => (
         <Button
