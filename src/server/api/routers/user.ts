@@ -41,21 +41,29 @@ export const userRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const hashedPassword = await hash(input.password, 12);
 
-      return ctx.db.user.create({
-        data: {
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          nationality: input.nationality,
-          dateOfBirth: input.dateOfBirth,
-          password: hashedPassword,
-          image: input.image,
-          doc: input.doc,
-        },
-      });
+      try {
+        const user = await ctx.db.user.create({
+          data: {
+            name: input.name,
+            email: input.email,
+            phone: input.phone,
+            nationality: input.nationality,
+            dateOfBirth: input.dateOfBirth,
+            password: hashedPassword,
+            image: input.image,
+            doc: input.doc,
+          },
+        });
+        return user.id;
+      } catch (error: any) {
+        if (error.code === "P2002") {
+          throw new Error("البريد الإلكتروني أو رقم الهاتف مستخدم بالفعل");
+        }
+        throw new Error("حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى");
+      }
     }),
 
-  update: protectedProcedure
+  update: publicProcedure
     .input(
       z.object({
         id: z.string(),

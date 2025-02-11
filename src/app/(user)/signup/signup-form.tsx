@@ -1,10 +1,7 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { FileUpload } from "@/components/custom/file-upload";
+import SelectCountry from "@/components/custom/select-country";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,26 +12,29 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { signupSchema, type SignupFormValues } from "@/schemas/signup";
-import SelectCountry from "@/components/custom/select-country";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { FileUpload } from "@/components/custom/file-upload";
+import { useToast } from "@/hooks/use-toast";
+import { SignupInput, signupSchema } from "@/schemas/signup";
 import { api } from "@/trpc/react";
-import crypto from "crypto";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 export function SignUpForm() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [profileFiles, setProfileFiles] = useState<Array<File>>([]);
-  const [docFiles, setDocFiles] = useState<Array<File>>([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<{
+    image?: File[];
+    doc?: File[];
+  }>({});
+
   const toast = useToast();
   const router = useRouter();
 
-  const optimizeImageMutation = api.optimizeImage.optimizeImage.useMutation();
-  const uploadFilesMutation = api.S3.uploadFiles.useMutation();
-  const createUserMutation = api.user.create.useMutation();
-
-  const form = useForm<SignupFormValues>({
+  const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
@@ -44,102 +44,115 @@ export function SignUpForm() {
       dateOfBirth: undefined,
       password: "",
       confirmPassword: "",
+      image: "",
+      doc: "",
     },
   });
 
-  const handleProfileFilesSelected = (selectedFiles: Array<File>) => {
-    setProfileFiles(selectedFiles);
+  const { mutateAsync: uploadFiles } = api.S3.uploadFiles.useMutation();
+  const { mutateAsync: createUser, isPending: isCreatingUser } =
+    api.user.create.useMutation();
+  const { mutateAsync: updateUser, isPending: isUpdatingUser } =
+    api.user.updatePublic.useMutation();
+
+  const handleFileSelection = (files: File[], type: "image" | "doc") => {
+    setSelectedFiles((prev) => ({
+      ...prev,
+      [type]: files,
+    }));
   };
 
-  const handleDocFilesSelected = (selectedFiles: Array<File>) => {
-    setDocFiles(selectedFiles);
-  };
+  const uploadSelectedFiles = async (userId: string) => {
+    const filesToUpload: { type: "image" | "doc"; files: File[] }[] = [];
 
-  const generateUserId = crypto.randomBytes(12).toString("hex");
-
-  const optimizeAndUploadFiles = async (
-    files: File[],
-    userId: string,
-    prefix: string,
-  ) => {
-    if (!files.length) return undefined;
-
-    const file = files[0];
-    if (!file) return;
-
-    const base64 = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-
-    let optimizedBase64 = base64;
-    if (file.type.startsWith("image/")) {
-      optimizedBase64 = await optimizeImageMutation.mutateAsync({
-        base64,
-        quality: 70,
-      });
+    if (selectedFiles.image?.length) {
+      filesToUpload.push({ type: "image", files: selectedFiles.image });
+    }
+    if (selectedFiles.doc?.length) {
+      filesToUpload.push({ type: "doc", files: selectedFiles.doc });
     }
 
-    const fileData = [
-      {
-        name: file.name,
-        type: file.type,
-        size: optimizedBase64.length,
-        lastModified: file.lastModified,
-        base64: optimizedBase64,
-      },
-    ];
+    if (filesToUpload.length === 0) return {};
 
-    const uploadedUrls = await uploadFilesMutation.mutateAsync({
-      entityId: `${prefix}/${userId}`,
-      fileData,
-    });
-
-    return uploadedUrls[0];
-  };
-
-  async function onSubmit(values: SignupFormValues) {
+    setIsUploading(true);
     try {
-      setIsLoading(true);
-      console.log("Sign up values:", values);
+      const uploadResults: Record<string, string> = {};
 
-      // Check if the profile file is selected
-      if (profileFiles.length > 0) {
-        const userId = generateUserId;
-        const uploadedProfileUrl = await optimizeAndUploadFiles(
-          profileFiles,
-          userId,
-          "profile",
+      for (const { type, files } of filesToUpload) {
+        const fileData = await Promise.all(
+          files.map(async (file) => ({
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            lastModified: file.lastModified,
+            base64: await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const result = reader.result;
+                if (typeof result === "string") {
+                  resolve(result);
+                } else {
+                  throw new Error("Failed to read file as base64");
+                }
+              };
+              reader.readAsDataURL(file);
+            }),
+          })),
         );
-        console.log("Uploaded profile image URL:", uploadedProfileUrl);
+
+        const urls = await uploadFiles({
+          entityId: `user-${type}/${userId}`,
+          fileData,
+        });
+
+        if (urls && urls.length > 0 && urls[0]) {
+          uploadResults[type] = urls[0];
+        }
       }
 
-      // Handle document file uploads if needed
-      if (docFiles.length > 0) {
-        const userId = generateUserId;
-        const uploadedDocUrl = await optimizeAndUploadFiles(
-          docFiles,
-          userId,
-          "documents",
-        );
-        console.log("Uploaded document URL:", uploadedDocUrl);
-      }
-
-      // Call the createUser mutation with the form data
-      const user = await createUserMutation.mutateAsync(values);
-
-      toast.success("تم تسجيل حساب جديد بنجاح");
-      // router.push("/welcome"); // Navigate to the welcome page or the desired page
-
-      setIsLoading(false);
+      return uploadResults;
     } catch (error) {
-      console.error("Sign up error:", error);
-      toast.error("حدث خطأ اثناء تسجيل الحساب");
-      setIsLoading(false);
+      console.error("File upload error:", error);
+      throw error;
+    } finally {
+      setIsUploading(false);
     }
-  }
+  };
+
+  const onSubmit = async (data: SignupInput) => {
+    try {
+      const newUserId = await createUser({ ...data, image: "", doc: "" });
+
+      if (!newUserId) {
+        throw new Error("حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى");
+      }
+
+      const uploadedUrls = await uploadSelectedFiles(newUserId);
+
+      if (Object.keys(uploadedUrls).length > 0) {
+        // if files were uploaded
+        await updateUser({
+          id: newUserId,
+          image: uploadedUrls.image ?? "",
+          doc: uploadedUrls.doc ?? "",
+        });
+      }
+
+      toast.success("تم تسجيل الحساب بنجاح 🎉 ، يمكنك تسجيل الدخول الآن");
+      router.replace("/signin");
+
+      setSelectedFiles({});
+    } catch (error) {
+      const errorMsg =
+        error instanceof Error
+          ? error.message
+          : "حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى";
+      console.error(errorMsg);
+      toast.error(errorMsg);
+    }
+  };
+
+  const isLoading = isCreatingUser || isUpdatingUser || isUploading;
 
   return (
     <Form {...form}>
@@ -151,7 +164,7 @@ export function SignUpForm() {
             <FormItem>
               <FormLabel>الاسم</FormLabel>
               <FormControl>
-                <Input placeholder="أدخل اسمك" {...field} />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -165,11 +178,7 @@ export function SignUpForm() {
             <FormItem>
               <FormLabel>البريد الإلكتروني</FormLabel>
               <FormControl>
-                <Input
-                  type="email"
-                  placeholder="example@gmail.com"
-                  {...field}
-                />
+                <Input type="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -182,12 +191,8 @@ export function SignUpForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>رقم الهاتف</FormLabel>
-              <FormControl>
-                <PhoneInput
-                  placeholder="ادخل رقم الهاتف"
-                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
-                  {...field}
-                />
+              <FormControl className="ltr">
+                <PhoneInput defaultCountry="QA" {...field} dir="ltr" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -205,7 +210,7 @@ export function SignUpForm() {
                   nationality={field.value}
                   setNationality={field.onChange}
                   placeholder="إختر الجنسية ..."
-                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+                  className="max-h-48 w-full rounded border border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none dark:bg-gray-800 dark:text-gray-300"
                 />
               </FormControl>
               <FormMessage />
@@ -218,17 +223,34 @@ export function SignUpForm() {
           name="dateOfBirth"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>تاريخ الميلاد</FormLabel>
+              <FormLabel htmlFor="dob">تاريخ الميلاد</FormLabel>
               <FormControl>
                 <Input
+                  id="dob"
                   type="date"
+                  {...field}
+                  onChange={(e) => field.onChange(new Date(e.target.value))}
                   value={
                     field.value
                       ? new Date(field.value).toISOString().split("T")[0]
                       : ""
                   }
-                  onChange={(e) => field.onChange(new Date(e.target.value))}
+                  className="flex justify-end"
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>العنوان</FormLabel>
+              <FormControl>
+                <Input placeholder="عنوان السكن" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -241,8 +263,27 @@ export function SignUpForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>كلمة المرور</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="********" {...field} />
+              <FormControl className="relative">
+                <div className="relative">
+                  <Input
+                    className="pl-10"
+                    type={showPassword ? "text" : "password"}
+                    {...field}
+                  />
+                  <Button
+                    type="button"
+                    className="absolute top-0 left-0 flex h-full cursor-pointer items-center px-2"
+                    aria-label="Toggle password visibility"
+                    variant="ghost"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -255,8 +296,27 @@ export function SignUpForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>تأكيد كلمة المرور</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="********" {...field} />
+              <FormControl className="relative">
+                <div className="relative">
+                  <Input
+                    className="pl-10"
+                    type={showConfirmPassword ? "text" : "password"}
+                    {...field}
+                  />
+                  <Button
+                    type="button"
+                    className="absolute top-0 left-0 flex h-full cursor-pointer items-center px-2"
+                    aria-label="Toggle password visibility"
+                    variant="ghost"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -271,9 +331,11 @@ export function SignUpForm() {
               <FormLabel>الصورة الشخصية</FormLabel>
               <FormControl>
                 <FileUpload
-                  onFilesSelected={handleProfileFilesSelected}
-                  accept="image/*"
-                  maxFiles={1}
+                  onFilesSelected={(files) =>
+                    handleFileSelection(files, "image")
+                  }
+                  accept={{ "image/*": [".jpeg", ".jpg", ".png", ".webp"] }}
+                  disabled={isUploading}
                 />
               </FormControl>
               <FormMessage />
@@ -286,15 +348,12 @@ export function SignUpForm() {
           name="doc"
           render={() => (
             <FormItem>
-              <FormLabel>مستند الهوية</FormLabel>
+              <FormLabel>المستند الشخصي</FormLabel>
               <FormControl>
                 <FileUpload
-                  onFilesSelected={handleDocFilesSelected}
-                  accept={{
-                    "application/pdf": [".pdf"],
-                    "image/*": [".jpeg", ".jpg", ".png", ".webp"],
-                  }}
-                  maxFiles={1}
+                  onFilesSelected={(files) => handleFileSelection(files, "doc")}
+                  accept={{ "application/pdf": [".pdf"] }}
+                  disabled={isUploading}
                 />
               </FormControl>
               <FormMessage />
@@ -304,11 +363,14 @@ export function SignUpForm() {
 
         <Button
           type="submit"
-          variant={"pressable"}
+          variant="pressable"
           className="w-full"
-          disabled={isLoading}
+          disabled={isLoading || isUploading}
         >
-          {isLoading && <Loader2 className="mr-2 animate-spin" />}تسجيل
+          {(isLoading || isUploading) && (
+            <Loader2 className="mr-2 animate-spin" />
+          )}
+          تسجيل
         </Button>
       </form>
     </Form>

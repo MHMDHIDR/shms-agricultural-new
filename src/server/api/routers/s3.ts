@@ -130,7 +130,7 @@ export const S3Router = createTRPCRouter({
           const cleanUrl = new URL(getUrl);
           cleanUrl.search = "";
 
-          return cleanUrl.toString();
+          return getUrl; //cleanUrl.toString();
         },
       );
 

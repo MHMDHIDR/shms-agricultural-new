@@ -89,7 +89,9 @@ const CountrySelect = ({
         <Button
           type="button"
           variant={"outline"}
-          className={cn("flex gap-1.5 rounded-s-lg rounded-e-none")}
+          className={cn(
+            "flex cursor-pointer gap-1.5 rounded-s-lg rounded-e-none",
+          )}
           disabled={disabled}
         >
           <FlagComponent country={value} countryName={value} />
@@ -101,12 +103,12 @@ const CountrySelect = ({
           />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="absolute -left-8 w-80 p-0 rtl:-right-8">
+      <PopoverContent className="absolute left-8 w-80 p-0" align="center">
         <Command>
-          <CommandInput placeholder="Search country..." />
+          <CommandInput placeholder="إبحث عن الدولة..." />
           <CommandList>
             <ScrollArea className="h-72">
-              <CommandEmpty>No country found.</CommandEmpty>
+              <CommandEmpty>لم يتم إيجاد نتيجة.</CommandEmpty>
               <CommandGroup>
                 {options
                   .filter((x) => x.value)
