@@ -54,11 +54,78 @@ export function SignUpForm() {
     },
   });
 
+  const { mutateAsync: optimizeImage } =
+    api.optimizeImage.optimizeImage.useMutation();
   const { mutateAsync: uploadFiles } = api.S3.uploadFiles.useMutation();
   const { mutateAsync: createUser, isPending: isCreatingUser } =
     api.user.create.useMutation();
   const { mutateAsync: updateUser, isPending: isUpdatingUser } =
     api.user.updatePublic.useMutation();
+
+  const convertToBase64 = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result;
+        if (typeof result === "string") {
+          resolve(result);
+        } else {
+          reject(new Error("Failed to read file as base64"));
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const processFile = async (
+    file: File,
+  ): Promise<{
+    name: string;
+    type: string;
+    size: number;
+    lastModified: number;
+    base64: string;
+  }> => {
+    const base64 = await convertToBase64(file);
+
+    // Only optimize images, leave PDFs as is
+    if (file.type.startsWith("image/")) {
+      try {
+        const optimizedBase64 = await optimizeImage({
+          base64,
+          quality: 70, // You can adjust this quality setting
+        });
+
+        return {
+          name: file.name.replace(/\.[^.]+$/, ".webp"), // Convert to .webp for optimized images
+          type: "image/webp",
+          size: optimizedBase64.length,
+          lastModified: file.lastModified,
+          base64: optimizedBase64,
+        };
+      } catch (error) {
+        console.error("Image optimization failed:", error);
+        // Fallback to original file if optimization fails
+        return {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          lastModified: file.lastModified,
+          base64,
+        };
+      }
+    }
+
+    // Return PDF files unchanged
+    return {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      lastModified: file.lastModified,
+      base64,
+    };
+  };
 
   const handleFileSelection = (files: File[], type: "image" | "doc") => {
     setSelectedFiles((prev) => ({
@@ -84,26 +151,7 @@ export function SignUpForm() {
       const uploadResults: Record<string, string> = {};
 
       for (const { type, files } of filesToUpload) {
-        const fileData = await Promise.all(
-          files.map(async (file) => ({
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            lastModified: file.lastModified,
-            base64: await new Promise<string>((resolve) => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                const result = reader.result;
-                if (typeof result === "string") {
-                  resolve(result);
-                } else {
-                  throw new Error("Failed to read file as base64");
-                }
-              };
-              reader.readAsDataURL(file);
-            }),
-          })),
-        );
+        const fileData = await Promise.all(files.map(processFile));
 
         const urls = await uploadFiles({
           entityId: `user-${type}/${userId}`,

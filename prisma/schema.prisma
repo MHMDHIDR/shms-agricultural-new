@@ -86,7 +86,7 @@ model User {
     accounts        Account[]
     sessions        Session[]
     password        String
-    phone           String
+    phone           String             @unique
     doc             String
     stocks          Stocks[]
     stockLimit      Int                @default(20)
