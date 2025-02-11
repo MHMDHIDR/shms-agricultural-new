@@ -53,7 +53,19 @@ type SharedColumnsProps = {
   actions: TableActions;
 };
 
-function getDeleteDialogTitle(entityType: string, entity: any) {
+// Add Row type for better type safety
+type Row<T> = {
+  original: T;
+  getIsSelected: () => boolean;
+  toggleSelected: (value: boolean) => void;
+};
+
+function getDeleteDialogTitle(
+  entityType: string,
+  entity: BaseEntity & {
+    projectName?: string;
+  },
+) {
   switch (entityType) {
     case "users":
       return `هل أنت متأكد من حذف المستخدم ${entity.name}؟`;
@@ -66,6 +78,107 @@ function getDeleteDialogTitle(entityType: string, entity: any) {
     default:
       return "هل أنت متأكد من حذف هذا العنصر؟";
   }
+}
+
+function ActionCell<T extends BaseEntity>({
+  row,
+  entityType,
+  actions,
+}: {
+  row: Row<
+    T & {
+      accountStatus?: string;
+      projectStatus?: string;
+      projectName?: string;
+    }
+  >;
+  entityType: string;
+  actions: TableActions;
+}) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const entity = row.original;
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    actions.onDelete?.(entity.id);
+    setIsDeleting(false);
+    setIsDeleteDialogOpen(false);
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 cursor-pointer p-0">
+            <span className="sr-only">إفتح القائمة</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="center" className="rtl">
+          <DropdownMenuLabel className="sr-only">
+            {translateSring("actions")}
+          </DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link href={`/admin${actions.basePath}/${entity.id}`}>
+              <Pencil className="mr-2 h-4 w-4" />
+              تعديل
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {entityType === "users" && actions.onBlock && actions.onUnblock && (
+            <DropdownMenuItem
+              onClick={() =>
+                (row.original as unknown as UserType).accountStatus === "block"
+                  ? actions.onUnblock?.(entity.id)
+                  : actions.onBlock?.(entity.id)
+              }
+            >
+              <Ban className="mr-2 h-4 w-4" />
+              {(row.original as unknown as UserType).accountStatus === "block"
+                ? "الغاء حظر المستخدم"
+                : "حظر المستخدم"}
+            </DropdownMenuItem>
+          )}
+          {entityType === "projects" &&
+            actions.onActivate &&
+            actions.onDeactivate && (
+              <DropdownMenuItem
+                onClick={() =>
+                  (row.original as unknown as Project).projectStatus ===
+                  "pending"
+                    ? actions.onActivate?.(entity.id)
+                    : actions.onDeactivate?.(entity.id)
+                }
+              >
+                <CheckCircle className="mr-2 h-4 w-4" />
+                {(row.original as unknown as Project).projectStatus ===
+                "pending"
+                  ? "تفعيل"
+                  : "تعطيل"}
+              </DropdownMenuItem>
+            )}
+          <DropdownMenuItem
+            className="text-red-600"
+            onClick={() => setIsDeleteDialogOpen(true)}
+          >
+            <Trash className="mr-2 h-4 w-4" />
+            حذف
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <ConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title={getDeleteDialogTitle(entityType, entity)}
+        description="لا يمكن التراجع عن هذا الإجراء."
+        buttonText={isDeleting ? "جاري الحذف..." : "حذف"}
+        buttonClass="bg-destructive hover:bg-destructive/90"
+        onConfirm={handleDelete}
+      />
+    </>
+  );
 }
 
 export function useSharedColumns<T extends BaseEntity>({
@@ -822,96 +935,13 @@ export function useSharedColumns<T extends BaseEntity>({
   const actionsColumn: ColumnDef<T> = {
     id: "actions",
     header: translateSring("actions"),
-    cell: ({ row }) => {
-      const entity = row.original;
-      const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-      const [isDeleting, setIsDeleting] = useState(false);
-
-      const handleDelete = async () => {
-        setIsDeleting(true);
-        actions.onDelete?.(entity.id);
-        setIsDeleting(false);
-        setIsDeleteDialogOpen(false);
-      };
-
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 cursor-pointer p-0">
-                <span className="sr-only">إفتح القائمة</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="rtl">
-              <DropdownMenuLabel className="sr-only">
-                {translateSring("actions")}
-              </DropdownMenuLabel>
-              <DropdownMenuItem asChild>
-                <Link href={`/admin${actions.basePath}/${entity.id}`}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  تعديل
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {entityType === "users" &&
-                actions.onBlock &&
-                actions.onUnblock && (
-                  <DropdownMenuItem
-                    onClick={() =>
-                      (row.original as unknown as UserType).accountStatus ===
-                      "block"
-                        ? actions.onUnblock?.(entity.id)
-                        : actions.onBlock?.(entity.id)
-                    }
-                  >
-                    <Ban className="mr-2 h-4 w-4" />
-                    {(row.original as unknown as UserType).accountStatus ===
-                    "block"
-                      ? "الغاء حظر المستخدم"
-                      : "حظر المستخدم"}
-                  </DropdownMenuItem>
-                )}
-              {entityType === "projects" &&
-                actions.onActivate &&
-                actions.onDeactivate && (
-                  <DropdownMenuItem
-                    onClick={() =>
-                      (row.original as unknown as Project).projectStatus ===
-                      "pending"
-                        ? actions.onActivate?.(entity.id)
-                        : actions.onDeactivate?.(entity.id)
-                    }
-                  >
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    {(row.original as unknown as Project).projectStatus ===
-                    "pending"
-                      ? "تفعيل"
-                      : "تعطيل"}
-                  </DropdownMenuItem>
-                )}
-              <DropdownMenuItem
-                className="text-red-600"
-                onClick={() => setIsDeleteDialogOpen(true)}
-              >
-                <Trash className="mr-2 h-4 w-4" />
-                حذف
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <ConfirmationDialog
-            open={isDeleteDialogOpen}
-            onOpenChange={setIsDeleteDialogOpen}
-            title={getDeleteDialogTitle(entityType, entity)}
-            description="لا يمكن التراجع عن هذا الإجراء."
-            buttonText={isDeleting ? "جاري الحذف..." : "حذف"}
-            buttonClass="bg-destructive hover:bg-destructive/90"
-            onConfirm={handleDelete}
-          />
-        </>
-      );
-    },
+    cell: ({ row }) => (
+      <ActionCell<T>
+        row={row as Row<T>}
+        entityType={entityType}
+        actions={actions}
+      />
+    ),
   };
 
   return {

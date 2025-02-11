@@ -43,8 +43,11 @@ export default function ProfitsPercentageTable({
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const { mutate: deleteProfitsPercentage, isPending: isDeleting } =
+  const { mutate: deleteProfitsPercentage } =
     api.projects.deleteProfitsPercentage.useMutation({
+      onMutate: () => {
+        toast.loading("جاري حذف نسبة الربح...");
+      },
       onSuccess: async () => {
         toast.success("تم حذف نسبة الربح بنجاح");
         await utils.projects.getAll.invalidate();
