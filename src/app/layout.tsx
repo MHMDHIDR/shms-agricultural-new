@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import { Noto_Kufi_Arabic } from "next/font/google";
 import { Nav } from "@/components/custom/nav";
+import { SessionProvider } from "next-auth/react";
 import { Providers } from "@/providers";
 import { ThemeProvider } from "@/providers/theme-provider";
 import Footer from "@/components/custom/footer";
@@ -36,14 +37,16 @@ export default async function RootLayout({
       dir="rtl"
     >
       <body className="font-noto-kufi flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50">
-        <Providers>
-          <ThemeProvider attribute="class" enableSystem={false}>
-            <Nav />
-            <main className="flex-1">{children}</main>
-            <NavigateTop />
-            <Footer />
-          </ThemeProvider>
-        </Providers>
+        <SessionProvider>
+          <Providers>
+            <ThemeProvider attribute="class" enableSystem={false}>
+              <Nav />
+              <main className="flex-1">{children}</main>
+              <NavigateTop />
+              <Footer />
+            </ThemeProvider>
+          </Providers>
+        </SessionProvider>
       </body>
     </html>
   );

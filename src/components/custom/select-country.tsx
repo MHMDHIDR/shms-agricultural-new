@@ -23,6 +23,7 @@ type SelectCountryProps = {
   setNationality: (value: string) => void;
   placeholder?: string;
   className?: string;
+  disabled?: boolean;
 };
 
 // Mark the component as a Client Component
@@ -31,6 +32,7 @@ const SelectCountry = ({
   setNationality,
   placeholder = "إختر الجنسية ...",
   className = "",
+  disabled = false,
 }: SelectCountryProps) => {
   const [open, setOpen] = useState(false);
 
@@ -42,12 +44,16 @@ const SelectCountry = ({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger disabled={disabled} asChild>
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn(`w-full cursor-pointer justify-between`, className)}
+          disabled={disabled}
+          className={cn(
+            `w-full cursor-pointer justify-between ${disabled && "cursor-not-allowed"}`,
+            className,
+          )}
         >
           {nationality
             ? countryNames.find(

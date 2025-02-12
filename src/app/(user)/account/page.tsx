@@ -20,8 +20,10 @@ export default async function AccountPage() {
       links={[{ to: `/`, label: "الصفحة الرئيسية" }]}
     />
   ) : (
-    <div className="container max-w-2xl py-8">
-      <h1 className="mb-8 text-2xl font-bold">إدارة الحساب</h1>
+    <div className="container mx-auto max-w-2xl py-8">
+      <h1 className="mb-8 text-center text-2xl font-bold select-none">
+        إدارة الحساب
+      </h1>
       <AccountForm user={userData} />
     </div>
   );

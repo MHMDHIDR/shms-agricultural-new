@@ -6,6 +6,9 @@ import { compare } from "bcryptjs";
 import type { NextAuthConfig, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { cookies } from "next/headers";
+import type { Session } from "next-auth";
+import type { JWT } from "next-auth/jwt";
+import type { AdapterUser } from "@auth/core/adapters";
 
 /* eslint-disable no-unused-vars */
 declare module "next-auth" {
@@ -101,26 +104,43 @@ export const authConfig = {
   ],
   pages: { signIn: "/signin" },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({
+      token,
+      user,
+      trigger,
+      session,
+    }: {
+      token: JWT;
+      user: User | AdapterUser;
+      trigger?: "signIn" | "update" | "signUp";
+      session?: Session["user"];
+    }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
         token.theme = user.theme;
       }
+
+      // Handle updates to the session via update() function
+      if (trigger === "update" && session) {
+        if (session.name) token.name = session.name;
+        if (session.image) token.picture = session.image;
+      }
+
       return token;
     },
     async session({ session, token }) {
-      if (session?.user?.email && token.jti) {
-        await db.session.upsert({
-          where: { sessionToken: token.jti },
-          create: {
-            sessionToken: token.jti,
-            userId: token.id as string,
-            expires: new Date(token.exp! * 1000),
-          },
-          update: { expires: new Date(token.exp! * 1000) },
-        });
-      }
+      // if (session?.user?.email && token.jti) {
+      //   await db.session.upsert({
+      //     where: { sessionToken: token.jti },
+      //     create: {
+      //       sessionToken: token.jti,
+      //       userId: token.id as string,
+      //       expires: new Date(token.exp! * 1000),
+      //     },
+      //     update: { expires: new Date(token.exp! * 1000) },
+      //   });
+      // }
 
       return {
         ...session,

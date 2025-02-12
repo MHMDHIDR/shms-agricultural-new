@@ -17,7 +17,13 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { auth, signOut } from "@/server/auth";
-import { MenuIcon, User2Icon } from "lucide-react";
+import {
+  LayoutDashboard,
+  MenuIcon,
+  Settings,
+  User2,
+  User2Icon,
+} from "lucide-react";
 
 export async function Nav() {
   const session = await auth();
@@ -68,10 +74,23 @@ export async function Nav() {
               {user.name}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-44 text-right">
-            <DropdownLinkItem href="/dashboard">لوحة التحكم</DropdownLinkItem>
+          <DropdownMenuContent
+            align="end"
+            className="min-w-44 space-y-2 text-right"
+          >
+            <DropdownLinkItem href="/dashboard">
+              <LayoutDashboard className="h-5 w-5" />
+              لوحة التحكم
+            </DropdownLinkItem>
+            <DropdownLinkItem href="/account">
+              <User2 className="h-5 w-5" />
+              الحساب
+            </DropdownLinkItem>
             {user.role === "admin" && (
-              <DropdownLinkItem href="/admin">الإدارة</DropdownLinkItem>
+              <DropdownLinkItem href="/admin">
+                <Settings className="h-5 w-5" />
+                الإدارة
+              </DropdownLinkItem>
             )}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

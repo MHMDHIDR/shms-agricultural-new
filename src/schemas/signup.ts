@@ -26,6 +26,7 @@ export const signupSchema = z.object({
       'يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل مثل "!@#$%^&*"',
     ),
   confirmPassword: z.string(),
+  theme: z.enum(["light", "dark"]).default("light"),
   image: z.string().default(""),
   doc: z.string().default(""),
 });

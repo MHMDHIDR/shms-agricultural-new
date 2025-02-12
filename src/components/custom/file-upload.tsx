@@ -2,12 +2,14 @@ import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { File, X } from "lucide-react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 type FileUploadProps = {
   onFilesSelected: (files: Array<File>) => void;
   disabled?: boolean;
   accept?: Record<string, string[]> | string;
   maxFiles?: number;
+  className?: string;
 };
 
 export function FileUpload({
@@ -15,6 +17,7 @@ export function FileUpload({
   disabled = false,
   accept,
   maxFiles,
+  className,
 }: FileUploadProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -61,12 +64,12 @@ export function FileUpload({
   });
 
   return (
-    <div className="space-y-4">
+    <div className={cn("space-y-4", className)}>
       <div
         {...getRootProps()}
         className={`relative rounded-lg border-2 border-dashed p-4 text-center ${isDragActive ? "border-primary bg-primary/10" : "border-gray-300"} ${disabled ? "cursor-not-allowed opacity-50" : "hover:border-primary cursor-pointer"}`}
       >
-        <input {...getInputProps()} multiple={false} />
+        <input id="fileUploadInput" {...getInputProps()} multiple={false} />
         {isDragActive ? (
           <p>اسحب الملف هنا...</p>
         ) : (

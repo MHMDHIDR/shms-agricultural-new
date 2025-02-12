@@ -28,7 +28,11 @@ export const contactSchema = z.object({
         const emailValidation = z.string().email();
 
         try {
-          if (isValidPhoneNumber(value)) return true;
+          // For phone numbers, add + if not present before validation
+          const phoneNumberToValidate = value.startsWith("+")
+            ? value
+            : `+${value}`;
+          if (isValidPhoneNumber(phoneNumberToValidate)) return true;
 
           emailValidation.parse(value);
           return true;

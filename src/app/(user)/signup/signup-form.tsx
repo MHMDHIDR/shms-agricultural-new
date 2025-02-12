@@ -242,7 +242,7 @@ export function SignUpForm({ sn }: { sn: number }) {
             <FormItem>
               <FormLabel>رقم الهاتف</FormLabel>
               <FormControl className="ltr">
-                <PhoneInput defaultCountry="QA" {...field} dir="ltr" />
+                <PhoneInput defaultCountry="QA" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

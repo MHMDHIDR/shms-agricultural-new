@@ -23,18 +23,12 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { FileUpload } from "@/components/custom/file-upload";
 import { api } from "@/trpc/react";
+import { accountFormSchema, type AccountFormValues } from "@/schemas/account";
+import SelectCountry from "@/components/custom/select-country";
+import { fallbackUsername } from "@/lib/fallback-username";
+import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import type { User } from "@prisma/client";
-import { accountFormSchema } from "@/schemas/account";
-
-type AccountFormValues = {
-  name: string;
-  email: string;
-  phone: string;
-  nationality: string;
-  dateOfBirth: Date;
-  theme: "light" | "dark";
-  image: string;
-};
+import clsx from "clsx";
 
 export function AccountForm({ user }: { user: User }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -55,17 +49,17 @@ export function AccountForm({ user }: { user: User }) {
           phone: data.phone ?? "",
           nationality: data.nationality ?? "",
           dateOfBirth: data.dateOfBirth,
-          theme: data.theme ?? "light",
+          theme: data.theme,
           image: data.image ?? "",
         });
 
         setTheme(data.theme ?? "light");
 
-        if (data.image) {
+        if (data.name !== user.name || data.image !== user.image) {
           await update({
-            ...user,
             name: data.name,
             image: data.image,
+            theme: data.theme,
           });
         }
 
@@ -78,12 +72,12 @@ export function AccountForm({ user }: { user: User }) {
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
-      name: user.name ?? "",
-      email: user.email ?? "",
-      phone: user.phone ?? "",
-      nationality: user.nationality ?? "",
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      nationality: user.nationality,
       dateOfBirth: user.dateOfBirth,
-      theme: user.theme ?? "light",
+      theme: user.theme,
       image: user.image ?? "",
     },
   });
@@ -154,30 +148,39 @@ export function AccountForm({ user }: { user: User }) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="mb-8 flex items-center gap-x-6">
-          {form.watch("image") ? (
-            <Image
-              src={
-                files[0]
-                  ? URL.createObjectURL(files[0])
-                  : (form.watch("image") ?? "")
-              }
-              alt={`Profile Image of ${user?.name}`}
-              width={112}
-              height={112}
-              className="h-28 w-28 rounded-full object-cover shadow"
-            />
-          ) : (
-            <div className="flex h-28 w-28 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800">
-              <span className="text-2xl font-bold text-gray-500">
-                {user?.name?.charAt(0).toUpperCase()}
-              </span>
-            </div>
-          )}
+          <FormLabel
+            htmlFor="fileUploadInput"
+            className={clsx("group cursor-pointer", {
+              "pointer-events-none opacity-50": !isEditingEnabled,
+            })}
+          >
+            {form.watch("image") ? (
+              <Image
+                src={
+                  files[0]
+                    ? URL.createObjectURL(files[0])
+                    : (form.watch("image") ?? "")
+                }
+                alt={`Profile Image of ${user?.name}`}
+                width={112}
+                height={112}
+                className="h-28 w-28 rounded-full object-cover shadow"
+              />
+            ) : (
+              <Avatar className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-200 transition-colors group-hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700">
+                <AvatarImage src={user.image!} alt={user.name} />
+                <AvatarFallback className="rounded-lg">
+                  {fallbackUsername(user.name)}
+                </AvatarFallback>
+              </Avatar>
+            )}
+          </FormLabel>
           <FileUpload
             onFilesSelected={handleFilesSelected}
-            accept="image/*"
+            accept={{ "image/*": [".jpeg", ".jpg", ".png", ".webp"] }}
             maxFiles={1}
             disabled={!isEditingEnabled}
+            className="flex items-center gap-x-2 space-y-0"
           />
         </div>
 
@@ -209,8 +212,8 @@ export function AccountForm({ user }: { user: User }) {
               <FormControl>
                 <Input
                   type="email"
-                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
-                  disabled={true} // Email cannot be changed
+                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden disabled:cursor-not-allowed dark:bg-gray-800 dark:text-gray-300"
+                  disabled={true}
                   {...field}
                 />
               </FormControl>
@@ -225,12 +228,18 @@ export function AccountForm({ user }: { user: User }) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>رقم الهاتف</FormLabel>
-              <FormControl>
+              <FormControl className="ltr">
                 <PhoneInput
                   placeholder="ادخل رقم الهاتف"
                   className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
                   disabled={!isEditingEnabled}
+                  defaultCountry="QA"
                   {...field}
+                  value={
+                    field.value && !field.value.startsWith("+")
+                      ? "+" + field.value
+                      : field.value
+                  }
                 />
               </FormControl>
               <FormMessage />
@@ -245,11 +254,12 @@ export function AccountForm({ user }: { user: User }) {
             <FormItem>
               <FormLabel>الجنسية</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="ادخل جنسيتك"
-                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+                <SelectCountry
+                  nationality={field.value}
+                  setNationality={field.onChange}
+                  placeholder="إختر الجنسية ..."
+                  className="max-h-48 w-full rounded border border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none dark:bg-gray-800 dark:text-gray-300"
                   disabled={!isEditingEnabled}
-                  {...field}
                 />
               </FormControl>
               <FormMessage />
@@ -266,7 +276,7 @@ export function AccountForm({ user }: { user: User }) {
               <FormControl>
                 <Input
                   type="date"
-                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+                  className="flex justify-end border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
                   disabled={!isEditingEnabled}
                   {...field}
                   onChange={(e) => field.onChange(new Date(e.target.value))}
@@ -300,18 +310,23 @@ export function AccountForm({ user }: { user: User }) {
                     setTheme(theme);
                   }}
                   disabled={!isEditingEnabled}
+                  className="ltr"
                 />
               </FormControl>
             </FormItem>
           )}
         />
 
-        <div className="flex justify-end gap-x-4">
+        <div className="flex justify-start gap-x-4">
           {!isEditingEnabled ? (
             <Button
               type="button"
-              onClick={() => setIsEditingEnabled(true)}
+              onClick={(e) => {
+                e.preventDefault(); // doing this to prevent form submission
+                setIsEditingEnabled(true);
+              }}
               variant="outline"
+              className="cursor-pointer"
             >
               تعديل البيانات
             </Button>
@@ -320,7 +335,7 @@ export function AccountForm({ user }: { user: User }) {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="min-w-[100px]"
+                className="min-w-[100px] cursor-pointer"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -334,6 +349,7 @@ export function AccountForm({ user }: { user: User }) {
                 onClick={() => {
                   setIsEditingEnabled(false);
                   form.reset();
+                  setTheme(form.watch("theme") ?? "light");
                 }}
               >
                 إلغاء

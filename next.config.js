@@ -9,14 +9,15 @@ const config = {
   reactStrictMode: true,
   images: {
     remotePatterns: [
+      { protocol: "https", hostname: "shmsagricultural.com", pathname: "/**" },
       {
         protocol: "https",
-        hostname: "shmsagricultural.com",
+        hostname: "shms-uploads.s3.eu-west-2.amazonaws.com",
         pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: "shms-uploads.s3.eu-west-2.amazonaws.com",
+        hostname: "new-shms.s3.eu-west-2.amazonaws.com",
         pathname: "/**",
       },
       {
