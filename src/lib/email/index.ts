@@ -1,8 +1,8 @@
 "use server";
 
-import { Resend } from "resend";
-import { ADMIN_EMAIL } from "@/lib/constants";
 import { env } from "@/env";
+import { ADMIN_EMAIL, APP_TITLE } from "@/lib/constants";
+import { Resend } from "resend";
 
 export async function sendContactEmail({
   name,
@@ -41,4 +41,30 @@ export async function sendContactEmail({
         error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
+}
+
+export async function sendEmail({
+  to,
+  subject,
+  html,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+}) {
+  try {
+    const resend = new Resend(env.RESEND_API_KEY);
+    const { data, error } = await resend.emails.send({
+      from: `${APP_TITLE} <${ADMIN_EMAIL}>`,
+      to,
+      subject,
+      html,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, data };
+  } catch (error) {}
 }

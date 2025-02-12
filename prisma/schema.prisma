@@ -74,31 +74,32 @@ model Projects {
 }
 
 model User {
-    id              String             @id @default(auto()) @map("_id") @db.ObjectId
-    sn              Int                @default(0)
-    name            String
-    nationality     String
-    dateOfBirth     DateTime
-    address         String             @default("لم يتم إدخال العنوان")
-    email           String             @unique
-    emailVerified   DateTime?
-    image           String?
-    accounts        Account[]
-    sessions        Session[]
-    password        String
-    phone           String             @unique
-    doc             String
-    stocks          Stocks[]
-    stockLimit      Int                @default(20)
-    credits         Int                @default(0)
-    role            UserType           @default(user)
-    theme           UserTheme          @default(light)
-    accountStatus   UserStatus         @default(active)
-    resetToken      String?
-    isDeleted       Boolean            @default(false)
-    createdAt       DateTime           @default(now())
-    updatedAt       DateTime           @updatedAt
-    withdrawActions withdraw_actions[] @relation("UserWithdrawActions")
+    id                String             @id @default(auto()) @map("_id") @db.ObjectId
+    sn                Int                @default(0)
+    name              String
+    nationality       String
+    dateOfBirth       DateTime
+    address           String             @default("لم يتم إدخال العنوان")
+    email             String             @unique
+    emailVerified     DateTime?
+    image             String?
+    accounts          Account[]
+    sessions          Session[]
+    password          String
+    phone             String             @unique
+    doc               String
+    stocks            Stocks[]
+    stockLimit        Int                @default(20)
+    credits           Int                @default(0)
+    role              UserType           @default(user)
+    theme             UserTheme          @default(light)
+    accountStatus     UserStatus         @default(active)
+    resetToken        String?
+    resetTokenExpires DateTime?
+    isDeleted         Boolean            @default(false)
+    createdAt         DateTime           @default(now())
+    updatedAt         DateTime           @updatedAt
+    withdrawActions   withdraw_actions[] @relation("UserWithdrawActions")
 
     @@map("users")
 }

@@ -1,12 +1,12 @@
+import { signupSchema, updatePublicSchema } from "@/schemas/signup";
 import {
   createTRPCRouter,
-  publicProcedure,
   protectedProcedure,
+  publicProcedure,
 } from "@/server/api/trpc";
-import { z } from "zod";
-import { hash } from "bcryptjs";
-import { signupSchema, updatePublicSchema } from "@/schemas/signup";
 import { Prisma } from "@prisma/client";
+import { hash } from "bcryptjs";
+import { z } from "zod";
 
 const updateUserSchema = signupSchema
   .omit({ confirmPassword: true, doc: true })
@@ -32,6 +32,12 @@ export const userRouter = createTRPCRouter({
       return ctx.db.user.findFirst({ where: { id: input.id } });
     }),
 
+  getUserByEmail: protectedProcedure
+    .input(z.object({ email: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.user.findFirst({ where: { email: input.email } });
+    }),
+
   getAll: publicProcedure.query(async ({ ctx }) => {
     const [users, count] = await Promise.all([
       ctx.db.user.findMany(),
@@ -40,40 +46,6 @@ export const userRouter = createTRPCRouter({
 
     return { users, count };
   }),
-
-  create: publicProcedure
-    .input(signupSchema)
-    .mutation(async ({ ctx, input }) => {
-      const hashedPassword = await hash(input.password, 12);
-
-      return ctx.db.$transaction(async (tx) => {
-        try {
-          const user = await tx.user.create({
-            data: {
-              name: input.name,
-              email: input.email,
-              phone: input.phone,
-              nationality: input.nationality,
-              dateOfBirth: input.dateOfBirth,
-              image: input.image,
-              doc: input.doc,
-              address: input.address,
-              password: hashedPassword,
-            },
-          });
-
-          return user.id;
-        } catch (error) {
-          if (
-            error instanceof Prisma.PrismaClientKnownRequestError &&
-            error.code === "P2002"
-          ) {
-            throw new Error("البريد الإلكتروني أو رقم الهاتف مستخدم بالفعل");
-          }
-          throw new Error("حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى");
-        }
-      });
-    }),
 
   update: publicProcedure
     .input(

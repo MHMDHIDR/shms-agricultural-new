@@ -58,7 +58,7 @@ export function SignUpForm({ sn }: { sn: number }) {
     api.optimizeImage.optimizeImage.useMutation();
   const { mutateAsync: uploadFiles } = api.S3.uploadFiles.useMutation();
   const { mutateAsync: createUser, isPending: isCreatingUser } =
-    api.user.create.useMutation();
+    api.auth.create.useMutation();
   const { mutateAsync: updateUser, isPending: isUpdatingUser } =
     api.user.updatePublic.useMutation();
 

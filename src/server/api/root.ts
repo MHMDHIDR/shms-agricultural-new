@@ -7,9 +7,11 @@ import { faqRouter } from "./routers/faq";
 import { operationsRouter } from "./routers/operations";
 import { optimizeImageRouter } from "./routers/optimize-image";
 import { S3Router } from "./routers/s3";
+import { authRouter } from "./routers/auth";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
+  auth: authRouter,
   contact: contactRouter,
   projects: projectRouter,
   socialLinks: socialLinksRouter,
