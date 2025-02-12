@@ -119,6 +119,7 @@ export const authConfig = {
         token.id = user.id;
         token.role = user.role;
         token.theme = user.theme;
+        token.isNewSession = true;
       }
 
       // Handle updates to the session via update() function
@@ -130,17 +131,21 @@ export const authConfig = {
       return token;
     },
     async session({ session, token }) {
-      // if (session?.user?.email && token.jti) {
-      //   await db.session.upsert({
-      //     where: { sessionToken: token.jti },
-      //     create: {
-      //       sessionToken: token.jti,
-      //       userId: token.id as string,
-      //       expires: new Date(token.exp! * 1000),
-      //     },
-      //     update: { expires: new Date(token.exp! * 1000) },
-      //   });
-      // }
+      // Only create a session in the database during initial sign-in
+      if (token.isNewSession && session?.user?.email && token.jti) {
+        await db.session.upsert({
+          where: { sessionToken: token.jti },
+          create: {
+            sessionToken: token.jti,
+            userId: token.id as string,
+            expires: new Date(token.exp! * 1000),
+          },
+          update: { expires: new Date(token.exp! * 1000) },
+        });
+
+        // Remove the flag after creating the session
+        token.isNewSession = undefined;
+      }
 
       return {
         ...session,
