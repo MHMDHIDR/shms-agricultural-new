@@ -3,6 +3,7 @@
 import { signIn } from "@/server/auth";
 import { api } from "@/trpc/server";
 import type { SignInFormValues } from "@/schemas/signin";
+import { AuthError } from "next-auth";
 
 export async function signInAction(values: SignInFormValues) {
   try {
@@ -13,10 +14,10 @@ export async function signInAction(values: SignInFormValues) {
     })) as { error: string };
 
     if (!result) {
-      return { error: "An unexpected error occurred" };
+      return { error: "حدث خطأ غير متوقع!" };
     }
 
-    if (result.error) {
+    if (result.error || result.error === "CredentialsSignin") {
       return { error: "Invalid credentials" };
     }
 
@@ -27,11 +28,16 @@ export async function signInAction(values: SignInFormValues) {
     return { success: true, theme };
   } catch (error) {
     console.error("Sign in error:", error);
-    if (error instanceof Error) {
-      if (error.message === "Account is not active") {
-        return { error: "Account is not active" };
+
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return { error: "كلمة المرور غير صحيحة" };
+        default:
+          return { error: "حدث خطأ غير متوقع!" };
       }
     }
-    return { error: "An unexpected error occurred" };
+
+    throw error;
   }
 }
