@@ -66,5 +66,11 @@ export async function sendEmail({
     }
 
     return { success: true, data };
-  } catch (error) {}
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
 }

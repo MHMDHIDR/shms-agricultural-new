@@ -5,10 +5,12 @@
  */
 export function calculatePasswordStrength(password: string) {
   let strength = 0;
+
   if (password.length >= 8) strength += 20;
-  if (password.match(/[A-Z]/)) strength += 20;
-  if (password.match(/[a-z]/)) strength += 20;
-  if (password.match(/[0-9]/)) strength += 20;
-  if (password.match(/[^A-Za-z0-9]/)) strength += 20;
+  if (/[A-Z]/.exec(password)) strength += 20;
+  if (/[a-z]/.exec(password)) strength += 20;
+  if (/[0-9]/.exec(password)) strength += 20;
+  if (/[^A-Za-z0-9]/.exec(password)) strength += 20;
+
   return strength;
 }

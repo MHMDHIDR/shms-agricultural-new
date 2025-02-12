@@ -64,7 +64,7 @@ export default function NewPasswordClientPage({
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === "password") {
-        setPasswordStrength(calculatePasswordStrength(value.password || ""));
+        setPasswordStrength(calculatePasswordStrength(value.password ?? ""));
       }
     });
     return () => subscription.unsubscribe();

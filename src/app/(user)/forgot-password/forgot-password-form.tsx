@@ -18,7 +18,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { startTransition } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import type { z } from "zod";
 
 const resetPasswordSchema = signupSchema.pick({ email: true });
 
