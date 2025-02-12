@@ -7,7 +7,7 @@ export const signupSchema = z.object({
   phone: z.string().refine((value) => isValidPhoneNumber(value), {
     message: "رقم الهاتف غير صالح",
   }),
-  nationality: z.string().min(2, "الجنسية يجب أن تكون أكثر من حرفين"),
+  nationality: z.string().min(2, "الرجاء اختيار الجنسية"),
   dateOfBirth: z.date({
     required_error: "تاريخ الميلاد مطلوب",
     invalid_type_error: "تاريخ الميلاد غير صالح",
@@ -22,8 +22,16 @@ export const signupSchema = z.object({
     .regex(/[a-z]/, "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل")
     .regex(/[0-9]/, "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل"),
   confirmPassword: z.string(),
-  image: z.string(),
-  doc: z.string(),
+  image: z.string().default(""),
+  doc: z.string().default(""),
+});
+
+export const updatePublicSchema = z.object({
+  id: z.string(),
+  sn: z.number(),
+  image: z.string().optional(),
+  doc: z.string().optional(),
 });
 
 export type SignupInput = z.infer<typeof signupSchema>;
+export type UpdatePublicInput = z.infer<typeof updatePublicSchema>;

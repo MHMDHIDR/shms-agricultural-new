@@ -72,6 +72,16 @@ export function FileUpload({
         ) : (
           <p>اسحب وأفلت الملف هنا، أو انقر للاختيار</p>
         )}
+        <small className="text-primary/75 text-xs">
+          {accept ? (
+            <span className="flex items-center justify-center gap-1">
+              يمكنك تحميل ملفات من نوع
+              <strong dir="ltr">{Object.values(accept).join(", ")}</strong>
+            </span>
+          ) : (
+            "يمكنك تحميل أي نوع من الملفات"
+          )}
+        </small>
       </div>
 
       {(preview ?? fileName) && (

@@ -5,7 +5,7 @@ import {
 } from "@/server/api/trpc";
 import { z } from "zod";
 import { hash } from "bcryptjs";
-import { signupSchema } from "@/schemas/signup";
+import { signupSchema, updatePublicSchema } from "@/schemas/signup";
 import { Prisma } from "@prisma/client";
 
 const updateUserSchema = signupSchema
@@ -46,36 +46,40 @@ export const userRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const hashedPassword = await hash(input.password, 12);
 
-      try {
-        const user = await ctx.db.user.create({
-          data: {
-            name: input.name,
-            email: input.email,
-            phone: input.phone,
-            nationality: input.nationality,
-            dateOfBirth: input.dateOfBirth,
-            password: hashedPassword,
-            image: input.image,
-            doc: input.doc,
-          },
-        });
-        return user.id;
-      } catch (error) {
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === "P2002"
-        ) {
-          throw new Error("البريد الإلكتروني أو رقم الهاتف مستخدم بالفعل");
+      return ctx.db.$transaction(async (tx) => {
+        try {
+          const user = await tx.user.create({
+            data: {
+              name: input.name,
+              email: input.email,
+              phone: input.phone,
+              nationality: input.nationality,
+              dateOfBirth: input.dateOfBirth,
+              image: input.image,
+              doc: input.doc,
+              address: input.address,
+              password: hashedPassword,
+            },
+          });
+
+          return user.id;
+        } catch (error) {
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === "P2002"
+          ) {
+            throw new Error("البريد الإلكتروني أو رقم الهاتف مستخدم بالفعل");
+          }
+          throw new Error("حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى");
         }
-        throw new Error("حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى");
-      }
+      });
     }),
 
   update: publicProcedure
     .input(
       z.object({
         id: z.string(),
-        ...updateUserSchema.shape, // Spread the shape of the update schema
+        ...updateUserSchema.shape,
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -99,21 +103,19 @@ export const userRouter = createTRPCRouter({
     }),
 
   updatePublic: publicProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        image: z.string().optional(),
-        doc: z.string().optional(),
-      }),
-    )
+    .input(updatePublicSchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.user.update({
-        where: { id: input.id },
-        data: {
-          image: input.image,
-          doc: input.doc,
-        },
-      });
+      const updateData: Record<string, string | number> = {};
+
+      if (input.image !== undefined) {
+        updateData.image = input.image;
+      }
+      if (input.doc !== undefined) {
+        updateData.doc = input.doc;
+      }
+      updateData.sn = input.sn;
+
+      return ctx.db.user.update({ where: { id: input.id }, data: updateData });
     }),
 
   delete: protectedProcedure

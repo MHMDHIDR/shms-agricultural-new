@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-export function SignUpForm() {
+export function SignUpForm({ sn }: { sn: number }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -174,22 +174,19 @@ export function SignUpForm() {
 
   const onSubmit = async (data: SignupInput) => {
     try {
-      const newUserId = await createUser({ ...data, image: "", doc: "" });
-
+      const newUserId = await createUser(data);
       if (!newUserId) {
         throw new Error("حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى");
       }
 
       const uploadedUrls = await uploadSelectedFiles(newUserId);
 
-      if (Object.keys(uploadedUrls).length > 0) {
-        // if files were uploaded
-        await updateUser({
-          id: newUserId,
-          image: uploadedUrls.image ?? "",
-          doc: uploadedUrls.doc ?? "",
-        });
-      }
+      await updateUser({
+        sn,
+        id: newUserId,
+        image: uploadedUrls.image ?? "",
+        doc: uploadedUrls.doc ?? "",
+      });
 
       toast.success("تم تسجيل الحساب بنجاح 🎉 ، يمكنك تسجيل الدخول الآن");
       router.replace("/signin");
@@ -200,7 +197,7 @@ export function SignUpForm() {
         error instanceof Error
           ? error.message
           : "حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى";
-      console.error(errorMsg);
+
       toast.error(errorMsg);
     }
   };
@@ -317,25 +314,32 @@ export function SignUpForm() {
             <FormItem>
               <FormLabel>كلمة المرور</FormLabel>
               <FormControl className="relative">
-                <div className="relative">
-                  <Input
-                    className="pl-10"
-                    type={showPassword ? "text" : "password"}
-                    {...field}
-                  />
-                  <Button
-                    type="button"
-                    className="absolute top-0 left-0 flex h-full cursor-pointer items-center px-2"
-                    aria-label="Toggle password visibility"
-                    variant="ghost"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
+                <div>
+                  <div className="relative">
+                    <Input
+                      className="pl-10"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="كلمة المرور يجب ان تكون على الاقل 8 احرف وتحتوي على حرف كبير وحرف صغير ورقم وحرف خاص مثل !@#$%^&*()"
+                      {...field}
+                    />
+                    <Button
+                      type="button"
+                      className="absolute top-0 left-0 flex h-full cursor-pointer items-center px-2"
+                      aria-label="Toggle password visibility"
+                      variant="ghost"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  <span className="text-xs text-slate-500 select-none">
+                    كلمة المرور يجب ان تكون على الاقل 8 احرف وتحتوي على حرف كبير
+                    وحرف صغير ورقم وحرف خاص مثل !@#$%^&*()
+                  </span>
                 </div>
               </FormControl>
               <FormMessage />
@@ -350,25 +354,32 @@ export function SignUpForm() {
             <FormItem>
               <FormLabel>تأكيد كلمة المرور</FormLabel>
               <FormControl className="relative">
-                <div className="relative">
-                  <Input
-                    className="pl-10"
-                    type={showConfirmPassword ? "text" : "password"}
-                    {...field}
-                  />
-                  <Button
-                    type="button"
-                    className="absolute top-0 left-0 flex h-full cursor-pointer items-center px-2"
-                    aria-label="Toggle password visibility"
-                    variant="ghost"
-                    onClick={() => setShowConfirmPassword((prev) => !prev)}
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
+                <div>
+                  <div className="relative">
+                    <Input
+                      className="pl-10"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="كلمة المرور يجب ان تكون على الاقل 8 احرف وتحتوي على حرف كبير وحرف صغير ورقم وحرف خاص مثل !@#$%^&*()"
+                      {...field}
+                    />
+                    <Button
+                      type="button"
+                      className="absolute top-0 left-0 flex h-full cursor-pointer items-center px-2"
+                      aria-label="Toggle password visibility"
+                      variant="ghost"
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  <span className="text-xs text-slate-500 select-none">
+                    كلمة المرور يجب ان تكون على الاقل 8 احرف وتحتوي على حرف كبير
+                    وحرف صغير ورقم وحرف خاص مثل !@#$%^&*()
+                  </span>
                 </div>
               </FormControl>
               <FormMessage />
