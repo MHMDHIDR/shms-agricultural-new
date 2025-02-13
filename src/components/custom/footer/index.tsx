@@ -1,10 +1,10 @@
-import Divider from "@/components/custom/divider";
-import { APP_TITLE } from "@/lib/constants";
-import { api } from "@/trpc/server";
-import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import FooterWrapper from "./footer-wrapper";
+import { Facebook, Instagram, Twitter, Youtube } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import Divider from "@/components/custom/divider"
+import { APP_TITLE } from "@/lib/constants"
+import { api } from "@/trpc/server"
+import FooterWrapper from "./footer-wrapper"
 
 const sections = [
   {
@@ -29,16 +29,16 @@ const sections = [
       { name: "الخصوصية", href: "privacy" },
     ],
   },
-];
+]
 
 export default async function Footer() {
-  const socialLinks = await api.socialLinks.getSocialLinks();
+  const socialLinks = await api.socialLinks.getSocialLinks()
   const IconMap = {
     facebook: <Facebook className="size-6" />,
     instagram: <Instagram className="size-6" />,
     twitter: <Twitter className="size-6" />,
     youtube: <Youtube className="size-6" />,
-  };
+  }
 
   return (
     <FooterWrapper>
@@ -55,33 +55,20 @@ export default async function Footer() {
                     width={56}
                     height={56}
                   />
-                  <p className="text-xl font-semibold select-none md:text-3xl">
-                    شمــس
-                  </p>
+                  <p className="text-xl font-semibold select-none md:text-3xl">شمــس</p>
                 </span>
                 <p className="text-muted-foreground mt-6 text-sm leading-loose">
-                  منصة استثمارية زراعية توفر مشاريع متنوعة لتعزيز الإنتاج
-                  الزراعي باستخدام أحدث التقنيات.
+                  منصة استثمارية زراعية توفر مشاريع متنوعة لتعزيز الإنتاج الزراعي باستخدام أحدث
+                  التقنيات.
                 </p>
               </div>
               <ul className="text-muted-foreground flex items-center gap-3">
                 {socialLinks &&
                   socialLinks.length > 0 &&
                   socialLinks.map((link, linkIdx) => (
-                    <li
-                      key={linkIdx}
-                      className="hover:text-primary font-medium"
-                    >
-                      <Link
-                        href={link.socialLink}
-                        aria-label={link.socialType}
-                        target="_blank"
-                      >
-                        {
-                          IconMap[
-                            link.socialType.toLowerCase() as keyof typeof IconMap
-                          ]
-                        }
+                    <li key={linkIdx} className="hover:text-primary font-medium">
+                      <Link href={link.socialLink} aria-label={link.socialType} target="_blank">
+                        {IconMap[link.socialType.toLowerCase() as keyof typeof IconMap]}
                       </Link>
                     </li>
                   ))}
@@ -93,10 +80,7 @@ export default async function Footer() {
                   <h3 className="mb-6 font-bold">{section.title}</h3>
                   <ul className="text-muted-foreground space-y-4 text-sm">
                     {section.links.map((link, linkIdx) => (
-                      <li
-                        key={linkIdx}
-                        className="hover:text-primary font-medium"
-                      >
+                      <li key={linkIdx} className="hover:text-primary font-medium">
                         <Link href={link.href}>{link.name}</Link>
                       </li>
                     ))}
@@ -122,5 +106,5 @@ export default async function Footer() {
         </div>
       </footer>
     </FooterWrapper>
-  );
+  )
 }

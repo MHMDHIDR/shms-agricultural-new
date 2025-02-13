@@ -1,6 +1,11 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -8,40 +13,31 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { api } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { Projects } from "@prisma/client";
-import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+} from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
+import { api } from "@/trpc/react"
+import type { Projects } from "@prisma/client"
 
 const profitsPercentageSchema = z.object({
   projectId: z.string().min(1, "الرجاء اختيار المشروع"),
   percentage: z.number().min(0).max(100),
   percentageCode: z.string().min(1),
-});
+})
 
-type ProfitsPercentageFormValues = z.infer<typeof profitsPercentageSchema>;
+type ProfitsPercentageFormValues = z.infer<typeof profitsPercentageSchema>
 
-export default function ProfitsPercentageForm({
-  projects,
-}: {
-  projects: Projects[];
-}) {
-  const toast = useToast();
-  const router = useRouter();
-  const utils = api.useUtils();
+export default function ProfitsPercentageForm({ projects }: { projects: Projects[] }) {
+  const toast = useToast()
+  const router = useRouter()
+  const utils = api.useUtils()
 
   const form = useForm<ProfitsPercentageFormValues>({
     resolver: zodResolver(profitsPercentageSchema),
@@ -50,53 +46,47 @@ export default function ProfitsPercentageForm({
       percentage: 0,
       percentageCode: "",
     },
-  });
+  })
 
   const { mutate: updateProfitsPercentage, isPending: isUpdating } =
     api.projects.updateProfitsPercentage.useMutation({
       onSuccess: async () => {
-        toast.success("تم تحديث نسبة الربح بنجاح");
-        form.reset();
-        await utils.projects.getAll.invalidate();
-        router.refresh();
+        toast.success("تم تحديث نسبة الربح بنجاح")
+        form.reset()
+        await utils.projects.getAll.invalidate()
+        router.refresh()
       },
-      onError: (error) => {
-        toast.error(error.message || "حدث خطأ ما");
+      onError: error => {
+        toast.error(error.message || "حدث خطأ ما")
       },
-    });
+    })
 
   const generatePercentageCode = () => {
-    return Math.random().toString(36).substring(2, 9).toUpperCase();
-  };
+    return Math.random().toString(36).substring(2, 9).toUpperCase()
+  }
 
   const selectedProjectData = form.watch("projectId")
-    ? projects.find((project) => project.id === form.watch("projectId"))
-    : null;
+    ? projects.find(project => project.id === form.watch("projectId"))
+    : null
 
   const onSubmit = (values: ProfitsPercentageFormValues) => {
-    updateProfitsPercentage(values);
-  };
+    updateProfitsPercentage(values)
+  }
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-3.5 space-y-6"
-        dir="rtl"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mx-3.5 space-y-6" dir="rtl">
         <FormField
           control={form.control}
           name="projectId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs select-none">
-                اختر المشروع
-              </FormLabel>
+              <FormLabel className="text-xs select-none">اختر المشروع</FormLabel>
               <Select
                 value={field.value}
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  form.setValue("percentageCode", generatePercentageCode());
+                onValueChange={value => {
+                  field.onChange(value)
+                  form.setValue("percentageCode", generatePercentageCode())
                 }}
               >
                 <FormControl>
@@ -105,12 +95,8 @@ export default function ProfitsPercentageForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent dir="auto">
-                  {projects.map((project) => (
-                    <SelectItem
-                      key={project.id}
-                      value={project.id}
-                      className="cursor-pointer"
-                    >
+                  {projects.map(project => (
+                    <SelectItem key={project.id} value={project.id} className="cursor-pointer">
                       {project.projectName}
                     </SelectItem>
                   ))}
@@ -122,9 +108,7 @@ export default function ProfitsPercentageForm({
         />
 
         <FormItem>
-          <FormLabel className="text-xs select-none">
-            رمز زيادة النسبة
-          </FormLabel>
+          <FormLabel className="text-xs select-none">رمز زيادة النسبة</FormLabel>
           <span className="inline-block min-h-8 w-full rounded border border-gray-900 bg-white px-4 py-2 leading-tight font-bold text-gray-700 select-none dark:bg-gray-800 dark:text-gray-300">
             {form.watch("percentageCode")}
           </span>
@@ -135,9 +119,7 @@ export default function ProfitsPercentageForm({
           name="percentage"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs select-none">
-                النسبة المئوية
-              </FormLabel>
+              <FormLabel className="text-xs select-none">النسبة المئوية</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -146,7 +128,7 @@ export default function ProfitsPercentageForm({
                   max="100"
                   className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={e => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
               <FormMessage />
@@ -166,18 +148,12 @@ export default function ProfitsPercentageForm({
           <span className="inline-block w-full rounded border border-gray-900 bg-white px-4 py-2 leading-tight font-bold text-gray-700 select-none dark:bg-gray-800 dark:text-gray-300">
             {selectedProjectData
               ? selectedProjectData.projectStockProfits +
-                (selectedProjectData.projectStockProfits *
-                  form.watch("percentage")) /
-                  100
+                (selectedProjectData.projectStockProfits * form.watch("percentage")) / 100
               : 0}
           </span>
         </FormItem>
 
-        <Button
-          type="submit"
-          disabled={isUpdating || !form.formState.isValid}
-          className="w-full"
-        >
+        <Button type="submit" disabled={isUpdating || !form.formState.isValid} className="w-full">
           {isUpdating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -189,5 +165,5 @@ export default function ProfitsPercentageForm({
         </Button>
       </form>
     </Form>
-  );
+  )
 }

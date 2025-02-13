@@ -1,21 +1,17 @@
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "@/server/api/trpc";
-import { z } from "zod";
+import { z } from "zod"
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
 
 export const projectRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const session = ctx.session;
-    const role = session?.user?.role;
+    const session = ctx.session
+    const role = session?.user?.role
 
     const [projects, count] = await Promise.all([
       ctx.db.projects.findMany(),
       ctx.db.projects.count(),
-    ]);
+    ])
 
-    return { projects, count, role };
+    return { projects, count, role }
   }),
 
   updateProfitsPercentage: protectedProcedure
@@ -34,9 +30,9 @@ export const projectRouter = createTRPCRouter({
           projectSpecialPercentageCode: input.percentageCode,
           updatePercentage: true,
         },
-      });
+      })
 
-      return project;
+      return project
     }),
 
   deleteProfitsPercentage: protectedProcedure
@@ -49,8 +45,8 @@ export const projectRouter = createTRPCRouter({
           projectSpecialPercentageCode: null,
           updatePercentage: true,
         },
-      });
+      })
 
-      return project;
+      return project
     }),
-});
+})

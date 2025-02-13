@@ -1,16 +1,10 @@
-import { signupSchema, updatePublicSchema } from "@/schemas/signup";
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "@/server/api/trpc";
-import type { Prisma } from "@prisma/client";
-import { hash } from "bcryptjs";
-import { z } from "zod";
+import { hash } from "bcryptjs"
+import { z } from "zod"
+import { signupSchema, updatePublicSchema } from "@/schemas/signup"
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
+import type { Prisma } from "@prisma/client"
 
-const updateUserSchema = signupSchema
-  .omit({ confirmPassword: true, doc: true })
-  .partial();
+const updateUserSchema = signupSchema.omit({ confirmPassword: true, doc: true }).partial()
 
 export const userRouter = createTRPCRouter({
   getUserThemeByCredentials: publicProcedure
@@ -21,30 +15,27 @@ export const userRouter = createTRPCRouter({
           OR: [{ email: input.emailOrPhone }, { phone: input.emailOrPhone }],
         },
         select: { theme: true },
-      });
+      })
 
-      return user?.theme ?? "light";
+      return user?.theme ?? "light"
     }),
 
   getUserById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.user.findFirst({ where: { id: input.id } });
+      return ctx.db.user.findFirst({ where: { id: input.id } })
     }),
 
   getUserByEmail: protectedProcedure
     .input(z.object({ email: z.string() }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.user.findFirst({ where: { email: input.email } });
+      return ctx.db.user.findFirst({ where: { email: input.email } })
     }),
 
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const [users, count] = await Promise.all([
-      ctx.db.user.findMany(),
-      ctx.db.user.count(),
-    ]);
+    const [users, count] = await Promise.all([ctx.db.user.findMany(), ctx.db.user.count()])
 
-    return { users, count };
+    return { users, count }
   }),
 
   update: publicProcedure
@@ -55,40 +46,38 @@ export const userRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const data: Partial<Prisma.UserUpdateInput> = {}; // Use Prisma's UserUpdateInput type
+      const data: Partial<Prisma.UserUpdateInput> = {} // Use Prisma's UserUpdateInput type
 
       // Only include defined fields
       Object.entries(input).forEach(([key, value]) => {
         if (value !== undefined && key !== "id") {
-          data[key as keyof Prisma.UserUpdateInput] = value; // Assign the value
+          data[key as keyof Prisma.UserUpdateInput] = value // Assign the value
         }
-      });
+      })
 
       if (input.password) {
-        data.password = await hash(input.password, 12); // Ensure this is assigned correctly
+        data.password = await hash(input.password, 12) // Ensure this is assigned correctly
       }
 
       return ctx.db.user.update({
         where: { id: input.id },
         data,
-      });
+      })
     }),
 
-  updatePublic: publicProcedure
-    .input(updatePublicSchema)
-    .mutation(async ({ ctx, input }) => {
-      const updateData: Record<string, string | number> = {};
+  updatePublic: publicProcedure.input(updatePublicSchema).mutation(async ({ ctx, input }) => {
+    const updateData: Record<string, string | number> = {}
 
-      if (input.image !== undefined) {
-        updateData.image = input.image;
-      }
-      if (input.doc !== undefined) {
-        updateData.doc = input.doc;
-      }
-      updateData.sn = input.sn;
+    if (input.image !== undefined) {
+      updateData.image = input.image
+    }
+    if (input.doc !== undefined) {
+      updateData.doc = input.doc
+    }
+    updateData.sn = input.sn
 
-      return ctx.db.user.update({ where: { id: input.id }, data: updateData });
-    }),
+    return ctx.db.user.update({ where: { id: input.id }, data: updateData })
+  }),
 
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -97,7 +86,7 @@ export const userRouter = createTRPCRouter({
       const user = await ctx.db.user.findUnique({
         where: { id: input.id },
         select: { stocks: true },
-      });
+      })
 
       // Return stocks to projects if any
       if (user?.stocks?.length) {
@@ -109,7 +98,7 @@ export const userRouter = createTRPCRouter({
                 increment: stock.stocks,
               },
             },
-          });
+          })
         }
       }
 
@@ -117,6 +106,6 @@ export const userRouter = createTRPCRouter({
       return ctx.db.user.update({
         where: { id: input.id },
         data: { isDeleted: true },
-      });
+      })
     }),
-});
+})

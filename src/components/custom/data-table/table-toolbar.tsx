@@ -1,8 +1,7 @@
-import {
-  DataTableFacetedFilter,
-  type DataTableFilterField,
-} from "@/components/custom/data-table/data-table-faceted-filter";
-import { Button, type ButtonProps } from "@/components/ui/button";
+import { ChevronDown, SettingsIcon, X } from "lucide-react"
+import { useMemo } from "react"
+import { DataTableFacetedFilter } from "@/components/custom/data-table/data-table-faceted-filter"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -11,28 +10,28 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { translateSring } from "@/lib/translate-string";
-import type { Table } from "@tanstack/react-table";
-import { ChevronDown, SettingsIcon, X } from "lucide-react";
-import { useMemo } from "react";
+} from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { translateSring } from "@/lib/translate-string"
+import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter"
+import type { ButtonProps } from "@/components/ui/button"
+import type { Table } from "@tanstack/react-table"
 
 export type BulkAction = {
-  label: string;
-  onClick: () => void;
-  variant?: ButtonProps["variant"];
-};
+  label: string
+  onClick: () => void
+  variant?: ButtonProps["variant"]
+}
 
 type TableToolbarProps<TData> = {
-  table: Table<TData>;
-  filtering: string;
-  setFiltering: (value: string) => void;
-  selectedRows: TData[];
-  bulkActions?: BulkAction[];
-  searchPlaceholder?: string;
-  filterFields?: DataTableFilterField[];
-};
+  table: Table<TData>
+  filtering: string
+  setFiltering: (value: string) => void
+  selectedRows: TData[]
+  bulkActions?: BulkAction[]
+  searchPlaceholder?: string
+  filterFields?: DataTableFilterField[]
+}
 
 export function TableToolbar<TData>({
   table,
@@ -43,20 +42,20 @@ export function TableToolbar<TData>({
   searchPlaceholder = "Search...",
   filterFields = [],
 }: TableToolbarProps<TData>) {
-  const hasBulkActions = bulkActions.length > 0;
+  const hasBulkActions = bulkActions.length > 0
 
-  const isFiltered = table.getState().columnFilters.length > 0;
+  const isFiltered = table.getState().columnFilters.length > 0
 
   const { filterableColumns } = useMemo(() => {
-    return { filterableColumns: filterFields.filter((field) => field.options) };
-  }, [filterFields]);
+    return { filterableColumns: filterFields.filter(field => field.options) }
+  }, [filterFields])
 
   return (
     <div className="flex w-full flex-col gap-2 py-2.5 sm:flex-row">
       <Input
         placeholder={searchPlaceholder || "إبحث عن بيانات ..."}
         value={filtering}
-        onChange={(event) => setFiltering(event.target.value)}
+        onChange={event => setFiltering(event.target.value)}
         className="rtl w-full sm:max-w-md"
       />
       <div className="flex flex-wrap items-center gap-2">
@@ -69,9 +68,7 @@ export function TableToolbar<TData>({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="space-y-1">
-              <DropdownMenuLabel className="text-center">
-                إجراءات إضافية
-              </DropdownMenuLabel>
+              <DropdownMenuLabel className="text-center">إجراءات إضافية</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {bulkActions.map((action, index) => (
                 <DropdownMenuItem key={index} asChild>
@@ -90,7 +87,7 @@ export function TableToolbar<TData>({
         )}
 
         {filterableColumns.map(
-          (column) =>
+          column =>
             table.getColumn(column.id) && (
               <DataTableFacetedFilter
                 key={column.id}
@@ -122,13 +119,13 @@ export function TableToolbar<TData>({
           <DropdownMenuContent align="center">
             {table
               .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => (
+              .filter(column => column.getCanHide())
+              .map(column => (
                 <DropdownMenuCheckboxItem
                   key={column.id}
                   className="capitalize"
                   checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  onCheckedChange={value => column.toggleVisibility(!!value)}
                   dir="auto"
                 >
                   {translateSring(column.id)}
@@ -138,5 +135,5 @@ export function TableToolbar<TData>({
         </DropdownMenu>
       </div>
     </div>
-  );
+  )
 }

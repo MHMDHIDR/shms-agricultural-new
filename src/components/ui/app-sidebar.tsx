@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   DollarSignIcon,
@@ -10,12 +10,11 @@ import {
   Settings2,
   Tractor,
   Users,
-} from "lucide-react";
-import * as React from "react";
-
-import { NavMain } from "@/components/ui/nav-main";
-import { NavUser } from "@/components/ui/nav-user";
-import { ProjectsSwitcher } from "@/components/ui/projects-switcher";
+} from "lucide-react"
+import * as React from "react"
+import { NavMain } from "@/components/ui/nav-main"
+import { NavUser } from "@/components/ui/nav-user"
+import { ProjectsSwitcher } from "@/components/ui/projects-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -23,21 +22,21 @@ import {
   SidebarHeader,
   SidebarRail,
   useSidebar,
-} from "@/components/ui/sidebar";
-import type { Projects } from "@prisma/client";
-import type { Session } from "next-auth";
+} from "@/components/ui/sidebar"
+import type { Projects } from "@prisma/client"
+import type { Session } from "next-auth"
 
 export function AppSidebar({
   projects,
   user,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
-  projects: Projects[];
-  user: Session["user"];
+  projects: Projects[]
+  user: Session["user"]
 }) {
-  const { open, isMobile } = useSidebar();
+  const { open, isMobile } = useSidebar()
 
-  if (!user) return null;
+  if (!user) return null
 
   const navItems = {
     user: {
@@ -45,7 +44,7 @@ export function AppSidebar({
       email: user?.email,
       avatar: user?.name,
     },
-    projects: projects.map((project) => ({
+    projects: projects.map(project => ({
       name: project.projectName,
       logo: Tractor,
       plan: "Enterprise",
@@ -103,15 +102,10 @@ export function AppSidebar({
         ],
       },
     ],
-  };
+  }
 
   return (
-    <Sidebar
-      side="right"
-      collapsible="icon"
-      className="bg-background"
-      {...props}
-    >
+    <Sidebar side="right" collapsible="icon" className="bg-background" {...props}>
       <SidebarHeader className="pt-20">
         <ProjectsSwitcher projects={navItems.projects} />
       </SidebarHeader>
@@ -123,5 +117,5 @@ export function AppSidebar({
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  );
+  )
 }

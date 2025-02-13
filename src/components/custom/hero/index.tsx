@@ -1,42 +1,39 @@
-"use client";
+"use client"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { NutIcon, TreePineIcon } from "lucide-react"
+import Image from "next/image"
+import { useState } from "react"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { useCountUp } from "@/hooks/use-count-up";
-import { api } from "@/trpc/react";
-import { NutIcon, TreePineIcon } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
-import { LoadingCard } from "../loading";
-import Video from "../video";
+} from "@/components/ui/dialog"
+import { useCountUp } from "@/hooks/use-count-up"
+import { api } from "@/trpc/react"
+import { LoadingCard } from "../loading"
+import Video from "../video"
 
 export default function Hero({ children }: { children: React.ReactNode }) {
-  const { data: usersData, isLoading: isLoadingUsers } =
-    api.user.getAll.useQuery();
-  const YEAR_IN_INDUSTRY = Math.abs(2020 - new Date().getFullYear());
-  const FARMING_PROJECTS = 1;
-  const USER_SATISFACTION = 100;
-  const TOTAL_USERS = usersData?.count ?? 1;
-  const TOP_INVESTORS_NAMES = usersData?.users
-    .map((user) => user.name?.slice(0, 2))
-    .slice(0, 7); // get the first 7 names;
-  const MAIN_HEADLINE = "استثمر في مجال الزراعة في السودان";
-  const SUB_HEADLINE = `"ازرع ثروتك اليوم.. واحصد نجاحك غدًا! استثمر في مستقبل الزراعة في السودان." 🌱💰`;
+  const { data: usersData, isLoading: isLoadingUsers } = api.user.getAll.useQuery()
+  const YEAR_IN_INDUSTRY = Math.abs(2020 - new Date().getFullYear())
+  const FARMING_PROJECTS = 1
+  const USER_SATISFACTION = 100
+  const TOTAL_USERS = usersData?.count ?? 1
+  const TOP_INVESTORS_NAMES = usersData?.users.map(user => user.name?.slice(0, 2)).slice(0, 7) // get the first 7 names;
+  const MAIN_HEADLINE = "استثمر في مجال الزراعة في السودان"
+  const SUB_HEADLINE = `"ازرع ثروتك اليوم.. واحصد نجاحك غدًا! استثمر في مستقبل الزراعة في السودان." 🌱💰`
 
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [isVideoOpen, setIsVideoOpen] = useState(false)
 
-  const yearInIndustryCount = useCountUp(YEAR_IN_INDUSTRY);
-  const farmingProjectsCount = useCountUp(FARMING_PROJECTS, 500);
-  const satisfactionCount = useCountUp(USER_SATISFACTION);
-  const usersCount = useCountUp(TOTAL_USERS);
+  const yearInIndustryCount = useCountUp(YEAR_IN_INDUSTRY)
+  const farmingProjectsCount = useCountUp(FARMING_PROJECTS, 500)
+  const satisfactionCount = useCountUp(USER_SATISFACTION)
+  const usersCount = useCountUp(TOTAL_USERS)
 
-  const users = TOP_INVESTORS_NAMES?.map((name) => ({ fallback: name }));
+  const users = TOP_INVESTORS_NAMES?.map(name => ({ fallback: name }))
 
   return (
     <section className="bg-background relative overflow-hidden py-12 select-none md:py-32">
@@ -63,9 +60,7 @@ export default function Hero({ children }: { children: React.ReactNode }) {
                 <div className="flex-1 text-sm text-gray-800">
                   <span>
                     إنضم لـ
-                    <strong className="mx-1">
-                      +{usersCount.toLocaleString()}
-                    </strong>
+                    <strong className="mx-1">+{usersCount.toLocaleString()}</strong>
                     مستثمرين المستقبل
                   </span>
                 </div>
@@ -111,9 +106,7 @@ export default function Hero({ children }: { children: React.ReactNode }) {
             <h1 className="text-3xl leading-snug! font-extrabold text-white lg:text-5xl">
               {MAIN_HEADLINE}
             </h1>
-            <p className="text-lg text-gray-200 lg:max-w-[80%]">
-              {SUB_HEADLINE}
-            </p>
+            <p className="text-lg text-gray-200 lg:max-w-[80%]">{SUB_HEADLINE}</p>
             {children}
           </div>
         </div>
@@ -124,9 +117,7 @@ export default function Hero({ children }: { children: React.ReactNode }) {
               <div className="text-primary text-2xl font-medium lg:text-4xl">
                 {yearInIndustryCount}+
               </div>
-              <div className="text-gray-200 lg:text-lg">
-                سنوات الخبرة في المجال
-              </div>
+              <div className="text-gray-200 lg:text-lg">سنوات الخبرة في المجال</div>
             </div>
             <div className="flex flex-1 flex-col gap-3 border-b-[1px] border-white/10 p-6 text-center md:border-b-0 md:border-l-[1px]">
               <div className="text-primary text-2xl font-medium lg:text-4xl">
@@ -148,9 +139,7 @@ export default function Hero({ children }: { children: React.ReactNode }) {
         <DialogContent className="p-2.5 sm:max-w-[800px]">
           <DialogHeader className="pt-4 text-center! select-none">
             <DialogTitle>فيديو استثمار</DialogTitle>
-            <DialogDescription>
-              شاهد فيديو الاستثمار في مجال الزراعة
-            </DialogDescription>
+            <DialogDescription>شاهد فيديو الاستثمار في مجال الزراعة</DialogDescription>
           </DialogHeader>
           <div className="aspect-video">
             <video
@@ -165,5 +154,5 @@ export default function Hero({ children }: { children: React.ReactNode }) {
         </DialogContent>
       </Dialog>
     </section>
-  );
+  )
 }

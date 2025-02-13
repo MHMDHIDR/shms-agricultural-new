@@ -1,30 +1,26 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Check, ListCollapse } from "lucide-react"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { countryNames } from "@/lib/list-of-countries";
-import { cn } from "@/lib/utils";
-import { Check, ListCollapse } from "lucide-react";
-import { useState } from "react";
+} from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { countryNames } from "@/lib/list-of-countries"
+import { cn } from "@/lib/utils"
 
 type SelectCountryProps = {
-  nationality?: string;
-  setNationality: (value: string) => void;
-  placeholder?: string;
-  className?: string;
-  disabled?: boolean;
-};
+  nationality?: string
+  setNationality: (value: string) => void
+  placeholder?: string
+  className?: string
+  disabled?: boolean
+}
 
 // Mark the component as a Client Component
 const SelectCountry = ({
@@ -34,13 +30,13 @@ const SelectCountry = ({
   className = "",
   disabled = false,
 }: SelectCountryProps) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   // Create a memoized handler for the selection
   const handleSelect = (currentValue: string) => {
-    setNationality(currentValue === nationality ? "" : currentValue);
-    setOpen(false);
-  };
+    setNationality(currentValue === nationality ? "" : currentValue)
+    setOpen(false)
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -56,9 +52,7 @@ const SelectCountry = ({
           )}
         >
           {nationality
-            ? countryNames.find(
-                (countryName) => countryName.label === nationality,
-              )?.label
+            ? countryNames.find(countryName => countryName.label === nationality)?.label
             : placeholder}
           <ListCollapse className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -71,7 +65,7 @@ const SelectCountry = ({
           <CommandInput placeholder="إبحث عن الجنسية" className="h-9 px-4" />
           <CommandEmpty>عفواً لم يتم العثور على البلد</CommandEmpty>
           <CommandGroup>
-            {countryNames.map((countryName) => (
+            {countryNames.map(countryName => (
               <CommandItem
                 key={countryName.code}
                 value={countryName.label}
@@ -82,9 +76,7 @@ const SelectCountry = ({
                 <Check
                   className={cn(
                     "ml-auto h-4 w-4",
-                    nationality === countryName.label
-                      ? "opacity-100"
-                      : "opacity-0",
+                    nationality === countryName.label ? "opacity-100" : "opacity-0",
                   )}
                 />
               </CommandItem>
@@ -93,7 +85,7 @@ const SelectCountry = ({
         </Command>
       </PopoverContent>
     </Popover>
-  );
-};
+  )
+}
 
-export default SelectCountry;
+export default SelectCountry

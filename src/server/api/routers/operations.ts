@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
 export const operationsRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -18,8 +18,8 @@ export const operationsRouter = createTRPCRouter({
         orderBy: { created_at: "desc" },
       }),
       ctx.db.withdraw_actions.count(),
-    ]);
+    ])
 
-    return { operations, count };
+    return { operations, count }
   }),
-});
+})

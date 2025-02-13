@@ -1,16 +1,16 @@
+import LoadMore from "@/components/custom/load-more"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { api } from "@/trpc/server";
-import LoadMore from "@/components/custom/load-more";
+} from "@/components/ui/accordion"
+import { api } from "@/trpc/server"
 
 export default async function FAQ({ pathname }: { pathname: "/faqs" | "/" }) {
-  const { faqs, count } = await api.faq.getAll();
-  const RENDER_LIMIT = 5;
-  const FAQS_TO_RENDER = pathname.includes("/faqs") ? count : RENDER_LIMIT;
+  const { faqs, count } = await api.faq.getAll()
+  const RENDER_LIMIT = 5
+  const FAQS_TO_RENDER = pathname.includes("/faqs") ? count : RENDER_LIMIT
 
   return (
     <section className="container mx-auto overflow-clip px-4 py-20 md:max-w-[70rem] md:px-0">
@@ -25,9 +25,7 @@ export default async function FAQ({ pathname }: { pathname: "/faqs" | "/" }) {
                 <AccordionTrigger className="focus-within:text-foreground/60 hover:text-foreground/60 dark:focus-within:text-secondary-foreground dark:hover:text-secondary-foreground hover:no-underline">
                   {item.question}
                 </AccordionTrigger>
-                <AccordionContent className="leading-loose">
-                  {item.answer}
-                </AccordionContent>
+                <AccordionContent className="leading-loose">{item.answer}</AccordionContent>
               </AccordionItem>
             </Accordion>
           ))}
@@ -39,5 +37,5 @@ export default async function FAQ({ pathname }: { pathname: "/faqs" | "/" }) {
         </>
       )}
     </section>
-  );
+  )
 }

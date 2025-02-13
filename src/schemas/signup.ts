@@ -1,10 +1,10 @@
-import { isValidPhoneNumber } from "libphonenumber-js";
-import { z } from "zod";
+import { isValidPhoneNumber } from "libphonenumber-js"
+import { z } from "zod"
 
 export const signupSchema = z.object({
   name: z.string().min(2, "الاسم يجب أن يكون أكثر من حرفين"),
   email: z.string().email("البريد الإلكتروني غير صالح"),
-  phone: z.string().refine((value) => isValidPhoneNumber(value), {
+  phone: z.string().refine(value => isValidPhoneNumber(value), {
     message: "رقم الهاتف غير صالح",
   }),
   nationality: z.string().min(2, "الرجاء اختيار الجنسية"),
@@ -21,22 +21,19 @@ export const signupSchema = z.object({
     .regex(/[A-Z]/, "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل")
     .regex(/[a-z]/, "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل")
     .regex(/[0-9]/, "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل")
-    .regex(
-      /[^A-Za-z0-9]/,
-      'يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل مثل "!@#$%^&*"',
-    ),
+    .regex(/[^A-Za-z0-9]/, 'يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل مثل "!@#$%^&*"'),
   confirmPassword: z.string(),
   theme: z.enum(["light", "dark"]).default("light"),
   image: z.string().default(""),
   doc: z.string().default(""),
-});
+})
 
 export const updatePublicSchema = z.object({
   id: z.string(),
   sn: z.number(),
   image: z.string().optional(),
   doc: z.string().optional(),
-});
+})
 
-export type SignupInput = z.infer<typeof signupSchema>;
-export type UpdatePublicInput = z.infer<typeof updatePublicSchema>;
+export type SignupInput = z.infer<typeof signupSchema>
+export type UpdatePublicInput = z.infer<typeof updatePublicSchema>

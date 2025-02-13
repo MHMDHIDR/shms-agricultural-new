@@ -1,6 +1,11 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { startTransition } from "react"
+import { useForm } from "react-hook-form"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -8,52 +13,46 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { signupSchema } from "@/schemas/signup";
-import { api } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { startTransition } from "react";
-import { useForm } from "react-hook-form";
-import type { z } from "zod";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { useToast } from "@/hooks/use-toast"
+import { signupSchema } from "@/schemas/signup"
+import { api } from "@/trpc/react"
+import type { z } from "zod"
 
-const resetPasswordSchema = signupSchema.pick({ email: true });
+const resetPasswordSchema = signupSchema.pick({ email: true })
 
-export type resetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+export type resetPasswordFormValues = z.infer<typeof resetPasswordSchema>
 
 export function SignInForm() {
-  const toast = useToast();
-  const router = useRouter();
+  const toast = useToast()
+  const router = useRouter()
 
   const { mutateAsync: resetUserByEmail, isPending: isLoading } =
-    api.auth.resetUserByEmail.useMutation();
+    api.auth.resetUserByEmail.useMutation()
 
   const form = useForm<resetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: { email: "" },
-  });
+  })
 
   function onSubmit(data: resetPasswordFormValues) {
     startTransition(async () => {
       try {
-        const resetSent = await resetUserByEmail(data);
+        const resetSent = await resetUserByEmail(data)
         if (!resetSent.success) {
-          toast.error(resetSent.message);
-          return;
+          toast.error(resetSent.message)
+          return
         }
 
-        toast.success(resetSent.message);
-        router.replace("/");
+        toast.success(resetSent.message)
+        router.replace("/")
       } catch (error) {
-        const errorMsg =
-          error instanceof Error ? error.message : "حدث خطأ غير متوقع";
-        console.error("Reset Password Error:", error);
-        toast.error(errorMsg);
+        const errorMsg = error instanceof Error ? error.message : "حدث خطأ غير متوقع"
+        console.error("Reset Password Error:", error)
+        toast.error(errorMsg)
       }
-    });
+    })
   }
 
   return (
@@ -64,9 +63,7 @@ export function SignInForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs select-none">
-                البريد الالكتروني
-              </FormLabel>
+              <FormLabel className="text-xs select-none">البريد الالكتروني</FormLabel>
               <FormControl>
                 <Input
                   placeholder="البريد الالكتروني"
@@ -80,16 +77,11 @@ export function SignInForm() {
           )}
         />
 
-        <Button
-          type="submit"
-          variant={"pressable"}
-          disabled={isLoading}
-          className="w-full"
-        >
+        <Button type="submit" variant={"pressable"} disabled={isLoading} className="w-full">
           {isLoading && <Loader2 className="animate-spin text-green-500" />}
           إستعادة كلمة المرور
         </Button>
       </form>
     </Form>
-  );
+  )
 }

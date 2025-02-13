@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { motion } from "framer-motion";
+import { motion } from "framer-motion"
 
 export default function OurValues() {
   return (
@@ -8,11 +8,10 @@ export default function OurValues() {
       <div className="flex flex-col justify-center gap-7 text-center">
         <h2 className="text-2xl font-semibold">رؤيتنا</h2>
         <p className="text-muted-foreground dark:text-secondary-foreground text-sm leading-loose! md:text-base">
-          أن يكون السودان هو فعلياً سلة غذاء العالم وأن يكون رائداً بين الدول
-          العربية في مجال الزراعة وتطوير الأدوات الزراعية وتحسين جودة المزروعات،
-          مما يسهم بشكل كبير في النمو الاقتصادي للفرد وللدولة على حد سواء. كما
-          نسعى إلى تحقيق الاستدامة الزراعية وتعزيز الابتكار في التقنيات
-          الزراعية، مع دعم المجتمعات المحلية لخلق بيئة زراعية متطورة ومستدامة.
+          أن يكون السودان هو فعلياً سلة غذاء العالم وأن يكون رائداً بين الدول العربية في مجال
+          الزراعة وتطوير الأدوات الزراعية وتحسين جودة المزروعات، مما يسهم بشكل كبير في النمو
+          الاقتصادي للفرد وللدولة على حد سواء. كما نسعى إلى تحقيق الاستدامة الزراعية وتعزيز الابتكار
+          في التقنيات الزراعية، مع دعم المجتمعات المحلية لخلق بيئة زراعية متطورة ومستدامة.
         </p>
       </div>
       <div className="mt-14 grid max-w-(--breakpoint-lg) grid-cols-1 items-center gap-10 md:grid-cols-2 lg:px-16">
@@ -62,5 +61,5 @@ export default function OurValues() {
         ))}
       </div>
     </section>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { isValidPhoneNumber } from "libphonenumber-js"
+import { z } from "zod"
 
 // List of services to validate against
 export const services = [
@@ -13,7 +13,7 @@ export const services = [
   "تأجير المعدات الزراعية",
   "شكاوى وملاحظات",
   "خدامات أخرى",
-];
+]
 
 // Validation schema for contact form
 export const contactSchema = z.object({
@@ -24,25 +24,22 @@ export const contactSchema = z.object({
       message: "الرجاء التأكد من إدخال رقم الهاتف أو البريد الالكتروني",
     })
     .refine(
-      (value) => {
-        const emailValidation = z.string().email();
+      value => {
+        const emailValidation = z.string().email()
 
         try {
           // For phone numbers, add + if not present before validation
-          const phoneNumberToValidate = value.startsWith("+")
-            ? value
-            : `+${value}`;
-          if (isValidPhoneNumber(phoneNumberToValidate)) return true;
+          const phoneNumberToValidate = value.startsWith("+") ? value : `+${value}`
+          if (isValidPhoneNumber(phoneNumberToValidate)) return true
 
-          emailValidation.parse(value);
-          return true;
+          emailValidation.parse(value)
+          return true
         } catch {
-          return false;
+          return false
         }
       },
       {
-        message:
-          "يرجى إدخال رقم هاتف صحيح (مع كود الدولة) أو بريد إلكتروني صالح",
+        message: "يرجى إدخال رقم هاتف صحيح (مع كود الدولة) أو بريد إلكتروني صالح",
       },
     ),
 
@@ -50,7 +47,7 @@ export const contactSchema = z.object({
     .string()
     .trim()
     .min(1, { message: "الرجاء اختيار نوع الخدمة" })
-    .refine((value) => services.includes(value), {
+    .refine(value => services.includes(value), {
       message: "يرجى اختيار خدمة صالحة",
     }),
 
@@ -63,7 +60,7 @@ export const contactSchema = z.object({
     .max(500, {
       message: "يجب أن تكون الرسالة 500 حرف كحد أقصى",
     }),
-});
+})
 
 // Type for the contact form data
-export type ContactFormData = z.infer<typeof contactSchema>;
+export type ContactFormData = z.infer<typeof contactSchema>

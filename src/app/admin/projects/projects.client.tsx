@@ -1,19 +1,5 @@
-"use client";
+"use client"
 
-import type { BulkAction } from "@/components/custom/data-table/table-toolbar";
-import { TableToolbar } from "@/components/custom/data-table/table-toolbar";
-import NoRecords from "@/components/custom/no-records";
-import { Button } from "@/components/ui/button";
-import {
-  TableBody,
-  TableCell,
-  Table,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useSharedColumns } from "@/hooks/use-shared-columns";
-import type { Projects } from "@prisma/client";
 import {
   flexRender,
   getCoreRowModel,
@@ -21,51 +7,61 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import type {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-} from "@tanstack/react-table";
-import Link from "next/link";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+} from "@tanstack/react-table"
+import Link from "next/link"
+import { useState } from "react"
+import { TableToolbar } from "@/components/custom/data-table/table-toolbar"
+import NoRecords from "@/components/custom/no-records"
+import { Button } from "@/components/ui/button"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { useSharedColumns } from "@/hooks/use-shared-columns"
+import { useToast } from "@/hooks/use-toast"
+import type { BulkAction } from "@/components/custom/data-table/table-toolbar"
+import type { Projects } from "@prisma/client"
+import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table"
 
 export default function ProjectsClientPage({
   projects,
   count,
 }: {
-  projects: Projects[];
-  count: number;
+  projects: Projects[]
+  count: number
 }) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState("");
-  const toast = useToast();
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
+  const [globalFilter, setGlobalFilter] = useState("")
+  const toast = useToast()
 
   // Handle project actions
   const handleDeleteProject = (_id: string) => {
     void (async () => {
       // Implement delete functionality
-      toast.error("Delete functionality not implemented yet");
-    })();
-  };
+      toast.error("Delete functionality not implemented yet")
+    })()
+  }
 
   const handleActivateProject = (_id: string) => {
     void (async () => {
       // Implement activate functionality
-      toast.success("Activate functionality not implemented yet");
-    })();
-  };
+      toast.success("Activate functionality not implemented yet")
+    })()
+  }
 
   const handleDeactivateProject = (_id: string) => {
     void (async () => {
       // Implement deactivate functionality
-      toast.success("Deactivate functionality not implemented yet");
-    })();
-  };
+      toast.success("Deactivate functionality not implemented yet")
+    })()
+  }
 
   const { columns, filterFields } = useSharedColumns<Projects>({
     entityType: "projects",
@@ -75,7 +71,7 @@ export default function ProjectsClientPage({
       onDeactivate: handleDeactivateProject,
       basePath: "/projects",
     },
-  });
+  })
 
   const table = useReactTable<Projects>({
     data: projects,
@@ -96,11 +92,9 @@ export default function ProjectsClientPage({
       rowSelection,
       globalFilter,
     },
-  });
+  })
 
-  const selectedRows = table
-    .getFilteredSelectedRowModel()
-    .rows.map((row) => row.original);
+  const selectedRows = table.getFilteredSelectedRowModel().rows.map(row => row.original)
 
   // Define bulk actions
   const getBulkActions = (): BulkAction[] => {
@@ -108,46 +102,42 @@ export default function ProjectsClientPage({
       {
         label: "حذف المحدد",
         onClick: () => {
-          const ids = selectedRows.map((row) => row.id);
-          toast.success(`Selected IDs: ${ids.join(", ")}`);
+          const ids = selectedRows.map(row => row.id)
+          toast.success(`Selected IDs: ${ids.join(", ")}`)
         },
         variant: "destructive",
       },
-    ];
+    ]
 
     if (selectedRows.length > 0) {
-      const hasPendingProjects = selectedRows.some(
-        (row) => row.projectStatus === "pending",
-      );
-      const hasActiveProjects = selectedRows.some(
-        (row) => row.projectStatus === "active",
-      );
+      const hasPendingProjects = selectedRows.some(row => row.projectStatus === "pending")
+      const hasActiveProjects = selectedRows.some(row => row.projectStatus === "active")
 
       if (hasPendingProjects) {
         actions.push({
           label: "تفعيل المحدد",
           onClick: () => {
-            const ids = selectedRows.map((row) => row.id);
-            toast.success(`Selected IDs: ${ids.join(", ")}`);
+            const ids = selectedRows.map(row => row.id)
+            toast.success(`Selected IDs: ${ids.join(", ")}`)
           },
           variant: "success",
-        });
+        })
       }
 
       if (hasActiveProjects) {
         actions.push({
           label: "تعطيل المحدد",
           onClick: () => {
-            const ids = selectedRows.map((row) => row.id);
-            toast.success(`Selected IDs: ${ids.join(", ")}`);
+            const ids = selectedRows.map(row => row.id)
+            toast.success(`Selected IDs: ${ids.join(", ")}`)
           },
           variant: "success",
-        });
+        })
       }
     }
 
-    return actions;
-  };
+    return actions
+  }
 
   return !projects || count === 0 ? (
     <NoRecords
@@ -175,16 +165,13 @@ export default function ProjectsClientPage({
       <div className="rounded-md border px-2.5">
         <Table>
           <TableHeader className="select-none">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map(header => (
                   <TableHead key={header.id} className="text-center">
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -192,27 +179,18 @@ export default function ProjectsClientPage({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
+              table.getRowModel().rows.map(row => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id} className="text-center">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   لم يتم العثور على نتائج
                 </TableCell>
               </TableRow>
@@ -221,5 +199,5 @@ export default function ProjectsClientPage({
         </Table>
       </div>
     </div>
-  );
+  )
 }

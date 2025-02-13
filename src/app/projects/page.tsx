@@ -1,20 +1,20 @@
-import NoRecords from "@/components/custom/no-records";
-import { Card, CardContent, CardDescription } from "@/components/ui/card";
-import { APP_DESCRIPTION, APP_LOGO, APP_TITLE } from "@/lib/constants";
-import { slugify } from "@/lib/slugify";
-import { api } from "@/trpc/server";
-import clsx from "clsx";
-import type { Metadata } from "next";
-import Link from "next/link";
-import Image from "next/image";
+import clsx from "clsx"
+import Image from "next/image"
+import Link from "next/link"
+import NoRecords from "@/components/custom/no-records"
+import { Card, CardContent, CardDescription } from "@/components/ui/card"
+import { APP_DESCRIPTION, APP_LOGO, APP_TITLE } from "@/lib/constants"
+import { slugify } from "@/lib/slugify"
+import { api } from "@/trpc/server"
+import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: `مشاريعنا الاستثمارية | ${APP_TITLE}`,
   description: APP_DESCRIPTION,
-};
+}
 
 export default async function ProjectsPage() {
-  const { projects, count, role } = await api.projects.getAll();
+  const { projects, count, role } = await api.projects.getAll()
 
   return (
     <main className="flex min-h-screen flex-col items-center pt-8 md:pt-14">
@@ -45,9 +45,7 @@ export default async function ProjectsPage() {
                   {role === "admin" ? (
                     <span
                       className={`absolute top-20 -left-4 z-10 origin-top-left -rotate-45 transform px-14 py-1 text-center text-xs font-bold text-white ${
-                        project.projectStatus === "active"
-                          ? "bg-green-600"
-                          : "bg-red-600"
+                        project.projectStatus === "active" ? "bg-green-600" : "bg-red-600"
                       }`}
                     >
                       {project.projectStatus === "active" ? "مفعل" : "غير مفعل"}
@@ -79,5 +77,5 @@ export default async function ProjectsPage() {
         </div>
       )}
     </main>
-  );
+  )
 }

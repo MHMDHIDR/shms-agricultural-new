@@ -1,8 +1,13 @@
-"use client";
+"use client"
 
-import { FileUpload } from "@/components/custom/file-upload";
-import SelectCountry from "@/components/custom/select-country";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { FileUpload } from "@/components/custom/file-upload"
+import SelectCountry from "@/components/custom/select-country"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -10,33 +15,30 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { PhoneInput } from "@/components/ui/phone-input";
-import { useToast } from "@/hooks/use-toast";
-import { type SignupInput, signupSchema } from "@/schemas/signup";
-import { api } from "@/trpc/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { PhoneInput } from "@/components/ui/phone-input"
+import { useToast } from "@/hooks/use-toast"
+import { optimizeImage } from "@/lib/optimize-image"
+import { signupSchema } from "@/schemas/signup"
+import { api } from "@/trpc/react"
+import type { SignupInput } from "@/schemas/signup"
 
 export function SignUpForm({ sn }: { sn: number }) {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<{
-    image?: File[];
-    doc?: File[];
-  }>({});
+    image?: File[]
+    doc?: File[]
+  }>({})
 
-  const toast = useToast();
-  const router = useRouter();
+  const toast = useToast()
+  const router = useRouter()
 
   const form = useForm<SignupInput>({
     resolver: zodResolver(
-      signupSchema.refine((data) => data.password === data.confirmPassword, {
+      signupSchema.refine(data => data.password === data.confirmPassword, {
         message: "كلمات المرور غير متطابقة",
         path: ["confirmPassword"],
       }),
@@ -52,50 +54,46 @@ export function SignUpForm({ sn }: { sn: number }) {
       image: "",
       doc: "",
     },
-  });
+  })
 
-  const { mutateAsync: optimizeImage } =
-    api.optimizeImage.optimizeImage.useMutation();
-  const { mutateAsync: uploadFiles } = api.S3.uploadFiles.useMutation();
-  const { mutateAsync: createUser, isPending: isCreatingUser } =
-    api.auth.create.useMutation();
-  const { mutateAsync: updateUser, isPending: isUpdatingUser } =
-    api.user.updatePublic.useMutation();
+  const { mutateAsync: uploadFiles } = api.S3.uploadFiles.useMutation()
+  const { mutateAsync: createUser, isPending: isCreatingUser } = api.auth.create.useMutation()
+  const { mutateAsync: updateUser, isPending: isUpdatingUser } = api.user.updatePublic.useMutation()
 
   const convertToBase64 = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onloadend = () => {
-        const result = reader.result;
+        const result = reader.result
         if (typeof result === "string") {
-          resolve(result);
+          resolve(result)
         } else {
-          reject(new Error("Failed to read file as base64"));
+          reject(new Error("Failed to read file as base64"))
         }
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
 
   const processFile = async (
     file: File,
   ): Promise<{
-    name: string;
-    type: string;
-    size: number;
-    lastModified: number;
-    base64: string;
+    name: string
+    type: string
+    size: number
+    lastModified: number
+    base64: string
   }> => {
-    const base64 = await convertToBase64(file);
+    const base64 = await convertToBase64(file)
 
     // Only optimize images, leave PDFs as is
     if (file.type.startsWith("image/")) {
       try {
         const optimizedBase64 = await optimizeImage({
           base64,
-          quality: 70, // You can adjust this quality setting
-        });
+          quality: 70,
+        })
 
         return {
           name: file.name.replace(/\.[^.]+$/, ".webp"), // Convert to .webp for optimized images
@@ -103,9 +101,9 @@ export function SignUpForm({ sn }: { sn: number }) {
           size: optimizedBase64.length,
           lastModified: file.lastModified,
           base64: optimizedBase64,
-        };
+        }
       } catch (error) {
-        console.error("Image optimization failed:", error);
+        console.error("Image optimization failed:", error)
         // Fallback to original file if optimization fails
         return {
           name: file.name,
@@ -113,7 +111,7 @@ export function SignUpForm({ sn }: { sn: number }) {
           size: file.size,
           lastModified: file.lastModified,
           base64,
-        };
+        }
       }
     }
 
@@ -124,85 +122,85 @@ export function SignUpForm({ sn }: { sn: number }) {
       size: file.size,
       lastModified: file.lastModified,
       base64,
-    };
-  };
+    }
+  }
 
   const handleFileSelection = (files: File[], type: "image" | "doc") => {
-    setSelectedFiles((prev) => ({
+    setSelectedFiles(prev => ({
       ...prev,
       [type]: files,
-    }));
-  };
+    }))
+  }
 
   const uploadSelectedFiles = async (userId: string) => {
-    const filesToUpload: { type: "image" | "doc"; files: File[] }[] = [];
+    const filesToUpload: { type: "image" | "doc"; files: File[] }[] = []
 
     if (selectedFiles.image?.length) {
-      filesToUpload.push({ type: "image", files: selectedFiles.image });
+      filesToUpload.push({ type: "image", files: selectedFiles.image })
     }
     if (selectedFiles.doc?.length) {
-      filesToUpload.push({ type: "doc", files: selectedFiles.doc });
+      filesToUpload.push({ type: "doc", files: selectedFiles.doc })
     }
 
-    if (filesToUpload.length === 0) return {};
+    if (filesToUpload.length === 0) return {}
 
-    setIsUploading(true);
+    setIsUploading(true)
     try {
-      const uploadResults: Record<string, string> = {};
+      const uploadResults: Record<string, string> = {}
 
       for (const { type, files } of filesToUpload) {
-        const fileData = await Promise.all(files.map(processFile));
+        const fileData = await Promise.all(files.map(processFile))
 
         const urls = await uploadFiles({
           entityId: `user-${type}/${userId}`,
           fileData,
-        });
+        })
 
         if (urls && urls.length > 0 && urls[0]) {
-          uploadResults[type] = urls[0];
+          uploadResults[type] = urls[0]
         }
       }
 
-      return uploadResults;
+      return uploadResults
     } catch (error) {
-      console.error("File upload error:", error);
-      throw error;
+      console.error("File upload error:", error)
+      throw error
     } finally {
-      setIsUploading(false);
+      setIsUploading(false)
     }
-  };
+  }
 
   const onSubmit = async (data: SignupInput) => {
     try {
-      const newUserId = await createUser(data);
+      const newUserId = await createUser(data)
       if (!newUserId) {
-        throw new Error("حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى");
+        throw new Error("حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى")
       }
 
-      const uploadedUrls = await uploadSelectedFiles(newUserId);
+      const uploadedUrls = await uploadSelectedFiles(newUserId)
 
       await updateUser({
         sn,
         id: newUserId,
         image: uploadedUrls.image ?? "",
         doc: uploadedUrls.doc ?? "",
-      });
+      })
 
-      toast.success("تم تسجيل الحساب بنجاح 🎉 ، يمكنك تسجيل الدخول الآن");
-      router.replace("/signin");
+      toast.success("تم تسجيل الحساب بنجاح 🎉 ، يمكنك تسجيل الدخول الآن")
+      router.replace("/signin")
 
-      setSelectedFiles({});
+      setSelectedFiles({})
     } catch (error) {
       const errorMsg =
         error instanceof Error
           ? error.message
-          : "حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى";
+          : "حدث خطأ أثناء تسجيل الحساب، يرجى المحاولة مرة أخرى"
 
-      toast.error(errorMsg);
+      toast.error(errorMsg)
     }
-  };
+  }
 
-  const isLoading = isCreatingUser || isUpdatingUser || isUploading;
+  const isLoading = isCreatingUser || isUpdatingUser || isUploading
 
   return (
     <Form {...form}>
@@ -279,12 +277,8 @@ export function SignUpForm({ sn }: { sn: number }) {
                   id="dob"
                   type="date"
                   {...field}
-                  onChange={(e) => field.onChange(new Date(e.target.value))}
-                  value={
-                    field.value
-                      ? new Date(field.value).toISOString().split("T")[0]
-                      : ""
-                  }
+                  onChange={e => field.onChange(new Date(e.target.value))}
+                  value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
                   className="flex justify-end"
                 />
               </FormControl>
@@ -327,18 +321,14 @@ export function SignUpForm({ sn }: { sn: number }) {
                       className="absolute top-0 left-0 flex h-full cursor-pointer items-center px-2"
                       aria-label="Toggle password visibility"
                       variant="ghost"
-                      onClick={() => setShowPassword((prev) => !prev)}
+                      onClick={() => setShowPassword(prev => !prev)}
                     >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
                   <span className="text-xs text-slate-500 select-none">
-                    كلمة المرور يجب ان تكون على الاقل 8 احرف وتحتوي على حرف كبير
-                    وحرف صغير ورقم وحرف خاص مثل !@#$%^&*()
+                    كلمة المرور يجب ان تكون على الاقل 8 احرف وتحتوي على حرف كبير وحرف صغير ورقم وحرف
+                    خاص مثل !@#$%^&*()
                   </span>
                 </div>
               </FormControl>
@@ -367,7 +357,7 @@ export function SignUpForm({ sn }: { sn: number }) {
                       className="absolute top-0 left-0 flex h-full cursor-pointer items-center px-2"
                       aria-label="Toggle password visibility"
                       variant="ghost"
-                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                      onClick={() => setShowConfirmPassword(prev => !prev)}
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -377,8 +367,8 @@ export function SignUpForm({ sn }: { sn: number }) {
                     </Button>
                   </div>
                   <span className="text-xs text-slate-500 select-none">
-                    كلمة المرور يجب ان تكون على الاقل 8 احرف وتحتوي على حرف كبير
-                    وحرف صغير ورقم وحرف خاص مثل !@#$%^&*()
+                    كلمة المرور يجب ان تكون على الاقل 8 احرف وتحتوي على حرف كبير وحرف صغير ورقم وحرف
+                    خاص مثل !@#$%^&*()
                   </span>
                 </div>
               </FormControl>
@@ -395,9 +385,7 @@ export function SignUpForm({ sn }: { sn: number }) {
               <FormLabel>الصورة الشخصية</FormLabel>
               <FormControl>
                 <FileUpload
-                  onFilesSelected={(files) =>
-                    handleFileSelection(files, "image")
-                  }
+                  onFilesSelected={files => handleFileSelection(files, "image")}
                   accept={{ "image/*": [".jpeg", ".jpg", ".png", ".webp"] }}
                   disabled={isUploading}
                 />
@@ -415,7 +403,7 @@ export function SignUpForm({ sn }: { sn: number }) {
               <FormLabel>المستند الشخصي</FormLabel>
               <FormControl>
                 <FileUpload
-                  onFilesSelected={(files) => handleFileSelection(files, "doc")}
+                  onFilesSelected={files => handleFileSelection(files, "doc")}
                   accept={{ "application/pdf": [".pdf"] }}
                   disabled={isUploading}
                 />
@@ -431,12 +419,10 @@ export function SignUpForm({ sn }: { sn: number }) {
           className="w-full"
           disabled={isLoading || isUploading}
         >
-          {(isLoading || isUploading) && (
-            <Loader2 className="mr-2 animate-spin" />
-          )}
+          {(isLoading || isUploading) && <Loader2 className="mr-2 animate-spin" />}
           تسجيل
         </Button>
       </form>
     </Form>
-  );
+  )
 }

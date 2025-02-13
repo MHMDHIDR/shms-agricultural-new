@@ -1,7 +1,6 @@
-import type { Column } from "@tanstack/react-table";
-import { CheckIcon, type LucideIcon, PlusCircleIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { CheckIcon, PlusCircleIcon } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Command,
   CommandEmpty,
@@ -10,85 +9,73 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+} from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Separator } from "@/components/ui/separator"
+import { cn } from "@/lib/utils"
+import type { Column } from "@tanstack/react-table"
+import type { LucideIcon } from "lucide-react"
 
 export type FilterOption = {
-  label: string;
-  value: string;
-  icon?: LucideIcon;
-  count?: number;
-};
+  label: string
+  value: string
+  icon?: LucideIcon
+  count?: number
+}
 
 export type DataTableFilterField = {
-  id: string;
-  label: string;
-  placeholder?: string;
-  options?: FilterOption[];
-};
+  id: string
+  label: string
+  placeholder?: string
+  options?: FilterOption[]
+}
 
 type DataTableFacetedFilterProps<TData, TValue> = {
-  column?: Column<TData, TValue>;
-  title?: string;
-  options: FilterOption[];
-};
+  column?: Column<TData, TValue>
+  title?: string
+  options: FilterOption[]
+}
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
-  const facetedFilter = column?.getFilterValue() as string[];
-  const selectedValues = new Set(facetedFilter || []);
+  const facetedFilter = column?.getFilterValue() as string[]
+  const selectedValues = new Set(facetedFilter || [])
 
   const handleSelect = (value: string) => {
     if (selectedValues.has(value)) {
-      selectedValues.delete(value);
+      selectedValues.delete(value)
     } else {
-      selectedValues.add(value);
+      selectedValues.add(value)
     }
 
-    const filterValues = Array.from(selectedValues);
-    column?.setFilterValue(filterValues.length ? filterValues : undefined);
-  };
+    const filterValues = Array.from(selectedValues)
+    column?.setFilterValue(filterValues.length ? filterValues : undefined)
+  }
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 cursor-pointer border-dashed"
-        >
+        <Button variant="outline" size="sm" className="h-8 cursor-pointer border-dashed">
           <PlusCircleIcon className="mr-2 h-4 w-4" />
           {title}
           {selectedValues?.size > 0 && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
-              <Badge
-                variant="secondary"
-                className="rounded-sm px-1 font-normal lg:hidden"
-              >
+              <Badge variant="secondary" className="rounded-sm px-1 font-normal lg:hidden">
                 {selectedValues.size}
               </Badge>
               <div className="hidden space-x-1 lg:flex">
                 {selectedValues.size > 2 ? (
-                  <Badge
-                    variant="secondary"
-                    className="rounded-sm px-1 font-normal"
-                  >
+                  <Badge variant="secondary" className="rounded-sm px-1 font-normal">
                     {selectedValues.size} فلاتر محددة
                   </Badge>
                 ) : (
                   options
-                    .filter((option) => selectedValues.has(option.value))
-                    .map((option) => (
+                    .filter(option => selectedValues.has(option.value))
+                    .map(option => (
                       <Badge
                         variant="secondary"
                         key={option.value}
@@ -109,8 +96,8 @@ export function DataTableFacetedFilter<TData, TValue>({
           <CommandList>
             <CommandEmpty>لا يوجد نتائج.</CommandEmpty>
             <CommandGroup>
-              {options.map((option) => {
-                const isSelected = selectedValues.has(option.value);
+              {options.map(option => {
+                const isSelected = selectedValues.has(option.value)
                 return (
                   <CommandItem
                     key={option.value}
@@ -127,9 +114,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     >
                       <CheckIcon className={cn("h-4 w-4")} />
                     </div>
-                    {option.icon && (
-                      <option.icon className="text-muted-foreground mr-2 h-4 w-4" />
-                    )}
+                    {option.icon && <option.icon className="text-muted-foreground mr-2 h-4 w-4" />}
                     <span>{option.label}</span>
                     {option.count && (
                       <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
@@ -137,7 +122,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                       </span>
                     )}
                   </CommandItem>
-                );
+                )
               })}
             </CommandGroup>
             {selectedValues.size > 0 && (
@@ -157,5 +142,5 @@ export function DataTableFacetedFilter<TData, TValue>({
         </Command>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

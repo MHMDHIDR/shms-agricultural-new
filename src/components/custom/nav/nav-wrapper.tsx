@@ -1,23 +1,23 @@
-"use client";
+"use client"
 
-import { ShmsIcon } from "@/components/custom/icons";
-import clsx from "clsx";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import clsx from "clsx"
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import { ShmsIcon } from "@/components/custom/icons"
 
 export function NavWrapper({ children }: { children: React.ReactNode }) {
-  const [scrolled, setScrolled] = useState(false);
-  const SCROLL_THRESHOLD = 130;
+  const [scrolled, setScrolled] = useState(false)
+  const SCROLL_THRESHOLD = 130
 
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > SCROLL_THRESHOLD;
-      setScrolled(isScrolled);
-    };
+      const isScrolled = window.scrollY > SCROLL_THRESHOLD
+      setScrolled(isScrolled)
+    }
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   return (
     <nav
@@ -42,5 +42,5 @@ export function NavWrapper({ children }: { children: React.ReactNode }) {
         {children}
       </div>
     </nav>
-  );
+  )
 }

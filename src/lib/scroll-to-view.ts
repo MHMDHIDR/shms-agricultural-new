@@ -5,9 +5,9 @@
  */
 export const scrollToView = (scrollY = 500) =>
   setTimeout(() => {
-    const heroElement = document.querySelector("#hero")!;
+    const heroElement = document.querySelector("#hero")!
     window.scrollTo({
       top: scrollY ?? (heroElement as HTMLElement).offsetHeight,
       behavior: "smooth",
-    });
-  }, 100);
+    })
+  }, 100)

@@ -1,5 +1,8 @@
-"use client";
+"use client"
 
+import { ChevronsUpDown, Plus } from "lucide-react"
+import Image from "next/image"
+import * as React from "react"
 import {
   DropdownLinkItem,
   DropdownMenu,
@@ -7,29 +10,26 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { APP_TITLE } from "@/lib/constants";
-import { ChevronsUpDown, Plus } from "lucide-react";
-import Image from "next/image";
-import * as React from "react";
+} from "@/components/ui/sidebar"
+import { APP_TITLE } from "@/lib/constants"
 
 export function ProjectsSwitcher({
   projects,
 }: {
   projects: {
-    name: string;
-    logo: React.ElementType;
-    plan: string;
-    id: string;
-  }[];
+    name: string
+    logo: React.ElementType
+    plan: string
+    id: string
+  }[]
 }) {
-  const { isMobile, open } = useSidebar();
+  const { isMobile, open } = useSidebar()
 
   return (
     <SidebarMenu>
@@ -47,12 +47,7 @@ export function ProjectsSwitcher({
                     <ChevronsUpDown size={14} className="mr-4" />
                   </>
                 ) : (
-                  <Image
-                    alt={APP_TITLE}
-                    src="/logo.svg"
-                    width={36}
-                    height={36}
-                  />
+                  <Image alt={APP_TITLE} src="/logo.svg" width={36} height={36} />
                 )}
               </strong>
             </SidebarMenuButton>
@@ -63,7 +58,7 @@ export function ProjectsSwitcher({
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
-            {projects.map((project) => (
+            {projects.map(project => (
               <DropdownLinkItem
                 key={project.name}
                 className="gap-3 p-2 text-right"
@@ -91,5 +86,5 @@ export function ProjectsSwitcher({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  );
+  )
 }

@@ -1,4 +1,5 @@
-import { api } from "@/trpc/server";
+import { FacebookIcon, InstagramIcon, TwitterIcon, YoutubeIcon } from "lucide-react"
+import Link from "next/link"
 import {
   Table,
   TableBody,
@@ -6,36 +7,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import {
-  FacebookIcon,
-  InstagramIcon,
-  TwitterIcon,
-  YoutubeIcon,
-} from "lucide-react";
-import Link from "next/link";
-import SocialLinksForm from "./social-links-form";
-import DeleteSocialLink from "./delete-social-link";
+} from "@/components/ui/table"
+import { api } from "@/trpc/server"
+import DeleteSocialLink from "./delete-social-link"
+import SocialLinksForm from "./social-links-form"
 
 export default async function SocialLinksPage() {
-  const socialLinks = await api.socialLinks.getSocialLinks();
+  const socialLinks = await api.socialLinks.getSocialLinks()
 
   return (
     <section className="container mx-auto">
-      <h1 className="my-10 text-center text-xl font-bold select-none">
-        روابط التواصل الاجتماعي
-      </h1>
+      <h1 className="my-10 text-center text-xl font-bold select-none">روابط التواصل الاجتماعي</h1>
       <SocialLinksForm />
 
       <Table className="rtl mt-8 table min-h-full min-w-full divide-y divide-gray-200 text-center">
         <TableHeader>
           <TableRow>
-            <TableHead className="text-center font-bold select-none">
-              نوع المنصة
-            </TableHead>
-            <TableHead className="text-center font-bold select-none">
-              الرابط
-            </TableHead>
+            <TableHead className="text-center font-bold select-none">نوع المنصة</TableHead>
+            <TableHead className="text-center font-bold select-none">الرابط</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -46,7 +35,7 @@ export default async function SocialLinksPage() {
               </TableCell>
             </TableRow>
           ) : (
-            socialLinks.map((link) => (
+            socialLinks.map(link => (
               <TableRow key={link.id}>
                 <TableCell className="p-2 text-center align-middle">
                   <div className="flex items-center justify-center gap-x-2 font-semibold capitalize">
@@ -85,5 +74,5 @@ export default async function SocialLinksPage() {
         </TableBody>
       </Table>
     </section>
-  );
+  )
 }

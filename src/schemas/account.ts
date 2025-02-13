@@ -1,14 +1,14 @@
-import { isValidPhoneNumber } from "libphonenumber-js";
-import { z } from "zod";
+import { isValidPhoneNumber } from "libphonenumber-js"
+import { z } from "zod"
 
 export const accountFormSchema = z.object({
   name: z.string().min(2, "الاسم يجب أن يكون أكثر من حرفين"),
   email: z.string().email("البريد الإلكتروني غير صالح"),
   phone: z.string().refine(
-    (value) => {
+    value => {
       // For phone numbers, add + if not present before validation
-      const phoneNumberToValidate = value.startsWith("+") ? value : `+${value}`;
-      return isValidPhoneNumber(phoneNumberToValidate);
+      const phoneNumberToValidate = value.startsWith("+") ? value : `+${value}`
+      return isValidPhoneNumber(phoneNumberToValidate)
     },
     {
       message: "رقم الهاتف غير صالح",
@@ -19,10 +19,13 @@ export const accountFormSchema = z.object({
     required_error: "تاريخ الميلاد مطلوب",
     invalid_type_error: "تاريخ الميلاد غير صالح",
   }),
+  address: z
+    .string({ required_error: "يجب إدخال العنوان لنستطيع التواصل معك" })
+    .min(2, "العنوان يجب أن يكون أكثر من حرفين"),
   theme: z.enum(["light", "dark"], {
     required_error: "يجب اختيار وضع السمة",
   }),
   image: z.string().url("رابط الصورة غير صالح").optional(),
-});
+})
 
-export type AccountFormValues = z.infer<typeof accountFormSchema>;
+export type AccountFormValues = z.infer<typeof accountFormSchema>

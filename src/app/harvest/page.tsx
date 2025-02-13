@@ -1,24 +1,22 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import Link from "next/link";
-import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
-import { env } from "@/env";
-import { api } from "@/trpc/server";
-import { services } from "@/schemas/contact";
-import type { Metadata } from "next";
+import Image from "next/image"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { env } from "@/env"
+import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants"
+import { getBlurPlaceholder } from "@/lib/optimize-image"
+import { services } from "@/schemas/contact"
+import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: `الحصـــــــــاد | ${APP_TITLE}`,
   description: APP_DESCRIPTION,
-};
+}
 
 export default async function Harvest() {
-  const MAIN_IMAGE = `${env.NEXT_PUBLIC_APP_URL}/our-services/harvest.webp`;
-  const blurImage = await api.optimizeImage.getBlurPlaceholder({
-    imageSrc: MAIN_IMAGE,
-  });
+  const MAIN_IMAGE = `${env.NEXT_PUBLIC_APP_URL}/our-services/harvest.webp`
+  const blurImage = await getBlurPlaceholder({ imageSrc: MAIN_IMAGE })
 
-  const serviceIndex = 2;
+  const serviceIndex = 2
 
   return (
     <main className="flex min-h-screen flex-col items-center">
@@ -44,27 +42,21 @@ export default async function Harvest() {
               <div className="flex flex-col items-center justify-center gap-y-7">
                 <div className="flex flex-col gap-6 md:flex-row md:gap-8">
                   <p className="px-5 text-right text-lg leading-10 text-white md:w-1/2 md:px-10 md:leading-12">
-                    في المرحلة الأخيرة من العملية الزراعية، يتم تنفيذ الحصاد
-                    بمشاركة فريق عمل يتراوح عدده بين 10 إلى 50 فردًا، وذلك وفقًا
-                    لمساحة الأرض المزروعة. يُقسم الفريق إلى مجموعات متخصصة في
-                    الحصاد، النقل، والتعبئة، حيث تُستخدم الأدوات اليدوية كجزء
-                    أساسي من العملية، إلى جانب الاعتماد على الآليات الحديثة في
-                    عمليات التعبئة والحصاد لتحسين الكفاءة وتقليل الجهد اليدوي.
+                    في المرحلة الأخيرة من العملية الزراعية، يتم تنفيذ الحصاد بمشاركة فريق عمل يتراوح
+                    عدده بين 10 إلى 50 فردًا، وذلك وفقًا لمساحة الأرض المزروعة. يُقسم الفريق إلى
+                    مجموعات متخصصة في الحصاد، النقل، والتعبئة، حيث تُستخدم الأدوات اليدوية كجزء
+                    أساسي من العملية، إلى جانب الاعتماد على الآليات الحديثة في عمليات التعبئة
+                    والحصاد لتحسين الكفاءة وتقليل الجهد اليدوي.
                   </p>
 
                   <p className="px-5 text-right text-lg leading-10 text-white md:w-1/2 md:px-10 md:leading-12">
-                    على الرغم من اتباع أساليب متطورة، يبقى هناك معدل فاقد يتراوح
-                    بين 5% إلى 8% نتيجة التأخير في الحصاد أو النقل وسوء التخزين.
-                    لا يمكن تحديد الإنتاج بدقة مطلقة، إلا أنه يمكن تحسين
-                    التقديرات باستخدام تقنيات حديثة مثل جمع عينات عشوائية من
-                    المزرعة أو مراجعة بيانات الإنتاج السابقة، مما يحقق دقة
-                    تقديرية تتراوح بين 86% و90%.
+                    على الرغم من اتباع أساليب متطورة، يبقى هناك معدل فاقد يتراوح بين 5% إلى 8% نتيجة
+                    التأخير في الحصاد أو النقل وسوء التخزين. لا يمكن تحديد الإنتاج بدقة مطلقة، إلا
+                    أنه يمكن تحسين التقديرات باستخدام تقنيات حديثة مثل جمع عينات عشوائية من المزرعة
+                    أو مراجعة بيانات الإنتاج السابقة، مما يحقق دقة تقديرية تتراوح بين 86% و90%.
                   </p>
                 </div>
-                <Link
-                  className="my-5 text-xl"
-                  href={`/contact?service=${services[serviceIndex]}`}
-                >
+                <Link className="my-5 text-xl" href={`/contact?service=${services[serviceIndex]}`}>
                   <Button variant={"pressable"} className="px-12">
                     طلب الخــدمة
                   </Button>
@@ -75,5 +67,5 @@ export default async function Harvest() {
         </div>
       </div>
     </main>
-  );
+  )
 }

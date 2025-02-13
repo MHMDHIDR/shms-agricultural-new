@@ -1,16 +1,16 @@
-import React, { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { File, X } from "lucide-react";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { File, X } from "lucide-react"
+import Image from "next/image"
+import React, { useCallback, useState } from "react"
+import { useDropzone } from "react-dropzone"
+import { cn } from "@/lib/utils"
 
 type FileUploadProps = {
-  onFilesSelected: (files: Array<File>) => void;
-  disabled?: boolean;
-  accept?: Record<string, string[]> | string;
-  maxFiles?: number;
-  className?: string;
-};
+  onFilesSelected: (files: Array<File>) => void
+  disabled?: boolean
+  accept?: Record<string, string[]> | string
+  maxFiles?: number
+  className?: string
+}
 
 export function FileUpload({
   onFilesSelected,
@@ -19,39 +19,39 @@ export function FileUpload({
   maxFiles,
   className,
 }: FileUploadProps) {
-  const [preview, setPreview] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null)
+  const [fileName, setFileName] = useState<string | null>(null)
 
   const clearPreview = () => {
     if (preview) {
-      URL.revokeObjectURL(preview);
+      URL.revokeObjectURL(preview)
     }
-    setPreview(null);
-    setFileName(null);
-    onFilesSelected([]);
-  };
+    setPreview(null)
+    setFileName(null)
+    onFilesSelected([])
+  }
 
   const onDrop = useCallback(
     (acceptedFiles: Array<File>) => {
-      const file = acceptedFiles[0];
-      if (!file) return;
+      const file = acceptedFiles[0]
+      if (!file) return
 
       // Clear previous preview
       if (preview) {
-        URL.revokeObjectURL(preview);
+        URL.revokeObjectURL(preview)
       }
 
       // If it's an image, create preview URL
       if (file.type.startsWith("image/")) {
-        const previewUrl = URL.createObjectURL(file);
-        setPreview(previewUrl);
+        const previewUrl = URL.createObjectURL(file)
+        setPreview(previewUrl)
       }
 
-      setFileName(file.name);
-      onFilesSelected(acceptedFiles);
+      setFileName(file.name)
+      onFilesSelected(acceptedFiles)
     },
     [onFilesSelected, preview],
-  );
+  )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -61,7 +61,7 @@ export function FileUpload({
         : (accept ?? { "image/*": [".jpeg", ".jpg", ".png", ".webp"] }),
     maxFiles: maxFiles ?? 1,
     disabled,
-  });
+  })
 
   return (
     <div className={cn("space-y-4", className)}>
@@ -70,11 +70,7 @@ export function FileUpload({
         className={`relative rounded-lg border-2 border-dashed p-4 text-center ${isDragActive ? "border-primary bg-primary/10" : "border-gray-300"} ${disabled ? "cursor-not-allowed opacity-50" : "hover:border-primary cursor-pointer"}`}
       >
         <input id="fileUploadInput" {...getInputProps()} multiple={false} />
-        {isDragActive ? (
-          <p>اسحب الملف هنا...</p>
-        ) : (
-          <p>اسحب وأفلت الملف هنا، أو انقر للاختيار</p>
-        )}
+        {isDragActive ? <p>اسحب الملف هنا...</p> : <p>اسحب وأفلت الملف هنا، أو انقر للاختيار</p>}
         <small className="text-primary/75 text-xs">
           {accept ? (
             <span className="flex items-center justify-center gap-1">
@@ -109,9 +105,9 @@ export function FileUpload({
 
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              clearPreview();
+            onClick={e => {
+              e.stopPropagation()
+              clearPreview()
             }}
             className="absolute top-2 right-2 cursor-pointer rounded-full bg-red-400 p-1 hover:bg-red-600"
           >
@@ -120,5 +116,5 @@ export function FileUpload({
         </div>
       )}
     </div>
-  );
+  )
 }

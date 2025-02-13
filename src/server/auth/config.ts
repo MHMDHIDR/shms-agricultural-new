@@ -1,35 +1,32 @@
-import { signInSchema } from "@/schemas/signin";
-import { db } from "@/server/db";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import type { User as UserTable, UserTheme } from "@prisma/client";
-import { compare } from "bcryptjs";
-import type { NextAuthConfig, User } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import { cookies } from "next/headers";
-import type { Session } from "next-auth";
-import type { JWT } from "next-auth/jwt";
-import type { AdapterUser } from "@auth/core/adapters";
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import { compare } from "bcryptjs"
+import Credentials from "next-auth/providers/credentials"
+import { cookies } from "next/headers"
+import { signInSchema } from "@/schemas/signin"
+import { db } from "@/server/db"
+import type { User as UserTable, UserTheme } from "@prisma/client"
+import type { NextAuthConfig, User } from "next-auth"
 
 /* eslint-disable no-unused-vars */
 declare module "next-auth" {
   interface User {
-    role: UserTable["role"];
-    theme: UserTheme;
+    role: UserTable["role"]
+    theme: UserTheme
   }
 }
 
 declare module "@auth/core/jwt" {
   interface JWT {
-    id: string;
-    role: UserTable["role"];
-    theme: UserTheme;
+    id: string
+    role: UserTable["role"]
+    theme: UserTheme
   }
 }
 
 declare module "@auth/core/adapters" {
   interface AdapterUser {
-    role: UserTable["role"];
-    theme: UserTheme;
+    role: UserTable["role"]
+    theme: UserTheme
   }
 }
 
@@ -44,11 +41,10 @@ export const authConfig = {
       },
       async authorize(credentials): Promise<User | null> {
         try {
-          const { emailOrPhone, password } =
-            await signInSchema.parseAsync(credentials);
+          const { emailOrPhone, password } = await signInSchema.parseAsync(credentials)
 
           if (!emailOrPhone || !password) {
-            return null;
+            return null
           }
 
           const user = await db.user.findFirst({
@@ -68,24 +64,24 @@ export const authConfig = {
               role: true,
               accountStatus: true,
             },
-          });
+          })
 
           if (!user) {
-            return null;
+            return null
           }
 
           if (user.accountStatus !== "active") {
-            throw new Error("Account is not active");
+            throw new Error("Account is not active")
           }
 
-          const isValidPassword = await compare(password, user.password);
+          const isValidPassword = await compare(password, user.password)
 
           if (!isValidPassword) {
-            return null;
+            return null
           }
 
-          const cookieStore = await cookies();
-          cookieStore.set("theme", user.theme);
+          const cookieStore = await cookies()
+          cookieStore.set("theme", user.theme)
 
           return {
             id: user.id,
@@ -94,45 +90,26 @@ export const authConfig = {
             image: user.image,
             theme: user.theme,
             role: user.role,
-          };
+          }
         } catch (error) {
-          console.error("Auth error:", error);
-          return null;
+          console.error("Auth error:", error)
+          return null
         }
       },
     }),
   ],
   pages: { signIn: "/signin" },
   callbacks: {
-    async jwt({
-      token,
-      user,
-      trigger,
-      session,
-    }: {
-      token: JWT;
-      user: User | AdapterUser;
-      trigger?: "signIn" | "update" | "signUp";
-      session?: Session["user"];
-    }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
-        token.theme = user.theme;
-        token.isNewSession = true;
+        token.id = user.id
+        token.role = user.role
+        token.theme = user.theme
       }
-
-      // Handle updates to the session via update() function
-      if (trigger === "update" && session) {
-        if (session.name) token.name = session.name;
-        if (session.image) token.picture = session.image;
-      }
-
-      return token;
+      return token
     },
     async session({ session, token }) {
-      // Only create a session in the database during initial sign-in
-      if (token.isNewSession && session?.user?.email && token.jti) {
+      if (session?.user?.email && token.jti) {
         await db.session.upsert({
           where: { sessionToken: token.jti },
           create: {
@@ -141,10 +118,7 @@ export const authConfig = {
             expires: new Date(token.exp! * 1000),
           },
           update: { expires: new Date(token.exp! * 1000) },
-        });
-
-        // Remove the flag after creating the session
-        token.isNewSession = undefined;
+        })
       }
 
       return {
@@ -155,7 +129,7 @@ export const authConfig = {
           role: token.role as UserTable["role"],
           theme: token.theme as UserTheme,
         },
-      };
+      }
     },
   },
   session: {
@@ -164,11 +138,11 @@ export const authConfig = {
   events: {
     async signOut(message) {
       if ("token" in message && message.token) {
-        const token = message.token;
+        const token = message.token
         if (token.jti) {
-          await db.session.delete({ where: { sessionToken: token.jti } });
+          await db.session.delete({ where: { sessionToken: token.jti } })
         }
       }
     },
   },
-} satisfies NextAuthConfig;
+} satisfies NextAuthConfig

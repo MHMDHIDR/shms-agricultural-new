@@ -1,4 +1,3 @@
-import { env } from "@/env";
 import {
   Body,
   Button,
@@ -10,19 +9,21 @@ import {
   Preview,
   Section,
   Text,
-} from "@react-email/components";
-import * as React from "react";
-import { ADMIN_EMAIL, APP_TITLE } from "@/lib/constants";
-import { Resend, type CreateEmailResponse } from "resend";
-import { getRemainTimeString } from "../get-remaining-time-string";
+} from "@react-email/components"
+import * as React from "react"
+import { Resend } from "resend"
+import { env } from "@/env"
+import { ADMIN_EMAIL, APP_TITLE } from "@/lib/constants"
+import { getRemainTimeString } from "../get-remaining-time-string"
+import type { CreateEmailResponse } from "resend"
 
-const baseUrl = env.NEXT_PUBLIC_APP_URL;
+const baseUrl = env.NEXT_PUBLIC_APP_URL
 
 type ResetPasswordEmailProps = {
-  userFirstname: string;
-  resetPasswordLink: string;
-  expiresIn: sendPasswordResetEmailProps["token"]["expiresIn"];
-};
+  userFirstname: string
+  resetPasswordLink: string
+  expiresIn: sendPasswordResetEmailProps["token"]["expiresIn"]
+}
 
 export const ResetPasswordEmail = ({
   userFirstname,
@@ -36,12 +37,7 @@ export const ResetPasswordEmail = ({
       <Body style={main}>
         <Container style={container}>
           <div className="mx-auto w-full">
-            <Img
-              src={`${baseUrl}/logo-slogan.svg`}
-              width="40"
-              height="33"
-              alt={APP_TITLE}
-            />
+            <Img src={`${baseUrl}/logo-slogan.svg`} width="40" height="33" alt={APP_TITLE} />
           </div>
           <Section dir="rtl" className="rtl">
             <Text style={text}>مرحبا {userFirstname}،</Text>
@@ -51,9 +47,7 @@ export const ResetPasswordEmail = ({
             <Button style={button} href={resetPasswordLink}>
               إعادة تعيين كلمة المرور
             </Button>
-            <Text style={text}>
-              إذا لم تكن أنت، فقط تجاهل واحذف هذه الرسالة.
-            </Text>
+            <Text style={text}>إذا لم تكن أنت، فقط تجاهل واحذف هذه الرسالة.</Text>
             <Text style={text}>
               للحفاظ على أمان حسابك، يرجى عدم إعادة توجيه هذا البريد الإلكتروني
               <br />
@@ -74,19 +68,19 @@ export const ResetPasswordEmail = ({
         </Container>
       </Body>
     </Html>
-  );
-};
+  )
+}
 
 const main = {
   backgroundColor: "#f6f9fc",
   padding: "10px 0",
-};
+}
 
 const container = {
   backgroundColor: "#ffffff",
   border: "1px solid #f0f0f0",
   padding: "45px",
-};
+}
 
 const text = {
   fontSize: "16px",
@@ -95,7 +89,7 @@ const text = {
   fontWeight: "300",
   color: "#404040",
   lineHeight: "26px",
-};
+}
 
 const button = {
   backgroundColor: "#007ee6",
@@ -108,30 +102,30 @@ const button = {
   display: "block",
   width: "210px",
   padding: "14px 7px",
-};
+}
 
 const anchor = {
   textDecoration: "underline",
-};
+}
 
-const RESEND = new Resend(env.RESEND_API_KEY);
-const DOMAIN = env.NEXT_PUBLIC_APP_URL;
+const RESEND = new Resend(env.RESEND_API_KEY)
+const DOMAIN = env.NEXT_PUBLIC_APP_URL
 
 type sendPasswordResetEmailProps = {
-  username: string;
-  email: string;
+  username: string
+  email: string
   token: {
-    token: string;
-    expiresIn: number;
-  };
-};
+    token: string
+    expiresIn: number
+  }
+}
 
 export const sendPasswordResetEmail = async ({
   username,
   email,
   token,
 }: sendPasswordResetEmailProps): Promise<CreateEmailResponse> => {
-  const resetLink = `${DOMAIN}/new-password/${token.token}`;
+  const resetLink = `${DOMAIN}/new-password/${token.token}`
 
   const emailResponse = await RESEND.emails.send({
     from: `${APP_TITLE} <${ADMIN_EMAIL}>`,
@@ -142,7 +136,7 @@ export const sendPasswordResetEmail = async ({
       resetPasswordLink: resetLink,
       expiresIn: token.expiresIn,
     }),
-  });
+  })
 
-  return emailResponse;
-};
+  return emailResponse
+}

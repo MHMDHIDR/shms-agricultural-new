@@ -1,4 +1,4 @@
-import type { User } from "@prisma/client";
+import type { User } from "@prisma/client"
 
 /**
  * This function takes a username and returns a fallback username
@@ -9,6 +9,6 @@ import type { User } from "@prisma/client";
 export function fallbackUsername(username: User["name"]) {
   return username
     .split(" ")
-    .map((name) => name[0])
-    .join("");
+    .map(name => name[0])
+    .join("")
 }

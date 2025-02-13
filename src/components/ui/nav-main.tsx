@@ -1,11 +1,10 @@
-"use client";
+"use client"
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import clsx from "clsx"
+import { ChevronRight } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import {
   SidebarGroup,
   SidebarMenu,
@@ -14,32 +13,30 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import clsx from "clsx";
+} from "@/components/ui/sidebar"
+import type { LucideIcon } from "lucide-react"
 
 export function NavMain({
   items,
 }: {
   items: {
-    title: string;
-    url: string;
-    icon?: LucideIcon;
-    isActive?: boolean;
+    title: string
+    url: string
+    icon?: LucideIcon
+    isActive?: boolean
     items?: {
-      title: string;
-      url: string;
-      icon?: LucideIcon;
-    }[];
-  }[];
+      title: string
+      url: string
+      icon?: LucideIcon
+    }[]
+  }[]
 }) {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {items.map((item) => (
+        {items.map(item => (
           <Collapsible
             key={item.title}
             defaultOpen={item.isActive}
@@ -48,10 +45,9 @@ export function NavMain({
           >
             <SidebarMenuItem>
               <CollapsibleTrigger
-                className={clsx(
-                  "cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800",
-                  { "bg-slate-200 dark:bg-slate-800": item.url === pathname },
-                )}
+                className={clsx("cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800", {
+                  "bg-slate-200 dark:bg-slate-800": item.url === pathname,
+                })}
                 asChild
               >
                 <SidebarMenuLink tooltip={item.title} href={item.url}>
@@ -65,14 +61,13 @@ export function NavMain({
               {item.items && (
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.items?.map((subItem) => (
+                    {item.items?.map(subItem => (
                       <SidebarMenuSubItem
                         key={subItem.title}
                         className={clsx(
                           "rounded-md hover:bg-slate-200 dark:hover:dark:bg-slate-800",
                           {
-                            "bg-slate-200 dark:bg-slate-800":
-                              subItem.url === pathname,
+                            "bg-slate-200 dark:bg-slate-800": subItem.url === pathname,
                           },
                         )}
                       >
@@ -92,5 +87,5 @@ export function NavMain({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  );
+  )
 }

@@ -1,16 +1,10 @@
-"use client";
+"use client"
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "next/navigation"
 
-export default function FooterWrapper({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const pathname = usePathname();
-  const NotToRenderPaths = ["/admin"];
+export default function FooterWrapper({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const NotToRenderPaths = ["/admin"]
 
-  return NotToRenderPaths.some((path) => pathname.includes(path))
-    ? null
-    : children;
+  return NotToRenderPaths.some(path => pathname.includes(path)) ? null : children
 }

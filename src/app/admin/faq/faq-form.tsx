@@ -1,47 +1,46 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { api } from "@/trpc/react";
-import { Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { useToast } from "@/hooks/use-toast"
+import { api } from "@/trpc/react"
 
 export default function FaqForm() {
-  const toast = useToast();
-  const router = useRouter();
-  const utils = api.useUtils();
+  const toast = useToast()
+  const router = useRouter()
+  const utils = api.useUtils()
 
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const MIN_LENGTH = 10;
+  const [question, setQuestion] = useState("")
+  const [answer, setAnswer] = useState("")
+  const MIN_LENGTH = 10
 
-  const { mutate: createFaq, isPending: isCreating } =
-    api.faq.create.useMutation({
-      onSuccess: async () => {
-        toast.success("تم إضافة السؤال بنجاح");
-        setQuestion("");
-        setAnswer("");
-        await utils.faq.getAll.invalidate();
-        router.refresh();
-      },
-      onError: (error) => {
-        toast.error(error.message || "حدث خطأ ما");
-      },
-    });
+  const { mutate: createFaq, isPending: isCreating } = api.faq.create.useMutation({
+    onSuccess: async () => {
+      toast.success("تم إضافة السؤال بنجاح")
+      setQuestion("")
+      setAnswer("")
+      await utils.faq.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ ما")
+    },
+  })
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!question.trim() || !answer.trim()) {
-      toast.error("الرجاء ملء جميع الحقول المطلوبة");
-      return;
+      toast.error("الرجاء ملء جميع الحقول المطلوبة")
+      return
     }
 
-    createFaq({ question: question.trim(), answer: answer.trim() });
-  };
+    createFaq({ question: question.trim(), answer: answer.trim() })
+  }
 
   return (
     <form dir="rtl" onSubmit={handleSubmit} className="mb-10">
@@ -58,7 +57,7 @@ export default function FaqForm() {
                 type="text"
                 className="w-full rounded border border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none dark:bg-gray-800 dark:text-gray-300"
                 value={question}
-                onChange={(e) => setQuestion(e.target.value)}
+                onChange={e => setQuestion(e.target.value)}
                 placeholder="أدخل السؤال"
                 required
               />
@@ -76,7 +75,7 @@ export default function FaqForm() {
                 className="max-h-96 min-h-48 w-full rounded border border-gray-200 bg-gray-200 px-4 py-2 leading-loose text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none dark:bg-gray-800 dark:text-gray-300"
                 rows={4}
                 value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
+                onChange={e => setAnswer(e.target.value)}
                 placeholder="أدخل الإجابة"
                 required
               />
@@ -109,5 +108,5 @@ export default function FaqForm() {
         </div>
       </div>
     </form>
-  );
+  )
 }

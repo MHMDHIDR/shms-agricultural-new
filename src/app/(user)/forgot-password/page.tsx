@@ -1,31 +1,29 @@
-import { redirect } from "next/navigation";
-import { auth } from "@/server/auth";
-import { SignInForm } from "./forgot-password-form";
-import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
-import Divider from "@/components/custom/divider";
-import Link from "next/link";
-import type { Metadata } from "next";
+import Link from "next/link"
+import { redirect } from "next/navigation"
+import Divider from "@/components/custom/divider"
+import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants"
+import { auth } from "@/server/auth"
+import { SignInForm } from "./forgot-password-form"
+import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: `إستعادة كلمة المرور | ${APP_TITLE}`,
   description: APP_DESCRIPTION,
-};
+}
 
 export default async function ForgotPasswordPage() {
-  const session = await auth();
-  const user = session?.user;
+  const session = await auth()
+  const user = session?.user
 
   if (user?.role === "admin") {
-    redirect("/admin");
+    redirect("/admin")
   } else if (user?.role === "user") {
-    redirect("/dashboard");
+    redirect("/dashboard")
   }
 
   return (
     <div className="container mx-auto max-w-md px-2.5 py-20">
-      <h1 className="mb-14 text-center text-2xl font-bold select-none">
-        إستعادة كلمة المرور
-      </h1>
+      <h1 className="mb-14 text-center text-2xl font-bold select-none">إستعادة كلمة المرور</h1>
       <SignInForm />
       <Divider className="my-10" />
 
@@ -39,5 +37,5 @@ export default async function ForgotPasswordPage() {
         </Link>
       </div>
     </div>
-  );
+  )
 }

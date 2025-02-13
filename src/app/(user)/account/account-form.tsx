@@ -1,73 +1,79 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { useTheme } from "next-themes";
-import Image from "next/image";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
+import clsx from "clsx"
+import { Loader2 } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { useTheme } from "next-themes"
+import Image from "next/image"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { FileUpload } from "@/components/custom/file-upload"
+import SelectCountry from "@/components/custom/select-country"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { PhoneInput } from "@/components/ui/phone-input";
-import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/hooks/use-toast";
-import { FileUpload } from "@/components/custom/file-upload";
-import { api } from "@/trpc/react";
-import { accountFormSchema, type AccountFormValues } from "@/schemas/account";
-import SelectCountry from "@/components/custom/select-country";
-import { fallbackUsername } from "@/lib/fallback-username";
-import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
-import type { User } from "@prisma/client";
-import clsx from "clsx";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { PhoneInput } from "@/components/ui/phone-input"
+import { Switch } from "@/components/ui/switch"
+import { useToast } from "@/hooks/use-toast"
+import { fallbackUsername } from "@/lib/fallback-username"
+import { optimizeImage } from "@/lib/optimize-image"
+import { accountFormSchema } from "@/schemas/account"
+import { api } from "@/trpc/react"
+import type { AccountFormValues } from "@/schemas/account"
+import type { User } from "@prisma/client"
 
 export function AccountForm({ user }: { user: User }) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [files, setFiles] = useState<Array<File>>([]);
-  const [isEditingEnabled, setIsEditingEnabled] = useState(false);
-  const { setTheme } = useTheme();
-  const { update } = useSession();
-  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false)
+  const [files, setFiles] = useState<Array<File>>([])
+  const [isEditingEnabled, setIsEditingEnabled] = useState(false)
+  const { setTheme } = useTheme()
+  const { data: session, update } = useSession()
+  const toast = useToast()
 
-  const optimizeImageMutation = api.optimizeImage.optimizeImage.useMutation();
-  const uploadFilesMutation = api.S3.uploadFiles.useMutation();
+  const uploadFilesMutation = api.S3.uploadFiles.useMutation()
   const updateUserMutation = api.user.update.useMutation({
-    onSuccess: async (data) => {
+    onSuccess: async data => {
       if (data) {
         form.reset({
           name: data.name,
-          email: user.email ?? "",
-          phone: data.phone ?? "",
-          nationality: data.nationality ?? "",
+          email: user.email,
+          phone: data.phone,
+          nationality: data.nationality,
           dateOfBirth: data.dateOfBirth,
+          address: data.address,
           theme: data.theme,
           image: data.image ?? "",
-        });
+        })
 
-        setTheme(data.theme ?? "light");
+        setTheme(data.theme ?? "light")
 
-        if (data.name !== user.name || data.image !== user.image) {
+        // if (data.name !== user.name || data.image !== user.image) {
+        if (data.image) {
           await update({
-            name: data.name,
-            image: data.image,
-            theme: data.theme,
-          });
+            user: {
+              ...session?.user,
+              image: data.image,
+              name: data.name,
+              theme: data.theme,
+            },
+          })
         }
 
-        toast.success("تم تحديث البيانات بنجاح");
-        setIsEditingEnabled(false);
+        toast.success("تم تحديث البيانات بنجاح")
+        setIsEditingEnabled(false)
       }
     },
-  });
+  })
 
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
@@ -77,29 +83,30 @@ export function AccountForm({ user }: { user: User }) {
       phone: user.phone,
       nationality: user.nationality,
       dateOfBirth: user.dateOfBirth,
+      address: user.address,
       theme: user.theme,
       image: user.image ?? "",
     },
-  });
+  })
 
   const handleFilesSelected = (selectedFiles: Array<File>) => {
-    setFiles(selectedFiles);
-  };
+    setFiles(selectedFiles)
+  }
 
   const optimizeAndUploadImage = async (file: File | undefined) => {
-    if (!file) return null;
+    if (!file) return null
 
     const base64 = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
 
-    const optimizedBase64 = await optimizeImageMutation.mutateAsync({
+    const optimizedBase64 = await optimizeImage({
       base64,
       quality: 70,
-    });
+    })
 
     const fileData = [
       {
@@ -109,25 +116,25 @@ export function AccountForm({ user }: { user: User }) {
         lastModified: file.lastModified,
         base64: optimizedBase64,
       },
-    ];
+    ]
 
     const uploadedUrls = await uploadFilesMutation.mutateAsync({
       entityId: `user-avatar/${user.id}`,
       fileData,
-    });
+    })
 
-    return uploadedUrls[0];
-  };
+    return uploadedUrls[0]
+  }
 
   async function onSubmit(values: AccountFormValues) {
     try {
-      setIsLoading(true);
-      let imageUrl = values.image;
+      setIsLoading(true)
+      let imageUrl = values.image
 
       if (files.length > 0) {
-        const uploadedUrl = await optimizeAndUploadImage(files[0]);
+        const uploadedUrl = await optimizeAndUploadImage(files[0])
         if (uploadedUrl) {
-          imageUrl = uploadedUrl;
+          imageUrl = uploadedUrl
         }
       }
 
@@ -135,12 +142,12 @@ export function AccountForm({ user }: { user: User }) {
         id: user.id,
         ...values,
         image: imageUrl,
-      });
+      })
     } catch (error) {
-      console.error("Update error:", error);
-      toast.error("حدث خطأ أثناء تحديث البيانات");
+      console.error("Update error:", error)
+      toast.error("حدث خطأ أثناء تحديث البيانات")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 
@@ -156,11 +163,7 @@ export function AccountForm({ user }: { user: User }) {
           >
             {form.watch("image") ? (
               <Image
-                src={
-                  files[0]
-                    ? URL.createObjectURL(files[0])
-                    : (form.watch("image") ?? "")
-                }
+                src={files[0] ? URL.createObjectURL(files[0]) : (form.watch("image") ?? "")}
                 alt={`Profile Image of ${user?.name}`}
                 width={112}
                 height={112}
@@ -236,9 +239,7 @@ export function AccountForm({ user }: { user: User }) {
                   defaultCountry="QA"
                   {...field}
                   value={
-                    field.value && !field.value.startsWith("+")
-                      ? "+" + field.value
-                      : field.value
+                    field.value && !field.value.startsWith("+") ? "+" + field.value : field.value
                   }
                 />
               </FormControl>
@@ -279,12 +280,27 @@ export function AccountForm({ user }: { user: User }) {
                   className="flex justify-end border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
                   disabled={!isEditingEnabled}
                   {...field}
-                  onChange={(e) => field.onChange(new Date(e.target.value))}
-                  value={
-                    field.value
-                      ? new Date(field.value).toISOString().split("T")[0]
-                      : ""
-                  }
+                  onChange={e => field.onChange(new Date(e.target.value))}
+                  value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>العنوان</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="عنوان السكن"
+                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+                  disabled={!isEditingEnabled}
+                  {...field}
                 />
               </FormControl>
               <FormMessage />
@@ -304,10 +320,9 @@ export function AccountForm({ user }: { user: User }) {
               <FormControl>
                 <Switch
                   checked={field.value === "dark"}
-                  onCheckedChange={(checked) => {
-                    const theme = checked ? "dark" : "light";
-                    field.onChange(theme);
-                    setTheme(theme);
+                  onCheckedChange={checked => {
+                    const theme = checked ? "dark" : "light"
+                    field.onChange(theme)
                   }}
                   disabled={!isEditingEnabled}
                   className="ltr"
@@ -321,9 +336,9 @@ export function AccountForm({ user }: { user: User }) {
           {!isEditingEnabled ? (
             <Button
               type="button"
-              onClick={(e) => {
-                e.preventDefault(); // doing this to prevent form submission
-                setIsEditingEnabled(true);
+              onClick={e => {
+                e.preventDefault() // doing this to prevent form submission
+                setIsEditingEnabled(true)
               }}
               variant="outline"
               className="cursor-pointer"
@@ -332,24 +347,16 @@ export function AccountForm({ user }: { user: User }) {
             </Button>
           ) : (
             <>
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="min-w-[100px] cursor-pointer"
-              >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "حفظ"
-                )}
+              <Button type="submit" disabled={isLoading} className="min-w-[100px] cursor-pointer">
+                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "حفظ"}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => {
-                  setIsEditingEnabled(false);
-                  form.reset();
-                  setTheme(form.watch("theme") ?? "light");
+                  setIsEditingEnabled(false)
+                  form.reset()
+                  setTheme(form.watch("theme") ?? "light")
                 }}
               >
                 إلغاء
@@ -359,5 +366,5 @@ export function AccountForm({ user }: { user: User }) {
         </div>
       </form>
     </Form>
-  );
+  )
 }

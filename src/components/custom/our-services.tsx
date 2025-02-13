@@ -1,24 +1,22 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import { services } from "@/schemas/contact";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
+import { motion } from "framer-motion"
+import Image from "next/image"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { services } from "@/schemas/contact"
 
 export default function OurServices() {
-  const serviceIndex = 4;
+  const serviceIndex = 4
 
   return (
     <section className="container mx-auto overflow-clip px-4 py-20 md:max-w-[70rem] md:px-0">
       <div className="relative grid gap-16 md:grid-cols-2">
         <div className="top-40 h-fit md:sticky">
-          <h2 className="mt-4 mb-6 text-4xl font-semibold md:text-5xl">
-            اختبر الفرق معنا
-          </h2>
+          <h2 className="mt-4 mb-6 text-4xl font-semibold md:text-5xl">اختبر الفرق معنا</h2>
           <p className="text-muted-foreground dark:text-secondary-foreground font-medium md:text-xl">
-            نحن نؤمن بإنشاء شراكات دائمة مع مستثمرينا مع التركيز على النجاح طويل
-            الأمد من خلال الابتكار التعاوني والدعم المخصص.
+            نحن نؤمن بإنشاء شراكات دائمة مع مستثمرينا مع التركيز على النجاح طويل الأمد من خلال
+            الابتكار التعاوني والدعم المخصص.
           </p>
           <div className="mt-8 flex flex-col gap-4 lg:flex-row">
             <Button className="gap-2" size="lg" asChild>
@@ -74,9 +72,7 @@ export default function OurServices() {
                   priority
                 />
                 <div className="p-6">
-                  <h3 className="mb-1 text-2xl font-semibold">
-                    {service.title}
-                  </h3>
+                  <h3 className="mb-1 text-2xl font-semibold">{service.title}</h3>
                   <p className="text-muted-foreground dark:text-secondary-foreground">
                     {service.text}
                   </p>
@@ -87,5 +83,5 @@ export default function OurServices() {
         </div>
       </div>
     </section>
-  );
+  )
 }

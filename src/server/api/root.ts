@@ -1,13 +1,12 @@
-import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
-import { userRouter } from "./routers/user";
-import { contactRouter } from "./routers/contact";
-import { projectRouter } from "./routers/projects";
-import { socialLinksRouter } from "./routers/social-links";
-import { faqRouter } from "./routers/faq";
-import { operationsRouter } from "./routers/operations";
-import { optimizeImageRouter } from "./routers/optimize-image";
-import { S3Router } from "./routers/s3";
-import { authRouter } from "./routers/auth";
+import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc"
+import { authRouter } from "./routers/auth"
+import { contactRouter } from "./routers/contact"
+import { faqRouter } from "./routers/faq"
+import { operationsRouter } from "./routers/operations"
+import { projectRouter } from "./routers/projects"
+import { S3Router } from "./routers/s3"
+import { socialLinksRouter } from "./routers/social-links"
+import { userRouter } from "./routers/user"
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
@@ -17,10 +16,9 @@ export const appRouter = createTRPCRouter({
   socialLinks: socialLinksRouter,
   faq: faqRouter,
   operations: operationsRouter,
-  optimizeImage: optimizeImageRouter,
   S3: S3Router,
-});
+})
 
-export type AppRouter = typeof appRouter;
+export type AppRouter = typeof appRouter
 
-export const createCaller = createCallerFactory(appRouter);
+export const createCaller = createCallerFactory(appRouter)

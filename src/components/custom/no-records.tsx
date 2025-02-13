@@ -1,24 +1,19 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
+import Image from "next/image"
+import Link from "next/link"
+import { cn } from "@/lib/utils"
+import { Button } from "../ui/button"
 
 type NoItemsProps = {
-  className?: string;
-  msg?: string;
+  className?: string
+  msg?: string
   links?: {
-    to: string;
-    label: string;
-  }[];
-  button?: React.ReactNode;
-};
+    to: string
+    label: string
+  }[]
+  button?: React.ReactNode
+}
 
-export default function NoRecords({
-  msg,
-  links,
-  button,
-  className,
-}: NoItemsProps): JSX.Element {
+export default function NoRecords({ msg, links, button, className }: NoItemsProps): JSX.Element {
   return (
     <div className="my-5 flex flex-col items-center justify-center gap-6">
       <div
@@ -47,5 +42,5 @@ export default function NoRecords({
         {button && button}
       </div>
     </div>
-  );
+  )
 }

@@ -1,14 +1,11 @@
-import {
-  ArrowUpDown,
-  Ban,
-  CheckCircle,
-  MoreHorizontal,
-  Pencil,
-  Trash,
-} from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import clsx from "clsx"
+import { ArrowUpDown, Ban, CheckCircle, MoreHorizontal, Pencil, Trash } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
+import { ConfirmationDialog } from "@/components/custom/confirmation-dialog"
+import { CopyText } from "@/components/custom/copy"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,67 +13,63 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import clsx from "clsx";
-import { formatDate } from "@/lib/format-date";
-import { translateSring } from "@/lib/translate-string";
-import { CopyText } from "@/components/custom/copy";
-import type { Projects, User, withdraw_actions } from "@prisma/client";
-import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter";
-import type { ColumnDef } from "@tanstack/react-table";
-import { ConfirmationDialog } from "@/components/custom/confirmation-dialog";
-import { useState } from "react";
+} from "@/components/ui/dropdown-menu"
+import { formatDate } from "@/lib/format-date"
+import { translateSring } from "@/lib/translate-string"
+import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter"
+import type { Projects, User, withdraw_actions } from "@prisma/client"
+import type { ColumnDef } from "@tanstack/react-table"
 
 type BaseEntity = {
-  id: string;
-  name?: string;
-  email?: string;
-};
+  id: string
+  name?: string
+  email?: string
+}
 
-type UserType = BaseEntity & User;
+type UserType = BaseEntity & User
 
-type Project = BaseEntity & Projects;
+type Project = BaseEntity & Projects
 
-type WithdrawAction = BaseEntity & withdraw_actions;
+type WithdrawAction = BaseEntity & withdraw_actions
 
 type TableActions = {
-  onDelete?: (id: string) => void;
-  onBlock?: (id: string) => void;
-  onUnblock?: (id: string) => void;
-  onActivate?: (id: string) => void;
-  onDeactivate?: (id: string) => void;
-  basePath: "/projects" | "/users" | "/operations" | "/profits-percentage";
-};
+  onDelete?: (id: string) => void
+  onBlock?: (id: string) => void
+  onUnblock?: (id: string) => void
+  onActivate?: (id: string) => void
+  onDeactivate?: (id: string) => void
+  basePath: "/projects" | "/users" | "/operations" | "/profits-percentage"
+}
 
 type SharedColumnsProps = {
-  entityType: "users" | "projects" | "withdraw_actions" | "profits_percentage";
-  actions: TableActions;
-};
+  entityType: "users" | "projects" | "withdraw_actions" | "profits_percentage"
+  actions: TableActions
+}
 
 // Add Row type for better type safety
 type Row<T> = {
-  original: T;
-  getIsSelected: () => boolean;
-  toggleSelected: (value: boolean) => void;
-};
+  original: T
+  getIsSelected: () => boolean
+  toggleSelected: (value: boolean) => void
+}
 
 function getDeleteDialogTitle(
   entityType: string,
   entity: BaseEntity & {
-    projectName?: string;
+    projectName?: string
   },
 ) {
   switch (entityType) {
     case "users":
-      return `هل أنت متأكد من حذف المستخدم ${entity.name}؟`;
+      return `هل أنت متأكد من حذف المستخدم ${entity.name}؟`
     case "projects":
-      return `هل أنت متأكد من حذف المشروع ${entity.projectName}؟`;
+      return `هل أنت متأكد من حذف المشروع ${entity.projectName}؟`
     case "withdraw_actions":
-      return `هل أنت متأكد من حذف العملية رقم ${entity.id}؟`;
+      return `هل أنت متأكد من حذف العملية رقم ${entity.id}؟`
     case "profits_percentage":
-      return `هل أنت متأكد من حذف نسبة الربح للمشروع ${entity.projectName}؟`;
+      return `هل أنت متأكد من حذف نسبة الربح للمشروع ${entity.projectName}؟`
     default:
-      return "هل أنت متأكد من حذف هذا العنصر؟";
+      return "هل أنت متأكد من حذف هذا العنصر؟"
   }
 }
 
@@ -87,24 +80,24 @@ function ActionCell<T extends BaseEntity>({
 }: {
   row: Row<
     T & {
-      accountStatus?: string;
-      projectStatus?: string;
-      projectName?: string;
+      accountStatus?: string
+      projectStatus?: string
+      projectName?: string
     }
-  >;
-  entityType: string;
-  actions: TableActions;
+  >
+  entityType: string
+  actions: TableActions
 }) {
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const entity = row.original;
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const entity = row.original
 
   const handleDelete = async () => {
-    setIsDeleting(true);
-    actions.onDelete?.(entity.id);
-    setIsDeleting(false);
-    setIsDeleteDialogOpen(false);
-  };
+    setIsDeleting(true)
+    actions.onDelete?.(entity.id)
+    setIsDeleting(false)
+    setIsDeleteDialogOpen(false)
+  }
 
   return (
     <>
@@ -116,9 +109,7 @@ function ActionCell<T extends BaseEntity>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center" className="rtl">
-          <DropdownMenuLabel className="sr-only">
-            {translateSring("actions")}
-          </DropdownMenuLabel>
+          <DropdownMenuLabel className="sr-only">{translateSring("actions")}</DropdownMenuLabel>
           <DropdownMenuItem asChild>
             <Link href={`/admin${actions.basePath}/${entity.id}`}>
               <Pencil className="mr-2 h-4 w-4" />
@@ -140,28 +131,19 @@ function ActionCell<T extends BaseEntity>({
                 : "حظر المستخدم"}
             </DropdownMenuItem>
           )}
-          {entityType === "projects" &&
-            actions.onActivate &&
-            actions.onDeactivate && (
-              <DropdownMenuItem
-                onClick={() =>
-                  (row.original as unknown as Project).projectStatus ===
-                  "pending"
-                    ? actions.onActivate?.(entity.id)
-                    : actions.onDeactivate?.(entity.id)
-                }
-              >
-                <CheckCircle className="mr-2 h-4 w-4" />
-                {(row.original as unknown as Project).projectStatus ===
-                "pending"
-                  ? "تفعيل"
-                  : "تعطيل"}
-              </DropdownMenuItem>
-            )}
-          <DropdownMenuItem
-            className="text-red-600"
-            onClick={() => setIsDeleteDialogOpen(true)}
-          >
+          {entityType === "projects" && actions.onActivate && actions.onDeactivate && (
+            <DropdownMenuItem
+              onClick={() =>
+                (row.original as unknown as Project).projectStatus === "pending"
+                  ? actions.onActivate?.(entity.id)
+                  : actions.onDeactivate?.(entity.id)
+              }
+            >
+              <CheckCircle className="mr-2 h-4 w-4" />
+              {(row.original as unknown as Project).projectStatus === "pending" ? "تفعيل" : "تعطيل"}
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem className="text-red-600" onClick={() => setIsDeleteDialogOpen(true)}>
             <Trash className="mr-2 h-4 w-4" />
             حذف
           </DropdownMenuItem>
@@ -178,15 +160,15 @@ function ActionCell<T extends BaseEntity>({
         onConfirm={handleDelete}
       />
     </>
-  );
+  )
 }
 
 export function useSharedColumns<T extends BaseEntity>({
   entityType,
   actions,
 }: SharedColumnsProps): {
-  columns: ColumnDef<T>[];
-  filterFields: DataTableFilterField[];
+  columns: ColumnDef<T>[]
+  filterFields: DataTableFilterField[]
 } {
   const filterFields: DataTableFilterField[] = [
     ...(entityType === "users"
@@ -228,7 +210,7 @@ export function useSharedColumns<T extends BaseEntity>({
           },
         ]
       : []),
-  ];
+  ]
 
   const baseColumns: ColumnDef<T>[] = [
     {
@@ -239,9 +221,7 @@ export function useSharedColumns<T extends BaseEntity>({
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
-          onCheckedChange={(value: boolean) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
+          onCheckedChange={(value: boolean) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
           className="cursor-pointer"
         />
@@ -257,7 +237,7 @@ export function useSharedColumns<T extends BaseEntity>({
       enableSorting: false,
       enableHiding: false,
     },
-  ];
+  ]
 
   const userColumns: ColumnDef<T>[] = [
     {
@@ -273,8 +253,8 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const user = row.original as unknown as UserType;
-        return <span className="whitespace-nowrap">{user.sn}</span>;
+        const user = row.original as unknown as UserType
+        return <span className="whitespace-nowrap">{user.sn}</span>
       },
     },
     {
@@ -290,25 +270,20 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const user = row.original as unknown as UserType;
-        return <span className="whitespace-nowrap">{user.name}</span>;
+        const user = row.original as unknown as UserType
+        return <span className="whitespace-nowrap">{user.name}</span>
       },
     },
     {
       accessorKey: "stocks",
       header: () => {
-        return (
-          <span className="whitespace-nowrap">{translateSring("stocks")}</span>
-        );
+        return <span className="whitespace-nowrap">{translateSring("stocks")}</span>
       },
       cell: ({ row }) => {
-        const userStocks = (row.original as unknown as UserType).stocks;
-        const totalStocks = userStocks.reduce(
-          (acc, stock) => acc + stock.stocks,
-          0,
-        );
+        const userStocks = (row.original as unknown as UserType).stocks
+        const totalStocks = userStocks.reduce((acc, stock) => acc + stock.stocks, 0)
 
-        return <span>{totalStocks}</span>;
+        return <span>{totalStocks}</span>
       },
     },
     {
@@ -337,7 +312,7 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const user = row.original as unknown as UserType;
+        const user = row.original as unknown as UserType
         return (
           <span
             className={clsx("rounded-full border px-2.5 py-0.5 select-none", {
@@ -347,11 +322,11 @@ export function useSharedColumns<T extends BaseEntity>({
           >
             {translateSring(user.role)}
           </span>
-        );
+        )
       },
       filterFn: (row, _id, filterValues: string[]) => {
-        const value = (row.original as unknown as UserType).role;
-        return filterValues.includes(value);
+        const value = (row.original as unknown as UserType).role
+        return filterValues.includes(value)
       },
     },
     {
@@ -367,7 +342,7 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const user = row.original as unknown as UserType;
+        const user = row.original as unknown as UserType
         return (
           <span
             className={clsx("rounded-full border px-2.5 py-0.5 select-none", {
@@ -378,14 +353,14 @@ export function useSharedColumns<T extends BaseEntity>({
           >
             {translateSring(user.accountStatus)}
           </span>
-        );
+        )
       },
       filterFn: (row, _id, filterValues: string[]) => {
-        const value = (row.original as unknown as UserType).accountStatus;
-        return filterValues.includes(value);
+        const value = (row.original as unknown as UserType).accountStatus
+        return filterValues.includes(value)
       },
     },
-  ];
+  ]
 
   const projectColumns: ColumnDef<T>[] = [
     {
@@ -401,8 +376,8 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const project = row.original as unknown as Project;
-        return <span className="whitespace-nowrap">{project.projectName}</span>;
+        const project = row.original as unknown as Project
+        return <span className="whitespace-nowrap">{project.projectName}</span>
       },
     },
     {
@@ -418,22 +393,21 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const project = row.original as unknown as Project;
+        const project = row.original as unknown as Project
         return (
           <span
             className={clsx("rounded-full border px-2.5 py-0.5 select-none", {
               "bg-green-50 text-green-600": project.projectStatus === "active",
-              "bg-yellow-50 text-yellow-600":
-                project.projectStatus === "pending",
+              "bg-yellow-50 text-yellow-600": project.projectStatus === "pending",
             })}
           >
             {translateSring(project.projectStatus)}
           </span>
-        );
+        )
       },
       filterFn: (row, _id, filterValues: string[]) => {
-        const value = (row.original as unknown as Project).projectStatus;
-        return filterValues.includes(value);
+        const value = (row.original as unknown as Project).projectStatus
+        return filterValues.includes(value)
       },
     },
     {
@@ -462,8 +436,8 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const project = row.original as unknown as Project;
-        return <span>{project.projectAvailableStocks}</span>;
+        const project = row.original as unknown as Project
+        return <span>{project.projectAvailableStocks}</span>
       },
     },
     {
@@ -479,8 +453,8 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const project = row.original as unknown as Project;
-        return <span>{project.projectTotalStocks}</span>;
+        const project = row.original as unknown as Project
+        return <span>{project.projectTotalStocks}</span>
       },
     },
     {
@@ -496,8 +470,8 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const project = row.original as unknown as Project;
-        return <span>{project.projectStockPrice}</span>;
+        const project = row.original as unknown as Project
+        return <span>{project.projectStockPrice}</span>
       },
     },
     {
@@ -513,7 +487,7 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const project = row.original as unknown as Project;
+        const project = row.original as unknown as Project
         return (
           <span>
             <CopyText
@@ -522,7 +496,7 @@ export function useSharedColumns<T extends BaseEntity>({
             />
             {project.projectSpecialPercentageCode}
           </span>
-        );
+        )
       },
     },
     {
@@ -538,8 +512,8 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const project = row.original as unknown as Project;
-        return <span>{project.projectSpecialPercentage}%</span>;
+        const project = row.original as unknown as Project
+        return <span>{project.projectSpecialPercentage}%</span>
       },
     },
     {
@@ -590,12 +564,10 @@ export function useSharedColumns<T extends BaseEntity>({
       ),
       cell: ({ row }) =>
         formatDate({
-          date: String(
-            (row.original as unknown as Project).projectProfitsCollectDate,
-          ),
+          date: String((row.original as unknown as Project).projectProfitsCollectDate),
         }),
     },
-  ];
+  ]
 
   const withdrawActionColumns: ColumnDef<T>[] = [
     {
@@ -611,16 +583,13 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const withdrawAction = row.original as unknown as WithdrawAction;
+        const withdrawAction = row.original as unknown as WithdrawAction
         return (
           <span className="whitespace-nowrap">
-            <CopyText
-              text={withdrawAction.id}
-              className="ml-2 inline h-4 w-4"
-            />
+            <CopyText text={withdrawAction.id} className="ml-2 inline h-4 w-4" />
             {withdrawAction.id}
           </span>
-        );
+        )
       },
     },
     {
@@ -637,17 +606,14 @@ export function useSharedColumns<T extends BaseEntity>({
       ),
       cell: ({ row }) => {
         const withdrawAction = row.original as unknown as WithdrawAction & {
-          user: Pick<UserType, "name">;
-        };
+          user: Pick<UserType, "name">
+        }
         return (
           <span className="whitespace-nowrap">
-            <CopyText
-              text={withdrawAction.user.name}
-              className="ml-2 inline h-4 w-4"
-            />
+            <CopyText text={withdrawAction.user.name} className="ml-2 inline h-4 w-4" />
             {withdrawAction.user.name}
           </span>
-        );
+        )
       },
     },
     {
@@ -664,17 +630,14 @@ export function useSharedColumns<T extends BaseEntity>({
       ),
       cell: ({ row }) => {
         const withdrawAction = row.original as unknown as WithdrawAction & {
-          user: Pick<UserType, "sn">;
-        };
+          user: Pick<UserType, "sn">
+        }
         return (
           <span className="whitespace-nowrap">
-            <CopyText
-              text={withdrawAction.user.sn.toString()}
-              className="ml-2 inline h-4 w-4"
-            />
+            <CopyText text={withdrawAction.user.sn.toString()} className="ml-2 inline h-4 w-4" />
             {withdrawAction.user.sn}
           </span>
-        );
+        )
       },
     },
     {
@@ -703,7 +666,7 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const withdrawAction = row.original as unknown as WithdrawAction;
+        const withdrawAction = row.original as unknown as WithdrawAction
         return (
           <span
             className={clsx("rounded-full border px-2.5 py-0.5 select-none", {
@@ -711,13 +674,12 @@ export function useSharedColumns<T extends BaseEntity>({
                 withdrawAction.accounting_operation_status === "completed",
               "bg-yellow-50 text-yellow-600":
                 withdrawAction.accounting_operation_status === "pending",
-              "bg-red-50 text-red-600":
-                withdrawAction.accounting_operation_status === "rejected",
+              "bg-red-50 text-red-600": withdrawAction.accounting_operation_status === "rejected",
             })}
           >
             {translateSring(withdrawAction.accounting_operation_status)}
           </span>
-        );
+        )
       },
     },
     {
@@ -733,8 +695,8 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const withdrawAction = row.original as unknown as WithdrawAction;
-        return <span>{translateSring(withdrawAction.action_type)}</span>;
+        const withdrawAction = row.original as unknown as WithdrawAction
+        return <span>{translateSring(withdrawAction.action_type)}</span>
       },
     },
     {
@@ -751,8 +713,8 @@ export function useSharedColumns<T extends BaseEntity>({
       ),
       cell: ({ row }) => {
         const withdrawAction = row.original as unknown as WithdrawAction & {
-          user: Pick<UserType, "phone">;
-        };
+          user: Pick<UserType, "phone">
+        }
         return (
           <Link
             href={`tel:${withdrawAction.user.phone}`}
@@ -760,7 +722,7 @@ export function useSharedColumns<T extends BaseEntity>({
           >
             {withdrawAction.user.phone}
           </Link>
-        );
+        )
       },
     },
     {
@@ -777,8 +739,8 @@ export function useSharedColumns<T extends BaseEntity>({
       ),
       cell: ({ row }) => {
         const withdrawAction = row.original as unknown as WithdrawAction & {
-          user: Pick<UserType, "email">;
-        };
+          user: Pick<UserType, "email">
+        }
         return (
           <Link
             href={`mailto:${withdrawAction.user.email}`}
@@ -786,7 +748,7 @@ export function useSharedColumns<T extends BaseEntity>({
           >
             {withdrawAction.user.email}
           </Link>
-        );
+        )
       },
     },
     {
@@ -803,17 +765,14 @@ export function useSharedColumns<T extends BaseEntity>({
       ),
       cell: ({ row }) => {
         const withdrawAction = row.original as unknown as WithdrawAction & {
-          user: Pick<UserType, "address">;
-        };
+          user: Pick<UserType, "address">
+        }
         return (
           <span className="whitespace-nowrap">
-            <CopyText
-              text={withdrawAction.user.address}
-              className="ml-2 inline h-4 w-4"
-            />
+            <CopyText text={withdrawAction.user.address} className="ml-2 inline h-4 w-4" />
             {withdrawAction.user.address}
           </span>
-        );
+        )
       },
     },
     {
@@ -833,7 +792,7 @@ export function useSharedColumns<T extends BaseEntity>({
           date: String((row.original as unknown as WithdrawAction).created_at),
         }),
     },
-  ];
+  ]
 
   const profitsPercentageColumns: ColumnDef<T>[] = [
     {
@@ -849,8 +808,8 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const project = row.original as unknown as Project;
-        return <span className="whitespace-nowrap">{project.projectName}</span>;
+        const project = row.original as unknown as Project
+        return <span className="whitespace-nowrap">{project.projectName}</span>
       },
     },
     {
@@ -866,7 +825,7 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const project = row.original as unknown as Project;
+        const project = row.original as unknown as Project
         return (
           <span>
             <CopyText
@@ -875,7 +834,7 @@ export function useSharedColumns<T extends BaseEntity>({
             />
             {project.projectSpecialPercentageCode}
           </span>
-        );
+        )
       },
     },
     {
@@ -891,8 +850,8 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const project = row.original as unknown as Project;
-        return <span>{project.projectSpecialPercentage}%</span>;
+        const project = row.original as unknown as Project
+        return <span>{project.projectSpecialPercentage}%</span>
       },
     },
     {
@@ -921,28 +880,22 @@ export function useSharedColumns<T extends BaseEntity>({
         </Button>
       ),
       cell: ({ row }) => {
-        const project = row.original as unknown as Project;
+        const project = row.original as unknown as Project
         const newProfits =
           project.projectStockProfits +
-          (project.projectStockProfits *
-            (project.projectSpecialPercentage ?? 0)) /
-            100;
-        return <span>{newProfits}</span>;
+          (project.projectStockProfits * (project.projectSpecialPercentage ?? 0)) / 100
+        return <span>{newProfits}</span>
       },
     },
-  ];
+  ]
 
   const actionsColumn: ColumnDef<T> = {
     id: "actions",
     header: translateSring("actions"),
     cell: ({ row }) => (
-      <ActionCell<T>
-        row={row as Row<T>}
-        entityType={entityType}
-        actions={actions}
-      />
+      <ActionCell<T> row={row as Row<T>} entityType={entityType} actions={actions} />
     ),
-  };
+  }
 
   return {
     columns: [
@@ -958,5 +911,5 @@ export function useSharedColumns<T extends BaseEntity>({
               : []),
     ] as ColumnDef<T>[],
     filterFields,
-  };
+  }
 }

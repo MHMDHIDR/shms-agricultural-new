@@ -1,5 +1,9 @@
-import { NavWrapper } from "@/components/custom/nav/nav-wrapper";
-import { Button } from "@/components/ui/button";
+"use client"
+
+import { LayoutDashboard, MenuIcon, Settings, User2, User2Icon } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { NavWrapper } from "@/components/custom/nav/nav-wrapper"
+import { Button } from "@/components/ui/button"
 import {
   DropdownLinkItem,
   DropdownMenu,
@@ -7,7 +11,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
+import { handleSignout } from "@/components/ui/nav-user/actions"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -15,19 +20,13 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { auth, signOut } from "@/server/auth";
-import {
-  LayoutDashboard,
-  MenuIcon,
-  Settings,
-  User2,
-  User2Icon,
-} from "lucide-react";
+} from "@/components/ui/navigation-menu"
+// import { signOut } from "@/server/auth"
+import type { Session } from "next-auth"
 
-export async function Nav() {
-  const session = await auth();
-  const user = session?.user;
+export function Nav({ user }: { user: Session["user"] | undefined }) {
+  const { data: session, status } = useSession()
+  const currentUser = status === "loading" ? user : session?.user
 
   const menuItems = [
     {
@@ -46,14 +45,14 @@ export async function Nav() {
       title: "حصاد",
       href: "/harvest",
     },
-  ];
+  ]
 
   return (
     <NavWrapper>
       <div className="hidden sm:block">
         <NavigationMenu>
           <NavigationMenuList className="rtl:rtl" dir="auto">
-            {menuItems.map((item) => (
+            {menuItems.map(item => (
               <NavigationMenuLink
                 key={item.href}
                 href={item.href}
@@ -71,13 +70,10 @@ export async function Nav() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="cursor-pointer gap-1.5">
               <User2Icon className="h-5 w-5" />
-              {user.name}
+              {currentUser?.name}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="min-w-44 space-y-2 text-right"
-          >
+          <DropdownMenuContent align="end" className="min-w-44 space-y-2 text-right">
             <DropdownLinkItem href="/dashboard">
               <LayoutDashboard className="h-5 w-5" />
               لوحة التحكم
@@ -94,7 +90,14 @@ export async function Nav() {
             )}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <form
+              <Button
+                variant="destructive"
+                className="w-full cursor-pointer"
+                onClick={handleSignout}
+              >
+                تسجيل الخروج
+              </Button>
+              {/* <form
                 action={async () => {
                   "use server";
                   await signOut({ redirectTo: "/" });
@@ -108,7 +111,7 @@ export async function Nav() {
                 >
                   تسجيل الخروج
                 </Button>
-              </form>
+              </form> */}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -129,7 +132,7 @@ export async function Nav() {
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-background">
                 <ul className="divide-accent flex w-60 flex-col gap-2 divide-y py-2.5">
-                  {menuItems.map((item) => (
+                  {menuItems.map(item => (
                     <NavigationMenuLink
                       key={item.title}
                       href={item.href}
@@ -145,5 +148,5 @@ export async function Nav() {
         </NavigationMenu>
       </div>
     </NavWrapper>
-  );
+  )
 }

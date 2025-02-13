@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { auth } from "@/server/auth";
-import Link from "next/link";
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { auth } from "@/server/auth"
 
 export async function StartInvestingCTA() {
-  const session = await auth();
+  const session = await auth()
 
   return (
     <div className="relative z-10 flex flex-wrap items-center gap-6">
@@ -18,5 +18,5 @@ export async function StartInvestingCTA() {
         <Link href="/projects">عرض المشاريع</Link>
       </Button>
     </div>
-  );
+  )
 }

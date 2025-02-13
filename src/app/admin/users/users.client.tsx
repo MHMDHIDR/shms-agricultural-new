@@ -1,24 +1,5 @@
-"use client";
+"use client"
 
-import type { BulkAction } from "@/components/custom/data-table/table-toolbar";
-import { TableToolbar } from "@/components/custom/data-table/table-toolbar";
-import NoRecords from "@/components/custom/no-records";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useSharedColumns } from "@/hooks/use-shared-columns";
-import { useToast } from "@/hooks/use-toast";
-import type { User } from "@prisma/client";
-import type {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-} from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -26,44 +7,53 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import { useState } from "react";
+} from "@tanstack/react-table"
+import { useState } from "react"
+import { TableToolbar } from "@/components/custom/data-table/table-toolbar"
+import NoRecords from "@/components/custom/no-records"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { useSharedColumns } from "@/hooks/use-shared-columns"
+import { useToast } from "@/hooks/use-toast"
+import type { BulkAction } from "@/components/custom/data-table/table-toolbar"
+import type { User } from "@prisma/client"
+import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table"
 
-export default function UsersClientPage({
-  users,
-  count,
-}: {
-  users: User[];
-  count: number;
-}) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState("");
-  const toast = useToast();
+export default function UsersClientPage({ users, count }: { users: User[]; count: number }) {
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
+  const [globalFilter, setGlobalFilter] = useState("")
+  const toast = useToast()
 
   // Handle user actions
   const handleDeleteUser = (_id: string) => {
     void (async () => {
       // Implement delete functionality
-      toast.error("Delete functionality not implemented yet");
-    })();
-  };
+      toast.error("Delete functionality not implemented yet")
+    })()
+  }
 
   const handleBlockUser = (_id: string) => {
     void (async () => {
       // Implement block functionality
-      toast.loading("Block functionality not implemented yet");
-    })();
-  };
+      toast.loading("Block functionality not implemented yet")
+    })()
+  }
 
   const handleUnblockUser = (_id: string) => {
     void (async () => {
       // Implement unblock functionality
-      toast.success("Unblock functionality not implemented yet");
-    })();
-  };
+      toast.success("Unblock functionality not implemented yet")
+    })()
+  }
 
   const { columns, filterFields } = useSharedColumns<User>({
     entityType: "users",
@@ -73,7 +63,7 @@ export default function UsersClientPage({
       onUnblock: handleUnblockUser,
       basePath: "/users",
     },
-  });
+  })
 
   const table = useReactTable<User>({
     data: users,
@@ -94,11 +84,9 @@ export default function UsersClientPage({
       rowSelection,
       globalFilter,
     },
-  });
+  })
 
-  const selectedRows = table
-    .getFilteredSelectedRowModel()
-    .rows.map((row) => row.original);
+  const selectedRows = table.getFilteredSelectedRowModel().rows.map(row => row.original)
 
   // Define bulk actions
   const getBulkActions = (): BulkAction[] => {
@@ -106,46 +94,42 @@ export default function UsersClientPage({
       {
         label: "حذف المحدد",
         onClick: () => {
-          const ids = selectedRows.map((row) => row.id);
-          toast.success(`Selected IDs: ${ids.join(", ")}`);
+          const ids = selectedRows.map(row => row.id)
+          toast.success(`Selected IDs: ${ids.join(", ")}`)
         },
         variant: "destructive",
       },
-    ];
+    ]
 
     if (selectedRows.length > 0) {
-      const hasBlockedUsers = selectedRows.some(
-        (row) => row.accountStatus === "block",
-      );
-      const hasActiveUsers = selectedRows.some(
-        (row) => row.accountStatus === "active",
-      );
+      const hasBlockedUsers = selectedRows.some(row => row.accountStatus === "block")
+      const hasActiveUsers = selectedRows.some(row => row.accountStatus === "active")
 
       if (hasActiveUsers) {
         actions.push({
           label: "حظر المحدد",
           onClick: () => {
-            const ids = selectedRows.map((row) => row.id);
-            toast.success(`Selected IDs: ${ids.join(", ")}`);
+            const ids = selectedRows.map(row => row.id)
+            toast.success(`Selected IDs: ${ids.join(", ")}`)
           },
           variant: "destructive",
-        });
+        })
       }
 
       if (hasBlockedUsers) {
         actions.push({
           label: "إلغاء حظر المحدد",
           onClick: () => {
-            const ids = selectedRows.map((row) => row.id);
-            toast.success(`Selected IDs: ${ids.join(", ")}`);
+            const ids = selectedRows.map(row => row.id)
+            toast.success(`Selected IDs: ${ids.join(", ")}`)
           },
           variant: "success",
-        });
+        })
       }
     }
 
-    return actions;
-  };
+    return actions
+  }
 
   return !users || count === 0 ? (
     <NoRecords msg="لم يتم العثور على أي مستخدمين في الوقت الحالي" />
@@ -164,16 +148,13 @@ export default function UsersClientPage({
       <div className="rounded-md border px-2.5">
         <Table>
           <TableHeader className="select-none">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map(header => (
                   <TableHead key={header.id} className="text-center">
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -181,27 +162,18 @@ export default function UsersClientPage({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
+              table.getRowModel().rows.map(row => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id} className="text-center">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   لم يتم العثور على نتائج
                 </TableCell>
               </TableRow>
@@ -210,5 +182,5 @@ export default function UsersClientPage({
         </Table>
       </div>
     </div>
-  );
+  )
 }

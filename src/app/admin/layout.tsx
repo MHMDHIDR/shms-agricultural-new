@@ -1,27 +1,19 @@
-import { auth } from "@/server/auth";
-import { notFound } from "next/navigation";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/ui/app-sidebar";
-import { cookies } from "next/headers";
-import { api } from "@/trpc/server";
+import { cookies } from "next/headers"
+import { notFound } from "next/navigation"
+import { AppSidebar } from "@/components/ui/app-sidebar"
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { auth } from "@/server/auth"
+import { api } from "@/trpc/server"
 
-export default async function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const session = await auth();
-  if (!session?.user) notFound();
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth()
+  if (!session?.user) notFound()
 
-  const { projects } = await api.projects.getAll();
+  const { projects } = await api.projects.getAll()
 
-  const cookieStore = await cookies();
-  const sidebarState = cookieStore.get("sidebar:state")?.value;
-  const initialSidebarOpen = sidebarState === "true";
+  const cookieStore = await cookies()
+  const sidebarState = cookieStore.get("sidebar:state")?.value
+  const initialSidebarOpen = sidebarState === "true"
 
   return (
     <SidebarProvider defaultOpen={initialSidebarOpen}>
@@ -37,5 +29,5 @@ export default async function DashboardLayout({
         </section>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }

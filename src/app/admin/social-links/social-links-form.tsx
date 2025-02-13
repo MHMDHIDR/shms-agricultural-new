@@ -1,64 +1,56 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { FacebookIcon, InstagramIcon, Loader2, TwitterIcon, YoutubeIcon } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { api } from "@/trpc/react";
-import {
-  FacebookIcon,
-  InstagramIcon,
-  Loader2,
-  TwitterIcon,
-  YoutubeIcon,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+} from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
+import { api } from "@/trpc/react"
 
-const socialTypes = ["facebook", "x", "instagram", "youtube"] as const;
+const socialTypes = ["facebook", "x", "instagram", "youtube"] as const
 
 export default function SocialLinksForm() {
-  const toast = useToast();
-  const router = useRouter();
-  const utils = api.useUtils();
+  const toast = useToast()
+  const router = useRouter()
+  const utils = api.useUtils()
 
-  const [selectedType, setSelectedType] = useState<
-    (typeof socialTypes)[number] | ""
-  >("");
-  const [socialLink, setSocialLink] = useState("");
+  const [selectedType, setSelectedType] = useState<(typeof socialTypes)[number] | "">("")
+  const [socialLink, setSocialLink] = useState("")
 
   const { mutate: updateSocialLink, isPending: isUpdating } =
     api.socialLinks.insertSocialLinks.useMutation({
       onSuccess: async () => {
-        toast.success("تم تحديث الرابط بنجاح");
-        setSelectedType("");
-        setSocialLink("");
-        await utils.socialLinks.getSocialLinks.invalidate();
-        router.refresh();
+        toast.success("تم تحديث الرابط بنجاح")
+        setSelectedType("")
+        setSocialLink("")
+        await utils.socialLinks.getSocialLinks.invalidate()
+        router.refresh()
       },
-      onError: (error) => {
-        toast.error(error.message || "حدث خطأ ما");
+      onError: error => {
+        toast.error(error.message || "حدث خطأ ما")
       },
-    });
+    })
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!selectedType || !socialLink) {
-      toast.error("الرجاء اختيار النوع وإدخال الرابط");
-      return;
+      toast.error("الرجاء اختيار النوع وإدخال الرابط")
+      return
     }
 
     updateSocialLink({
       socialType: selectedType,
       socialLink: socialLink,
-    });
-  };
+    })
+  }
 
   return (
     <form dir="rtl" onSubmit={handleSubmit} className="mb-10">
@@ -74,20 +66,14 @@ export default function SocialLinksForm() {
               <Select
                 dir="rtl"
                 value={selectedType}
-                onValueChange={(type: (typeof socialTypes)[number]) =>
-                  setSelectedType(type)
-                }
+                onValueChange={(type: (typeof socialTypes)[number]) => setSelectedType(type)}
               >
                 <SelectTrigger className="w-full cursor-pointer">
                   <SelectValue placeholder="اختر المنصة" />
                 </SelectTrigger>
                 <SelectContent>
-                  {socialTypes.map((type) => (
-                    <SelectItem
-                      key={type}
-                      value={type}
-                      className="cursor-pointer"
-                    >
+                  {socialTypes.map(type => (
+                    <SelectItem key={type} value={type} className="cursor-pointer">
                       <span className="flex items-center gap-x-2">
                         {type === "facebook" ? (
                           <FacebookIcon className="h-4 w-4 rounded-md" />
@@ -119,7 +105,7 @@ export default function SocialLinksForm() {
                 type="text"
                 placeholder="ادخل رابط المنصة"
                 value={socialLink}
-                onChange={(e) => setSocialLink(e.target.value)}
+                onChange={e => setSocialLink(e.target.value)}
                 required
               />
             </div>
@@ -144,5 +130,5 @@ export default function SocialLinksForm() {
         </div>
       </div>
     </form>
-  );
+  )
 }

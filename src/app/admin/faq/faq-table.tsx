@@ -1,18 +1,9 @@
-"use client";
+"use client"
 
-import { useState, useRef } from "react";
-import { api } from "@/trpc/react";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { Loader2, Pencil, Save, X } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useRef, useState } from "react"
+import NoRecords from "@/components/custom/no-records"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,82 +14,89 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Loader2, Pencil, Save, X } from "lucide-react";
-import type { Faq } from "@prisma/client";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import NoRecords from "@/components/custom/no-records";
-import { scrollToView } from "@/lib/scroll-to-view";
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Textarea } from "@/components/ui/textarea"
+import { useToast } from "@/hooks/use-toast"
+import { scrollToView } from "@/lib/scroll-to-view"
+import { api } from "@/trpc/react"
+import type { Faq } from "@prisma/client"
 
 export default function FaqTable({ initialFaqs }: { initialFaqs: Faq[] }) {
-  const toast = useToast();
-  const router = useRouter();
-  const utils = api.useUtils();
+  const toast = useToast()
+  const router = useRouter()
+  const utils = api.useUtils()
 
   // const [faqs, setFaqs] = useState(initialFaqs);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editedQuestion, setEditedQuestion] = useState("");
-  const [editedAnswer, setEditedAnswer] = useState("");
-  const [selectedFaqId, setSelectedFaqId] = useState<string | null>(null);
-  const questionInputRef = useRef<HTMLInputElement>(null);
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editedQuestion, setEditedQuestion] = useState("")
+  const [editedAnswer, setEditedAnswer] = useState("")
+  const [selectedFaqId, setSelectedFaqId] = useState<string | null>(null)
+  const questionInputRef = useRef<HTMLInputElement>(null)
 
-  const { mutate: updateFaq, isPending: isUpdating } =
-    api.faq.update.useMutation({
-      onSuccess: async () => {
-        toast.success("تم تحديث السؤال بنجاح");
-        setEditingId(null);
-        await utils.faq.getAll.invalidate();
-        router.refresh();
-      },
-      onError: (error) => {
-        toast.error(error.message || "حدث خطأ ما");
-      },
-    });
+  const { mutate: updateFaq, isPending: isUpdating } = api.faq.update.useMutation({
+    onSuccess: async () => {
+      toast.success("تم تحديث السؤال بنجاح")
+      setEditingId(null)
+      await utils.faq.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ ما")
+    },
+  })
 
-  const { mutate: deleteFaq, isPending: isDeleting } =
-    api.faq.delete.useMutation({
-      onSuccess: async () => {
-        toast.success("تم حذف السؤال بنجاح");
-        setSelectedFaqId(null);
-        await utils.faq.getAll.invalidate();
-        router.refresh();
-      },
-      onError: (error) => {
-        toast.error(error.message || "حدث خطأ ما");
-        setSelectedFaqId(null);
-      },
-    });
+  const { mutate: deleteFaq, isPending: isDeleting } = api.faq.delete.useMutation({
+    onSuccess: async () => {
+      toast.success("تم حذف السؤال بنجاح")
+      setSelectedFaqId(null)
+      await utils.faq.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ ما")
+      setSelectedFaqId(null)
+    },
+  })
 
   const handleEdit = (faq: Faq) => {
-    setEditingId(faq.id);
-    setEditedQuestion(faq.question);
-    setEditedAnswer(faq.answer);
-  };
+    setEditingId(faq.id)
+    setEditedQuestion(faq.question)
+    setEditedAnswer(faq.answer)
+  }
 
   const handleSave = (id: string) => {
     if (!editedQuestion.trim() || !editedAnswer.trim()) {
-      toast.error("الرجاء ملء جميع الحقول المطلوبة");
-      return;
+      toast.error("الرجاء ملء جميع الحقول المطلوبة")
+      return
     }
 
     updateFaq({
       id,
       question: editedQuestion.trim(),
       answer: editedAnswer.trim(),
-    });
-  };
+    })
+  }
 
   const handleDelete = (id: string) => {
-    setSelectedFaqId(id);
-    deleteFaq({ id });
-  };
+    setSelectedFaqId(id)
+    deleteFaq({ id })
+  }
 
   const handleCancelEdit = () => {
-    setEditingId(null);
-    setEditedQuestion("");
-    setEditedAnswer("");
-  };
+    setEditingId(null)
+    setEditedQuestion("")
+    setEditedAnswer("")
+  }
 
   return (
     <Table className="rtl mt-8 table min-h-full min-w-full divide-y divide-gray-200">
@@ -119,8 +117,8 @@ export default function FaqTable({ initialFaqs }: { initialFaqs: Faq[] }) {
                   <Button
                     variant={"pressable"}
                     onClick={() => {
-                      questionInputRef.current?.focus();
-                      scrollToView(100);
+                      questionInputRef.current?.focus()
+                      scrollToView(100)
                     }}
                   >
                     إضافة سؤال جديد
@@ -130,7 +128,7 @@ export default function FaqTable({ initialFaqs }: { initialFaqs: Faq[] }) {
             </TableCell>
           </TableRow>
         ) : (
-          initialFaqs.map((faq) => (
+          initialFaqs.map(faq => (
             <TableRow key={faq.id}>
               <TableCell className="min-w-[200px] align-top">
                 {editingId === faq.id ? (
@@ -139,7 +137,7 @@ export default function FaqTable({ initialFaqs }: { initialFaqs: Faq[] }) {
                     type="text"
                     className="w-full rounded border border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none dark:bg-gray-800 dark:text-gray-300"
                     value={editedQuestion}
-                    onChange={(e) => setEditedQuestion(e.target.value)}
+                    onChange={e => setEditedQuestion(e.target.value)}
                   />
                 ) : (
                   faq.question
@@ -151,7 +149,7 @@ export default function FaqTable({ initialFaqs }: { initialFaqs: Faq[] }) {
                     className="max-h-72 w-full rounded border border-gray-200 bg-gray-200 px-4 py-2 leading-loose text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-none dark:bg-gray-800 dark:text-gray-300"
                     rows={7}
                     value={editedAnswer}
-                    onChange={(e) => setEditedAnswer(e.target.value)}
+                    onChange={e => setEditedAnswer(e.target.value)}
                   />
                 ) : (
                   faq.answer
@@ -210,17 +208,13 @@ export default function FaqTable({ initialFaqs }: { initialFaqs: Faq[] }) {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader className="rtl:text-right">
-                            <AlertDialogTitle>
-                              هل أنت متأكد من حذف هذا السؤال؟
-                            </AlertDialogTitle>
+                            <AlertDialogTitle>هل أنت متأكد من حذف هذا السؤال؟</AlertDialogTitle>
                             <AlertDialogDescription>
                               لا يمكن التراجع عن هذا الإجراء بعد تنفيذه.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter className="gap-2 rtl:justify-start!">
-                            <AlertDialogCancel
-                              onClick={() => setSelectedFaqId(null)}
-                            >
+                            <AlertDialogCancel onClick={() => setSelectedFaqId(null)}>
                               الغاء
                             </AlertDialogCancel>
                             <AlertDialogAction
@@ -248,5 +242,5 @@ export default function FaqTable({ initialFaqs }: { initialFaqs: Faq[] }) {
         )}
       </TableBody>
     </Table>
-  );
+  )
 }

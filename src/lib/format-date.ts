@@ -1,8 +1,8 @@
 type formatDateOptions = {
-  date: string;
-  isNormalDate?: boolean;
-  isFullTimestamp?: boolean;
-};
+  date: string
+  isNormalDate?: boolean
+  isFullTimestamp?: boolean
+}
 
 /**
  * A function to format the date and time with appropriate granularity.
@@ -24,7 +24,7 @@ export function formatDate({
       year: "numeric" as const,
       month: "short" as const,
       day: "numeric" as const,
-    };
+    }
 
     return new Date(date).toLocaleDateString(
       "ar-QA",
@@ -35,56 +35,56 @@ export function formatDate({
             minute: "numeric" as const,
           }
         : dateOptions,
-    );
+    )
   }
 
-  const now = new Date().getTime();
-  const givenDate = new Date(date).getTime();
-  const diff = givenDate - now;
-  const isPast = diff < 0;
-  const absDays = Math.abs(Math.round(diff / (1000 * 60 * 60 * 24)));
-  const absWeeks = Math.abs(Math.round(absDays / 7));
-  const absMonths = Math.abs(Math.floor(absDays / 30));
-  const absYears = Math.abs(Math.floor(absDays / 365));
+  const now = new Date().getTime()
+  const givenDate = new Date(date).getTime()
+  const diff = givenDate - now
+  const isPast = diff < 0
+  const absDays = Math.abs(Math.round(diff / (1000 * 60 * 60 * 24)))
+  const absWeeks = Math.abs(Math.round(absDays / 7))
+  const absMonths = Math.abs(Math.floor(absDays / 30))
+  const absYears = Math.abs(Math.floor(absDays / 365))
 
-  const suffix = isPast ? "ago" : "left";
+  const suffix = isPast ? "ago" : "left"
 
   switch (true) {
     case absDays === 0:
-      return "Today";
+      return "Today"
 
     case absDays === 1:
-      return isPast ? "Yesterday" : "Tomorrow";
+      return isPast ? "Yesterday" : "Tomorrow"
 
     case absDays >= 2 && absDays <= 5:
-      return `${absDays} days ${suffix}`;
+      return `${absDays} days ${suffix}`
 
     case absDays >= 6 && absDays <= 10:
-      return `${absWeeks} week ${suffix}`;
+      return `${absWeeks} week ${suffix}`
 
     case absDays >= 10 && absDays <= 14:
-      return `${absWeeks} weeks ${suffix}`;
+      return `${absWeeks} weeks ${suffix}`
 
     case absDays >= 15 && absDays <= 17:
-      return `${absWeeks} weeks ${suffix}`;
+      return `${absWeeks} weeks ${suffix}`
 
     case absWeeks > 2 && absWeeks < 4:
-      return `3 weeks ${suffix}`;
+      return `3 weeks ${suffix}`
 
     case absDays >= 25 && absDays <= 35:
-      return `1 month ${suffix}`;
+      return `1 month ${suffix}`
 
     case absMonths >= 2 && absMonths <= 11:
-      return `${absMonths} months ${suffix}`;
+      return `${absMonths} months ${suffix}`
 
     case absYears === 1:
-      return `1 year ${suffix}`;
+      return `1 year ${suffix}`
 
     case absYears > 1:
-      return `${absYears} years ${suffix}`;
+      return `${absYears} years ${suffix}`
 
     default:
-      return `${absDays} days ${suffix}`;
+      return `${absDays} days ${suffix}`
   }
 }
 
@@ -94,9 +94,9 @@ export function formatDate({
  * @returns Formatted date string in 'dd/MM/yyyy' format
  */
 export function getDate(sub = 0): string {
-  const date = new Date();
-  date.setDate(date.getDate() - sub);
-  return formatDateToString(date);
+  const date = new Date()
+  date.setDate(date.getDate() - sub)
+  return formatDateToString(date)
 }
 
 /**
@@ -105,10 +105,10 @@ export function getDate(sub = 0): string {
  * @returns Formatted date string
  */
 function formatDateToString(date: Date): string {
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
+  const day = String(date.getDate()).padStart(2, "0")
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const year = date.getFullYear()
+  return `${day}/${month}/${year}`
 }
 
 /**
@@ -118,7 +118,7 @@ function formatDateToString(date: Date): string {
  * @returns 1 if dateA is later, -1 if dateB is later, 0 if equal
  */
 export function compareDates(dateA: Date, dateB: Date): number {
-  if (dateA > dateB) return 1;
-  if (dateA < dateB) return -1;
-  return 0;
+  if (dateA > dateB) return 1
+  if (dateA < dateB) return -1
+  return 0
 }

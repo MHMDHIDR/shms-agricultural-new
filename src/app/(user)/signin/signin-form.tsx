@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Loader2 } from "lucide-react"
+import { useTheme } from "next-themes"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -14,43 +14,43 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { signInSchema } from "@/schemas/signin";
-import { signInAction } from "./actions";
-import type { SignInFormValues } from "@/schemas/signin";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { useToast } from "@/hooks/use-toast"
+import { signInSchema } from "@/schemas/signin"
+import { signInAction } from "./actions"
+import type { SignInFormValues } from "@/schemas/signin"
 
 export function SignInForm() {
-  const [isLoading, setIsLoading] = useState(false);
-  const { setTheme } = useTheme();
-  const toast = useToast();
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false)
+  const { setTheme } = useTheme()
+  const toast = useToast()
+  const router = useRouter()
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
     defaultValues: { emailOrPhone: "", password: "" },
-  });
+  })
 
   async function onSubmit(values: SignInFormValues) {
     try {
-      setIsLoading(true);
-      const result = await signInAction(values);
+      setIsLoading(true)
+      const result = await signInAction(values)
 
       if (result.error) {
-        toast.error(result.error);
-        setIsLoading(false);
-        return;
+        toast.error(result.error)
+        setIsLoading(false)
+        return
       }
 
-      setTheme(result.theme ?? "light");
-      toast.success("تم تسجيل الدخول بنجاح");
-      router.refresh();
-      router.push("/");
+      setTheme(result.theme ?? "light")
+      toast.success("تم تسجيل الدخول بنجاح")
+      router.refresh()
+      router.push("/")
     } catch (error) {
-      console.error("Sign in error:", error);
-      toast.error("حدث خطأ اثناء تسجيل الدخول");
-      setIsLoading(false);
+      console.error("Sign in error:", error)
+      toast.error("حدث خطأ اثناء تسجيل الدخول")
+      setIsLoading(false)
     }
   }
 
@@ -62,9 +62,7 @@ export function SignInForm() {
           name="emailOrPhone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs select-none">
-                رقم الهاتف او البريد الالكتروني
-              </FormLabel>
+              <FormLabel className="text-xs select-none">رقم الهاتف او البريد الالكتروني</FormLabel>
               <FormControl>
                 <Input
                   placeholder="البريد الالكتروني أو رقم الهاتف"
@@ -94,16 +92,11 @@ export function SignInForm() {
             </FormItem>
           )}
         />
-        <Button
-          type="submit"
-          variant={"pressable"}
-          disabled={isLoading}
-          className="w-full"
-        >
+        <Button type="submit" variant={"pressable"} disabled={isLoading} className="w-full">
           {isLoading && <Loader2 className="animate-spin text-green-500" />}
           تسجيل الدخول
         </Button>
       </form>
     </Form>
-  );
+  )
 }

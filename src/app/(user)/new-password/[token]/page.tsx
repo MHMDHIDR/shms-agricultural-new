@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { use, useEffect, useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { signupSchema } from "@/schemas/signup";
-import { Button } from "@/components/ui/button";
-import { api } from "@/trpc/react";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { EyeIcon, EyeOffIcon } from "lucide-react"
+import { redirect } from "next/navigation"
+import { use, useEffect, useState, useTransition } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -14,13 +14,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/hooks/use-toast";
-import { z } from "zod";
-import { redirect } from "next/navigation";
-import { calculatePasswordStrength } from "@/lib/calculate-password-strength";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Progress } from "@/components/ui/progress"
+import { useToast } from "@/hooks/use-toast"
+import { calculatePasswordStrength } from "@/lib/calculate-password-strength"
+import { signupSchema } from "@/schemas/signup"
+import { api } from "@/trpc/react"
 
 // Create a new schema using pick from the signup schema
 const newPasswordSchema = signupSchema
@@ -29,46 +29,42 @@ const newPasswordSchema = signupSchema
     confirmPassword: z.string(),
     token: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine(data => data.password === data.confirmPassword, {
     message: "كلمات المرور غير متطابقة",
     path: ["confirmPassword"],
-  });
+  })
 
-type NewPasswordData = z.infer<typeof newPasswordSchema>;
+type NewPasswordData = z.infer<typeof newPasswordSchema>
 
-export default function NewPasswordClientPage({
-  params,
-}: {
-  params: Promise<{ token: string }>;
-}) {
-  const { token } = use(params);
-  const toast = useToast();
-  const [isPending, startTransition] = useTransition();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState(0);
+export default function NewPasswordClientPage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = use(params)
+  const toast = useToast()
+  const [isPending, startTransition] = useTransition()
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordStrength, setPasswordStrength] = useState(0)
 
-  const resetPassword = api.auth.resetPassword.useMutation();
+  const resetPassword = api.auth.resetPassword.useMutation()
 
   useEffect(() => {
     if (!token) {
-      toast.success("رمز إعادة تعيين كلمة المرور مفقود");
+      toast.success("رمز إعادة تعيين كلمة المرور مفقود")
     }
-  }, [token, toast]);
+  }, [token, toast])
 
   const form = useForm<NewPasswordData>({
     resolver: zodResolver(newPasswordSchema),
     defaultValues: { password: "", confirmPassword: "", token },
-  });
+  })
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === "password") {
-        setPasswordStrength(calculatePasswordStrength(value.password ?? ""));
+        setPasswordStrength(calculatePasswordStrength(value.password ?? ""))
       }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+    })
+    return () => subscription.unsubscribe()
+  }, [form])
 
   async function onSubmit(data: NewPasswordData) {
     startTransition(async () => {
@@ -76,34 +72,28 @@ export default function NewPasswordClientPage({
         const result = await resetPassword.mutateAsync({
           password: data.password,
           token: data.token,
-        });
+        })
 
         if (result.success) {
-          toast.success(result.message);
-          setTimeout(() => redirect("/signin"), 2500);
+          toast.success(result.message)
+          setTimeout(() => redirect("/signin"), 2500)
         } else {
-          toast.error(result.message);
+          toast.error(result.message)
         }
       } catch (error) {
-        const errorMsg =
-          error instanceof Error ? error.message : "حدث خطأ غير متوقع";
-        console.error("New Password Error:", JSON.stringify(error));
-        toast.error(
-          errorMsg ??
-            "حدث خطأ أثناء تغيير كلمة المرور. يرجى المحاولة مرة أخرى.",
-        );
+        const errorMsg = error instanceof Error ? error.message : "حدث خطأ غير متوقع"
+        console.error("New Password Error:", JSON.stringify(error))
+        toast.error(errorMsg ?? "حدث خطأ أثناء تغيير كلمة المرور. يرجى المحاولة مرة أخرى.")
       }
-    });
+    })
   }
 
-  if (!token) return null;
+  if (!token) return null
 
   return (
     <div className="container mx-auto max-w-md px-2.5 py-20">
       <div className="mb-14 flex flex-col">
-        <h1 className="text-center text-2xl font-bold select-none">
-          إنشاء كلمة مرور جديدة
-        </h1>
+        <h1 className="text-center text-2xl font-bold select-none">إنشاء كلمة مرور جديدة</h1>
         <small className="mt-2 text-center text-sm text-gray-600 select-none dark:text-gray-300">
           الرجاء اختيار كلمة مرور قوية لحسابك
         </small>
@@ -163,9 +153,7 @@ export default function NewPasswordClientPage({
                     </FormControl>
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute top-1/2 right-3 -translate-y-1/2"
                     >
                       {showConfirmPassword ? (
@@ -185,15 +173,11 @@ export default function NewPasswordClientPage({
               <Progress value={passwordStrength} className="mt-2" />
             </div>
           </div>
-          <Button
-            disabled={isPending}
-            type="submit"
-            className="w-full cursor-pointer"
-          >
+          <Button disabled={isPending} type="submit" className="w-full cursor-pointer">
             {isPending ? "جاري إعادة التعيين..." : "إعادة تعيين كلمة المرور"}
           </Button>
         </form>
       </Form>
     </div>
-  );
+  )
 }

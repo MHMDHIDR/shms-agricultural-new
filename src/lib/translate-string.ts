@@ -6,131 +6,131 @@
 export const translateSring = (string: string) => {
   switch (string) {
     case "sn": {
-      return "الرقم التسلسلي";
+      return "الرقم التسلسلي"
     }
     case "id": {
-      return "الرقم المعرف";
+      return "الرقم المعرف"
     }
     case "amount":
     case "withdraw_amount": {
-      return "المبلغ المراد سحبه";
+      return "المبلغ المراد سحبه"
     }
     case "projectName":
     case "name": {
-      return "الاسم";
+      return "الاسم"
     }
     case "projectStatus":
     case "accountStatus":
     case "status":
     case "accounting_operation_status": {
-      return "الحالة";
+      return "الحالة"
     }
     case "projectLocation": {
-      return "موقع المشروع";
+      return "موقع المشروع"
     }
     case "projectStartDate": {
-      return "تاريخ بداية المشروع";
+      return "تاريخ بداية المشروع"
     }
     case "projectEndDate": {
-      return "تاريخ نهاية المشروع";
+      return "تاريخ نهاية المشروع"
     }
     case "projectInvestDate": {
-      return "تاريخ الاستثمار";
+      return "تاريخ الاستثمار"
     }
     case "projectProfitsCollectDate": {
-      return "تاريخ جمع الأرباح";
+      return "تاريخ جمع الأرباح"
     }
     case "projectStudyCase": {
-      return "دراسة الجدوى";
+      return "دراسة الجدوى"
     }
     case "projectStudyCaseVisibility": {
-      return "إظهار دراسة الجدوى";
+      return "إظهار دراسة الجدوى"
     }
     case "projectAvailableStocks": {
-      return "الأسهم المتاحة";
+      return "الأسهم المتاحة"
     }
     case "projectTotalStocks": {
-      return "إجمالي الأسهم";
+      return "إجمالي الأسهم"
     }
     case "projectStockPrice": {
-      return "سعر السهم";
+      return "سعر السهم"
     }
     case "projectSpecialPercentage": {
-      return "نسبة زيادة خاصة";
+      return "نسبة زيادة خاصة"
     }
     case "projectSpecialPercentageCode": {
-      return "رمز نسبة الزيادة الخاصة";
+      return "رمز نسبة الزيادة الخاصة"
     }
     case "projectStockProfits": {
-      return "أرباح السهم";
+      return "أرباح السهم"
     }
     case "projectDescription": {
-      return "وصف المشروع";
+      return "وصف المشروع"
     }
     case "projectTerms": {
-      return "شروط المشروع";
+      return "شروط المشروع"
     }
     case "stocks": {
-      return "عدد الأسهم";
+      return "عدد الأسهم"
     }
     case "createdAt":
     case "created_at": {
-      return "تاريخ الإنشاء";
+      return "تاريخ الإنشاء"
     }
     case "actions": {
-      return "الإجراءات";
+      return "الإجراءات"
     }
     case "active": {
-      return "نشط";
+      return "نشط"
     }
     case "pending": {
-      return "معلق";
+      return "معلق"
     }
     case "block": {
-      return "محظور";
+      return "محظور"
     }
     case "completed": {
-      return "مكتمل";
+      return "مكتمل"
     }
     case "rejected": {
-      return "مرفوض";
+      return "مرفوض"
     }
     case "email": {
-      return "البريد الإلكتروني";
+      return "البريد الإلكتروني"
     }
     case "phone": {
-      return "رقم الهاتف";
+      return "رقم الهاتف"
     }
     case "address": {
-      return "العنوان";
+      return "العنوان"
     }
     case "role": {
-      return "الدور";
+      return "الدور"
     }
     case "admin": {
-      return "مدير";
+      return "مدير"
     }
     case "user": {
-      return "مستخدم";
+      return "مستخدم"
     }
     case "type":
     case "action_type": {
-      return "النوع";
+      return "النوع"
     }
     case "withdraw": {
-      return "ســـحب رصيد";
+      return "ســـحب رصيد"
     }
     case "deposit": {
-      return "إيـــــــداع رصيد";
+      return "إيـــــــداع رصيد"
     }
     case "currentProfits": {
-      return "الربح الحالي";
+      return "الربح الحالي"
     }
     case "newProfits": {
-      return "الربح الجديد";
+      return "الربح الجديد"
     }
     default: {
-      return string;
+      return string
     }
   }
-};
+}

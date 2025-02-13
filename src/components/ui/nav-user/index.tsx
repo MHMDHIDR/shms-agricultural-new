@@ -1,27 +1,27 @@
-"use client";
+"use client"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ChevronsUpDown, LogOut } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { fallbackUsername } from "@/lib/fallback-username";
-import { ChevronsUpDown, LogOut } from "lucide-react";
-import type { Session } from "next-auth";
-import { handleSignout } from "./actions";
+} from "@/components/ui/sidebar"
+import { fallbackUsername } from "@/lib/fallback-username"
+import { handleSignout } from "./actions"
+import type { Session } from "next-auth"
 
 export function NavUser({ user }: { user: Session["user"] }) {
-  const { isMobile } = useSidebar();
+  const { isMobile } = useSidebar()
 
-  if (!user) return null;
+  if (!user) return null
 
   return (
     <SidebarMenu>
@@ -59,5 +59,5 @@ export function NavUser({ user }: { user: Session["user"] }) {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  );
+  )
 }

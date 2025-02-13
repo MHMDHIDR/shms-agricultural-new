@@ -1,25 +1,21 @@
-"use client";
+"use client"
 
-import { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { MyTooltip } from "@/components/ui/tooltip";
-import { ChevronUp } from "lucide-react";
-import { scrollToView } from "@/lib/scroll-to-view";
+import { ChevronUp } from "lucide-react"
+import { useCallback, useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { MyTooltip } from "@/components/ui/tooltip"
+import { scrollToView } from "@/lib/scroll-to-view"
 
-export function NavigateTop({
-  scrolledHeight = 300,
-}: {
-  scrolledHeight?: number;
-}) {
-  const [isScrolled, setIsScrolled] = useState(false);
+export function NavigateTop({ scrolledHeight = 300 }: { scrolledHeight?: number }) {
+  const [isScrolled, setIsScrolled] = useState(false)
   const isSticky = useCallback(() => {
-    const scrollTop = window.scrollY;
-    setIsScrolled(scrollTop > scrolledHeight);
-  }, [scrolledHeight]);
+    const scrollTop = window.scrollY
+    setIsScrolled(scrollTop > scrolledHeight)
+  }, [scrolledHeight])
   useEffect(() => {
-    window.addEventListener("scroll", isSticky);
-    return () => window.removeEventListener("scroll", isSticky);
-  }, [isSticky]);
+    window.addEventListener("scroll", isSticky)
+    return () => window.removeEventListener("scroll", isSticky)
+  }, [isSticky])
 
   return (
     <MyTooltip text="الى الأعلى">
@@ -37,5 +33,5 @@ export function NavigateTop({
         />
       </Button>
     </MyTooltip>
-  );
+  )
 }
