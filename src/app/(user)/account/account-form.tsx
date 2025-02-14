@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 import clsx from "clsx"
 import { Loader2 } from "lucide-react"
+import { useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
 import Image from "next/image"
 import { useState } from "react"
@@ -37,6 +38,7 @@ export function AccountForm({ user }: { user: User }) {
   const [isEditingEnabled, setIsEditingEnabled] = useState(false)
   const { setTheme } = useTheme()
   const toast = useToast()
+  const { data: session, update: updateSession } = useSession()
 
   const uploadFilesMutation = api.S3.uploadFiles.useMutation()
   const updateUserMutation = api.user.update.useMutation({
@@ -54,6 +56,11 @@ export function AccountForm({ user }: { user: User }) {
         }
         form.reset(updatedUser)
         setTheme(data.theme ?? "light")
+
+        await updateSession({
+          ...session,
+          user: { ...session?.user, name: data.name, image: data.image },
+        })
 
         toast.success("تم تحديث البيانات بنجاح")
         setIsEditingEnabled(false)

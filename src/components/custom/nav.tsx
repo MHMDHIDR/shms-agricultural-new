@@ -106,7 +106,7 @@ export function Nav({ user }: { user: Session["user"] | undefined }) {
           <DropdownMenu dir="rtl">
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="cursor-pointer gap-1.5">
-                <Avatar user={user} className="rounded-sm rounded-r-none h-9 w-9" />
+                <Avatar user={currentUser} className="rounded-sm rounded-r-none h-9 w-9" />
                 <span>{truncateUsername(currentUser?.name ?? "User")}</span>
               </Button>
             </DropdownMenuTrigger>

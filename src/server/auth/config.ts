@@ -110,11 +110,17 @@ export const authConfig = {
     signIn: "/signin",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update" && session) {
+        return { ...token, ...session.user }
+      }
+
       if (user) {
         token.id = user.id
         token.role = user.role
         token.theme = user.theme
+        token.name = user.name
+        token.image = user.image
       }
       return token
     },
@@ -143,6 +149,8 @@ export const authConfig = {
           id: token.id as string,
           role: token.role as UserTable["role"],
           theme: token.theme as UserTheme,
+          name: token.name as string,
+          image: token.image as string | null,
           blurImageDataURL: blurImage,
         },
       }
