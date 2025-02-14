@@ -38,13 +38,8 @@ export const userRouter = createTRPCRouter({
     return { users, count }
   }),
 
-  update: publicProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        ...updateUserSchema.shape,
-      }),
-    )
+  update: protectedProcedure
+    .input(z.object({ id: z.string(), ...updateUserSchema.shape }))
     .mutation(async ({ ctx, input }) => {
       const data: Partial<Prisma.UserUpdateInput> = {} // Use Prisma's UserUpdateInput type
 
@@ -59,10 +54,7 @@ export const userRouter = createTRPCRouter({
         data.password = await hash(input.password, 12) // Ensure this is assigned correctly
       }
 
-      return ctx.db.user.update({
-        where: { id: input.id },
-        data,
-      })
+      return ctx.db.user.update({ where: { id: input.id }, data })
     }),
 
   updatePublic: publicProcedure.input(updatePublicSchema).mutation(async ({ ctx, input }) => {

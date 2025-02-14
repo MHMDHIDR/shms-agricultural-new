@@ -34,12 +34,14 @@ import type { User } from "@prisma/client"
 
 export function AccountForm({ user }: { user: User }) {
   const [isLoading, setIsLoading] = useState(false)
-  const [files, setFiles] = useState<Array<File>>([])
+  const [files, setFiles] = useState<{
+    image?: File[]
+    doc?: File[]
+  }>({})
   const [isEditingEnabled, setIsEditingEnabled] = useState(false)
   const { setTheme } = useTheme()
   const toast = useToast()
   const { data: session, update: updateSession } = useSession()
-
   const uploadFilesMutation = api.S3.uploadFiles.useMutation()
   const updateUserMutation = api.user.update.useMutation({
     onSuccess: async data => {
@@ -56,12 +58,10 @@ export function AccountForm({ user }: { user: User }) {
         }
         form.reset(updatedUser)
         setTheme(data.theme ?? "light")
-
         await updateSession({
           ...session,
           user: { ...session?.user, name: data.name, image: data.image },
         })
-
         toast.success("تم تحديث البيانات بنجاح")
         setIsEditingEnabled(false)
       }
@@ -88,11 +88,14 @@ export function AccountForm({ user }: { user: User }) {
     },
   })
 
-  const handleFilesSelected = (selectedFiles: Array<File>) => {
-    setFiles(selectedFiles)
+  const handleFilesSelected = (selectedFiles: File[], type: "image" | "doc") => {
+    setFiles(prev => ({
+      ...prev,
+      [type]: selectedFiles,
+    }))
   }
 
-  const optimizeAndUploadImage = async (file: File | undefined) => {
+  const processAndUploadFile = async (file: File | undefined, type: "image" | "doc") => {
     if (!file) return null
 
     const base64 = await new Promise<string>((resolve, reject) => {
@@ -102,26 +105,37 @@ export function AccountForm({ user }: { user: User }) {
       reader.readAsDataURL(file)
     })
 
-    const optimizedBase64 = await optimizeImage({
-      base64,
-      quality: 70,
-    })
-
-    const fileData = [
-      {
-        name: file.name.replace(/\.[^.]+$/, ".webp"),
-        type: "image/webp",
-        size: optimizedBase64.length,
-        lastModified: file.lastModified,
-        base64: optimizedBase64,
-      },
-    ]
+    let fileData
+    if (type === "image") {
+      const optimizedBase64 = await optimizeImage({
+        base64,
+        quality: 70,
+      })
+      fileData = [
+        {
+          name: file.name.replace(/\.[^.]+$/, ".webp"),
+          type: "image/webp",
+          size: optimizedBase64.length,
+          lastModified: file.lastModified,
+          base64: optimizedBase64,
+        },
+      ]
+    } else {
+      fileData = [
+        {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          lastModified: file.lastModified,
+          base64,
+        },
+      ]
+    }
 
     const uploadedUrls = await uploadFilesMutation.mutateAsync({
-      entityId: `user-avatar/${user.id}`,
+      entityId: `user-${type}/${user.id}`,
       fileData,
     })
-
     return uploadedUrls[0]
   }
 
@@ -130,8 +144,8 @@ export function AccountForm({ user }: { user: User }) {
       setIsLoading(true)
       let imageUrl = values.image
 
-      if (files.length > 0) {
-        const uploadedUrl = await optimizeAndUploadImage(files[0])
+      if (files.image && files.image.length > 0) {
+        const uploadedUrl = await processAndUploadFile(files.image[0], "image")
         if (uploadedUrl) {
           imageUrl = uploadedUrl
         }
@@ -162,7 +176,11 @@ export function AccountForm({ user }: { user: User }) {
           >
             {form.watch("image") ? (
               <Image
-                src={files[0] ? URL.createObjectURL(files[0]) : (form.watch("image") ?? "")}
+                src={
+                  files.image && files.image.length > 0
+                    ? URL.createObjectURL(files.image[0] ?? new Blob())
+                    : (form.watch("image") ?? "")
+                }
                 alt={`Profile Image of ${user?.name}`}
                 width={112}
                 height={112}
@@ -178,11 +196,12 @@ export function AccountForm({ user }: { user: User }) {
             )}
           </FormLabel>
           <FileUpload
-            onFilesSelected={handleFilesSelected}
+            onFilesSelected={files => handleFilesSelected(files, "image")}
             accept={{ "image/*": [".jpeg", ".jpg", ".png", ".webp"] }}
             maxFiles={1}
             disabled={!isEditingEnabled}
             className="flex items-center gap-x-2 space-y-0"
+            isPreviewHidden={true}
           />
         </div>
 
@@ -336,7 +355,7 @@ export function AccountForm({ user }: { user: User }) {
             <Button
               type="button"
               onClick={e => {
-                e.preventDefault() // doing this to prevent form submission
+                e.preventDefault()
                 setIsEditingEnabled(true)
               }}
               variant="outline"

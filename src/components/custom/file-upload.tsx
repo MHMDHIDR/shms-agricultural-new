@@ -10,6 +10,7 @@ type FileUploadProps = {
   accept?: Record<string, string[]> | string
   maxFiles?: number
   className?: string
+  isPreviewHidden?: boolean
 }
 
 export function FileUpload({
@@ -18,6 +19,7 @@ export function FileUpload({
   accept,
   maxFiles,
   className,
+  isPreviewHidden = false,
 }: FileUploadProps) {
   const [preview, setPreview] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
@@ -83,7 +85,7 @@ export function FileUpload({
         </small>
       </div>
 
-      {(preview ?? fileName) && (
+      {!isPreviewHidden && (preview ?? fileName) && (
         <div className="relative mt-4 flex items-center gap-4 rounded-lg border p-4">
           {preview ? (
             <Image

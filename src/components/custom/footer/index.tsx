@@ -42,8 +42,8 @@ export default async function Footer() {
 
   return (
     <FooterWrapper>
-      <footer className="mt-auto bg-slate-50 select-none dark:bg-slate-900">
-        <div className="container mx-auto overflow-clip px-4 pt-10 pb-5 md:max-w-[70rem] md:px-0">
+      <footer className="mt-auto bg-slate-50 select-none dark:bg-slate-900 shadow-inner shadow-slate-300 dark:shadow-slate-800">
+        <div className="container mx-auto overflow-clip px-4 py-5 md:max-w-[70rem] md:px-0">
           <div className="flex flex-col items-center justify-between gap-10 text-center lg:flex-row lg:text-right">
             <div className="flex w-full max-w-96 shrink flex-col items-center justify-between gap-6 lg:items-start">
               <div>

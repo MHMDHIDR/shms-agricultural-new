@@ -106,7 +106,7 @@ export function Nav({ user }: { user: Session["user"] | undefined }) {
           <DropdownMenu dir="rtl">
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="inline-flex justify-between px-0 cursor-pointer">
-                <Avatar user={currentUser} className="rounded-sm rounded-r-none h-9 w-9" />
+                <Avatar user={currentUser} className="rounded-md rounded-r-none h-8.5 w-8.5" />
                 <span className="px-3">{truncateUsername(currentUser?.name ?? "User")}</span>
               </Button>
             </DropdownMenuTrigger>
@@ -180,9 +180,9 @@ function Avatar({ user, className }: { user: Session["user"] | undefined; classN
       {user?.image ? (
         <AvatarImage
           src={user.image}
-          alt={fallbackUsername(user?.name ?? APP_TITLE)}
+          alt={user.name ?? APP_TITLE}
           blurDataURL={user?.blurImageDataURL ?? "/logo.svg"}
-          className="object-contain"
+          className="object-cover object-top"
         />
       ) : (
         <AvatarFallback className="text-orange-600 rounded-lg">
