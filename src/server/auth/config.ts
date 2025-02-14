@@ -5,8 +5,10 @@ import { cookies } from "next/headers"
 import { getBlurPlaceholder } from "@/lib/optimize-image"
 import { signInSchema } from "@/schemas/signin"
 import { db } from "@/server/db"
+import type { AdapterUser } from "@auth/core/adapters"
 import type { User as UserTable, UserTheme } from "@prisma/client"
-import type { NextAuthConfig, User } from "next-auth"
+import type { NextAuthConfig, Session, User } from "next-auth"
+import type { JWT } from "next-auth/jwt"
 
 /* eslint-disable no-unused-vars */
 declare module "next-auth" {
@@ -106,11 +108,20 @@ export const authConfig = {
       },
     }),
   ],
-  pages: {
-    signIn: "/signin",
-  },
+  pages: { signIn: "/signin" },
+  session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({
+      token,
+      user,
+      trigger,
+      session,
+    }: {
+      token: JWT
+      user: User | AdapterUser
+      trigger?: "signIn" | "update" | "signUp"
+      session?: Session
+    }) {
       if (trigger === "update" && session) {
         return { ...token, ...session.user }
       }
@@ -125,10 +136,9 @@ export const authConfig = {
       return token
     },
     async session({ session, token }) {
-      let blurImage: string | null = null
-      if (session?.user?.image) {
-        blurImage = await getBlurPlaceholder({ imageSrc: session.user.image })
-      }
+      const blurImage = session.user?.image
+        ? await getBlurPlaceholder({ imageSrc: session.user.image })
+        : null
 
       return {
         ...session,
@@ -137,15 +147,12 @@ export const authConfig = {
           id: token.id as string,
           role: token.role as UserTable["role"],
           theme: token.theme as UserTheme,
-          name: token.name as string,
+          name: token.name,
           image: token.image as string | null,
           blurImageDataURL: blurImage,
         },
       }
     },
-  },
-  session: {
-    strategy: "jwt",
   },
   events: {
     async signIn({ user, account }) {
