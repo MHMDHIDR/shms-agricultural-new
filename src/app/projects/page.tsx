@@ -4,7 +4,6 @@ import Link from "next/link"
 import NoRecords from "@/components/custom/no-records"
 import { Card, CardContent, CardDescription } from "@/components/ui/card"
 import { APP_DESCRIPTION, APP_LOGO, APP_TITLE } from "@/lib/constants"
-import { slugify } from "@/lib/slugify"
 import { api } from "@/trpc/server"
 import type { Metadata } from "next"
 
@@ -27,18 +26,14 @@ export default async function ProjectsPage() {
         <div className="rtl grid grid-cols-1 justify-end gap-4 md:grid-cols-2">
           {projects.map((project, index) => (
             <Link
-              href={`projects/${project.id}/${slugify(project.projectName)}`}
               key={index}
-              className={clsx("rtl group block overflow-clip", {
-                "col-span-full": count === 1,
-              })}
+              href={`projects/${project.id}`}
+              className={clsx("rtl group block overflow-clip", { "col-span-full": count === 1 })}
             >
               <Card
                 className={clsx(
                   "relative m-5 mx-auto w-4/5 max-w-screen-md min-w-72 overflow-clip rounded-lg shadow-md",
-                  {
-                    "w-full": count === 1,
-                  },
+                  { "w-full": count === 1 },
                 )}
               >
                 <CardContent className="relative flex flex-col p-0">

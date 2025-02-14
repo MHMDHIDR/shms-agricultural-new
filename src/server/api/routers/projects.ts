@@ -14,6 +14,14 @@ export const projectRouter = createTRPCRouter({
     return { projects, count, role }
   }),
 
+  getProjectById: publicProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.projects.findUnique({
+        where: { id: input.projectId },
+      })
+    }),
+
   updateProfitsPercentage: protectedProcedure
     .input(
       z.object({
