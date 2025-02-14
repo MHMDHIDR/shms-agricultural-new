@@ -27,7 +27,7 @@ export default async function ForgotPasswordPage() {
       <SignInForm />
       <Divider className="my-10" />
 
-      <div className="divide-primary flex items-center justify-center gap-x-4 divide-x divide-dotted select-none">
+      <div className="flex items-center justify-center gap-x-3 select-none">
         <h2 className="text-sm">تذكرت كلمة المرور؟</h2>
         <Link
           href="/signin"

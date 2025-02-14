@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { EyeIcon, EyeOffIcon } from "lucide-react"
-import { redirect } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { use, useEffect, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -19,10 +19,10 @@ import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/hooks/use-toast"
 import { calculatePasswordStrength } from "@/lib/calculate-password-strength"
+import { validateToken } from "@/lib/validate-token"
 import { signupSchema } from "@/schemas/signup"
 import { api } from "@/trpc/react"
 
-// Create a new schema using pick from the signup schema
 const newPasswordSchema = signupSchema
   .pick({ password: true })
   .extend({
@@ -38,6 +38,9 @@ type NewPasswordData = z.infer<typeof newPasswordSchema>
 
 export default function NewPasswordClientPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = use(params)
+
+  if (!token || !validateToken(token)) notFound()
+
   const toast = useToast()
   const [isPending, startTransition] = useTransition()
   const [showPassword, setShowPassword] = useState(false)
@@ -45,12 +48,6 @@ export default function NewPasswordClientPage({ params }: { params: Promise<{ to
   const [passwordStrength, setPasswordStrength] = useState(0)
 
   const resetPassword = api.auth.resetPassword.useMutation()
-
-  useEffect(() => {
-    if (!token) {
-      toast.success("رمز إعادة تعيين كلمة المرور مفقود")
-    }
-  }, [token, toast])
 
   const form = useForm<NewPasswordData>({
     resolver: zodResolver(newPasswordSchema),

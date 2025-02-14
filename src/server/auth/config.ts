@@ -2,6 +2,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { compare } from "bcryptjs"
 import Credentials from "next-auth/providers/credentials"
 import { cookies } from "next/headers"
+import { getBlurPlaceholder } from "@/lib/optimize-image"
 import { signInSchema } from "@/schemas/signin"
 import { db } from "@/server/db"
 import type { User as UserTable, UserTheme } from "@prisma/client"
@@ -12,6 +13,7 @@ declare module "next-auth" {
   interface User {
     role: UserTable["role"]
     theme: UserTheme
+    blurImageDataURL: string | null
   }
 }
 
@@ -27,10 +29,11 @@ declare module "@auth/core/adapters" {
   interface AdapterUser {
     role: UserTable["role"]
     theme: UserTheme
+    blurImageDataURL: string | null
   }
 }
-
 /* eslint-enable no-unused-vars */
+
 export const authConfig = {
   adapter: PrismaAdapter(db),
   providers: [
@@ -75,9 +78,13 @@ export const authConfig = {
           }
 
           const isValidPassword = await compare(password, user.password)
-
           if (!isValidPassword) {
             return null
+          }
+
+          let blurImage: string | null = null
+          if (user.image) {
+            blurImage = await getBlurPlaceholder({ imageSrc: user.image })
           }
 
           const cookieStore = await cookies()
@@ -90,6 +97,7 @@ export const authConfig = {
             image: user.image,
             theme: user.theme,
             role: user.role,
+            blurImageDataURL: blurImage,
           }
         } catch (error) {
           console.error("Auth error:", error)
@@ -98,7 +106,9 @@ export const authConfig = {
       },
     }),
   ],
-  pages: { signIn: "/signin" },
+  pages: {
+    signIn: "/signin",
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -109,6 +119,11 @@ export const authConfig = {
       return token
     },
     async session({ session, token }) {
+      let blurImage: string | null = null
+      if (session?.user?.image) {
+        blurImage = await getBlurPlaceholder({ imageSrc: session.user.image })
+      }
+
       if (session?.user?.email && token.jti) {
         await db.session.upsert({
           where: { sessionToken: token.jti },
@@ -128,6 +143,7 @@ export const authConfig = {
           id: token.id as string,
           role: token.role as UserTable["role"],
           theme: token.theme as UserTheme,
+          blurImageDataURL: blurImage,
         },
       }
     },

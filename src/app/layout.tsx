@@ -37,7 +37,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <SessionProvider>
           <Providers>
             <ThemeProvider attribute="class" enableSystem={false}>
-              <Nav user={user} />
+              <Nav user={user} key={user?.image} />
               <main className="flex-1">{children}</main>
               <NavigateTop />
               <Footer />

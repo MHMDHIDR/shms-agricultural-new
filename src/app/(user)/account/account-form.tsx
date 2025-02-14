@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 import clsx from "clsx"
 import { Loader2 } from "lucide-react"
-import { useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
 import Image from "next/image"
 import { useState } from "react"
@@ -37,41 +36,34 @@ export function AccountForm({ user }: { user: User }) {
   const [files, setFiles] = useState<Array<File>>([])
   const [isEditingEnabled, setIsEditingEnabled] = useState(false)
   const { setTheme } = useTheme()
-  const { data: session, update } = useSession()
   const toast = useToast()
 
   const uploadFilesMutation = api.S3.uploadFiles.useMutation()
   const updateUserMutation = api.user.update.useMutation({
     onSuccess: async data => {
       if (data) {
-        form.reset({
-          name: data.name,
+        const updatedUser = {
+          name: data.name ?? user.name,
           email: user.email,
           phone: data.phone,
           nationality: data.nationality,
           dateOfBirth: data.dateOfBirth,
           address: data.address,
           theme: data.theme,
-          image: data.image ?? "",
-        })
-
-        setTheme(data.theme ?? "light")
-
-        // if (data.name !== user.name || data.image !== user.image) {
-        if (data.image) {
-          await update({
-            user: {
-              ...session?.user,
-              image: data.image,
-              name: data.name,
-              theme: data.theme,
-            },
-          })
+          image: data.image ?? form.getValues("image"),
         }
+        form.reset(updatedUser)
+        setTheme(data.theme ?? "light")
 
         toast.success("تم تحديث البيانات بنجاح")
         setIsEditingEnabled(false)
       }
+    },
+    onError: error => {
+      toast.error(`تعذر تحديث البيانات في الوقت الحالي! ${error.message}`)
+    },
+    onMutate: () => {
+      toast.loading("جاري تحديث البيانات ...")
     },
   })
 
@@ -234,7 +226,7 @@ export function AccountForm({ user }: { user: User }) {
               <FormControl className="ltr">
                 <PhoneInput
                   placeholder="ادخل رقم الهاتف"
-                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300 rounded-md"
                   disabled={!isEditingEnabled}
                   defaultCountry="QA"
                   {...field}
