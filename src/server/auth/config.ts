@@ -130,18 +130,6 @@ export const authConfig = {
         blurImage = await getBlurPlaceholder({ imageSrc: session.user.image })
       }
 
-      if (session?.user?.email && token.jti) {
-        await db.session.upsert({
-          where: { sessionToken: token.jti },
-          create: {
-            sessionToken: token.jti,
-            userId: token.id as string,
-            expires: new Date(token.exp! * 1000),
-          },
-          update: { expires: new Date(token.exp! * 1000) },
-        })
-      }
-
       return {
         ...session,
         user: {
@@ -160,12 +148,24 @@ export const authConfig = {
     strategy: "jwt",
   },
   events: {
+    async signIn({ user, account }) {
+      if (user.id && account?.providerAccountId) {
+        await db.session.create({
+          data: {
+            userId: user.id,
+            sessionToken: `${account.providerAccountId}_${Date.now()}`,
+            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          },
+        })
+      }
+    },
     async signOut(message) {
-      if ("token" in message && message.token) {
-        const token = message.token
-        if (token.jti) {
-          await db.session.delete({ where: { sessionToken: token.jti } })
-        }
+      if ("token" in message && message.token?.id) {
+        await db.session.deleteMany({
+          where: {
+            userId: message.token.id,
+          },
+        })
       }
     },
   },
