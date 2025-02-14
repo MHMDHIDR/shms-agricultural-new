@@ -1,7 +1,9 @@
 import { hash } from "bcryptjs"
 import { z } from "zod"
+import { extractS3FileName } from "@/lib/extract-s3-filename"
 import { signupSchema, updatePublicSchema } from "@/schemas/signup"
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
+import { createCaller } from "../root"
 import type { Prisma } from "@prisma/client"
 
 const updateUserSchema = signupSchema.omit({ confirmPassword: true, doc: true }).partial()
@@ -41,6 +43,28 @@ export const userRouter = createTRPCRouter({
   update: protectedProcedure
     .input(z.object({ id: z.string(), ...updateUserSchema.shape }))
     .mutation(async ({ ctx, input }) => {
+      const existingUser = await ctx.db.user.findUnique({
+        where: { id: input.id },
+        select: { image: true },
+      })
+
+      if (!existingUser) {
+        throw new Error("User not found")
+      }
+
+      console.log("Existing User=>", existingUser)
+
+      if (input.image && input.image !== existingUser.image && existingUser.image) {
+        const oldFileKey = extractS3FileName(existingUser.image)
+
+        console.log("Removing old IMG=>", oldFileKey)
+
+        if (oldFileKey) {
+          const caller = createCaller(ctx)
+          await caller.S3.deleteFile({ fileName: oldFileKey })
+        }
+      }
+
       const data: Partial<Prisma.UserUpdateInput> = {} // Use Prisma's UserUpdateInput type
 
       // Only include defined fields

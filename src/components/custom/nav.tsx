@@ -107,7 +107,7 @@ export function Nav({ user }: { user: Session["user"] | undefined }) {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="inline-flex justify-between px-0 cursor-pointer">
                 <Avatar user={currentUser} className="rounded-md rounded-r-none h-8.5 w-8.5" />
-                <span className="px-3">{truncateUsername(currentUser?.name ?? "User")}</span>
+                <span className="pr-2">{truncateUsername(currentUser?.name ?? "User")}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-44 space-y-2 text-right">
