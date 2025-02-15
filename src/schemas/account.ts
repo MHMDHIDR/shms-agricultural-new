@@ -26,6 +26,7 @@ export const accountFormSchema = z.object({
     required_error: "يجب اختيار وضع السمة",
   }),
   image: z.string().url("رابط الصورة غير صالح").optional(),
+  doc: z.string().url("رابط المستند غير صالح").optional(),
 })
 
 export type AccountFormValues = z.infer<typeof accountFormSchema>

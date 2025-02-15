@@ -47,8 +47,7 @@ export const S3Router = createTRPCRouter({
       fileData.map(async file => {
         const uniqueFileName = generateUniqueFileName(entityId, file.name)
 
-        // if entityId includes user-avatar/ then delete the files with the same entityId (previous avatar)
-        if (entityId.includes("user-avatar/")) {
+        if (entityId.includes("user-image/")) {
           const listObjectsParams = {
             Bucket: env.AWS_BUCKET_NAME,
             Prefix: entityId,

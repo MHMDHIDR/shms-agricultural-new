@@ -45,5 +45,5 @@ function getProjectDuration(projectStartDate: Date, projectEndDate: Date): strin
   const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
   const diffMonths = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30))
 
-  return diffMonths > 2 ? `${diffMonths} أشهر` : `${diffMonths} شهر`
+  return diffMonths > 2 ? `${diffMonths} أشهر` : `${diffMonths} شهور`
 }

@@ -6,7 +6,7 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/
 import { createCaller } from "../root"
 import type { Prisma } from "@prisma/client"
 
-const updateUserSchema = signupSchema.omit({ confirmPassword: true, doc: true }).partial()
+const updateUserSchema = signupSchema.omit({ confirmPassword: true }).partial()
 
 export const userRouter = createTRPCRouter({
   getUserThemeByCredentials: publicProcedure
@@ -45,37 +45,40 @@ export const userRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const existingUser = await ctx.db.user.findUnique({
         where: { id: input.id },
-        select: { image: true },
+        select: { image: true, doc: true },
       })
 
       if (!existingUser) {
         throw new Error("User not found")
       }
 
-      console.log("Existing User=>", existingUser)
-
+      const caller = createCaller(ctx)
       if (input.image && input.image !== existingUser.image && existingUser.image) {
         const oldFileKey = extractS3FileName(existingUser.image)
-
-        console.log("Removing old IMG=>", oldFileKey)
-
         if (oldFileKey) {
-          const caller = createCaller(ctx)
           await caller.S3.deleteFile({ fileName: oldFileKey })
         }
       }
 
-      const data: Partial<Prisma.UserUpdateInput> = {} // Use Prisma's UserUpdateInput type
+      // Handle document deletion
+      if (input.doc && input.doc !== existingUser.doc && existingUser.doc) {
+        const oldFileKey = extractS3FileName(existingUser.doc)
+        if (oldFileKey) {
+          await caller.S3.deleteFile({ fileName: oldFileKey })
+        }
+      }
+
+      const data: Partial<Prisma.UserUpdateInput> = {}
 
       // Only include defined fields
       Object.entries(input).forEach(([key, value]) => {
         if (value !== undefined && key !== "id") {
-          data[key as keyof Prisma.UserUpdateInput] = value // Assign the value
+          data[key as keyof Prisma.UserUpdateInput] = value
         }
       })
 
       if (input.password) {
-        data.password = await hash(input.password, 12) // Ensure this is assigned correctly
+        data.password = await hash(input.password, 12)
       }
 
       return ctx.db.user.update({ where: { id: input.id }, data })

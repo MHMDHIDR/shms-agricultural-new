@@ -108,7 +108,7 @@ export function ProjectIntro({ project }: { project: Projects }) {
               className="mx-14 my-2.5"
               onClick={e => {
                 const buttonRect = e.currentTarget.getBoundingClientRect()
-                scrollToView(buttonRect.top)
+                scrollToView(buttonRect.x)
               }}
             >
               إبدأ الاستثمار

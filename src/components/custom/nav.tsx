@@ -176,7 +176,7 @@ export function Nav({ user }: { user: Session["user"] | undefined }) {
 
 function Avatar({ user, className }: { user: Session["user"] | undefined; className?: string }) {
   return (
-    <AvatarWrapper className={cn("h-8 w-8 select-none rounded-full shadow", className)}>
+    <AvatarWrapper className={cn("h-8 w-8 select-none shadow", className)}>
       {user?.image ? (
         <AvatarImage
           src={user.image}
@@ -185,7 +185,7 @@ function Avatar({ user, className }: { user: Session["user"] | undefined; classN
           className="object-cover object-top"
         />
       ) : (
-        <AvatarFallback className="text-orange-600 rounded-lg">
+        <AvatarFallback className="text-orange-600 rounded-none">
           {fallbackUsername(user?.name ?? APP_TITLE)}
         </AvatarFallback>
       )}

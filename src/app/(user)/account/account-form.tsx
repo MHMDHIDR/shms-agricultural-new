@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
 import Image from "next/image"
+import Link from "next/link"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { FileUpload } from "@/components/custom/file-upload"
@@ -55,6 +56,7 @@ export function AccountForm({ user }: { user: User }) {
           address: data.address,
           theme: data.theme,
           image: data.image ?? form.getValues("image"),
+          doc: data.doc ?? form.getValues("doc"),
         }
         form.reset(updatedUser)
         setTheme(data.theme ?? "light")
@@ -85,6 +87,7 @@ export function AccountForm({ user }: { user: User }) {
       address: user.address,
       theme: user.theme,
       image: user.image ?? "",
+      doc: user.doc ?? "",
     },
   })
 
@@ -97,6 +100,14 @@ export function AccountForm({ user }: { user: User }) {
 
   const processAndUploadFile = async (file: File | undefined, type: "image" | "doc") => {
     if (!file) return null
+    // 5MB for PDF, 10MB for image
+    const MAX_SIZE = type === "doc" ? 5 * 1024 * 1024 : 10 * 1024 * 1024
+
+    // Check file size for PDF (5MB limit)
+    if (file.size > MAX_SIZE) {
+      toast.error("حجم الملف يجب أن لا يتجاوز 5 ميجابايت")
+      return null
+    }
 
     const base64 = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader()
@@ -143,11 +154,19 @@ export function AccountForm({ user }: { user: User }) {
     try {
       setIsLoading(true)
       let imageUrl = values.image
+      let docUrl = values.doc
 
       if (files.image && files.image.length > 0) {
-        const uploadedUrl = await processAndUploadFile(files.image[0], "image")
-        if (uploadedUrl) {
-          imageUrl = uploadedUrl
+        const uploadedImageUrl = await processAndUploadFile(files.image[0], "image")
+        if (uploadedImageUrl) {
+          imageUrl = uploadedImageUrl
+        }
+      }
+
+      if (files.doc && files.doc.length > 0) {
+        const uploadedDocUrl = await processAndUploadFile(files.doc[0], "doc")
+        if (uploadedDocUrl) {
+          docUrl = uploadedDocUrl
         }
       }
 
@@ -155,6 +174,7 @@ export function AccountForm({ user }: { user: User }) {
         id: user.id,
         ...values,
         image: imageUrl,
+        doc: docUrl,
       })
     } catch (error) {
       console.error("Update error:", error)
@@ -346,6 +366,40 @@ export function AccountForm({ user }: { user: User }) {
                   className="ltr"
                 />
               </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="doc"
+          render={() => (
+            <FormItem>
+              <div className="flex gap-x-3 mb-4 items-center">
+                <FormLabel>المستند الشخصي</FormLabel>
+                {user.doc && (
+                  <Link
+                    href={user.doc}
+                    target="_blank"
+                    className="pressable text-xs"
+                    rel="noopener noreferrer"
+                  >
+                    عرض المستند الحالي
+                  </Link>
+                )}
+              </div>
+              <FormControl>
+                <div className="space-y-2">
+                  <FileUpload
+                    onFilesSelected={files => handleFilesSelected(files, "doc")}
+                    accept={{ "application/pdf": [".pdf"] }}
+                    maxFiles={1}
+                    disabled={!isEditingEnabled}
+                  />
+                </div>
+              </FormControl>
+              <FormDescription>يجب أن لا يتجاوز حجم الملف 5 ميجابايت</FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />

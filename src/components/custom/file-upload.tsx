@@ -75,10 +75,10 @@ export function FileUpload({
         {isDragActive ? <p>اسحب الملف هنا...</p> : <p>اسحب وأفلت الملف هنا، أو انقر للاختيار</p>}
         <small className="text-primary/75 text-xs">
           {accept ? (
-            <span className="flex items-center justify-center gap-1">
-              يمكنك تحميل ملفات من نوع
+            <p className="flex flex-col items-center justify-center gap-1">
+              <span>يمكنك تحميل ملفات من نوع</span>
               <strong dir="ltr">{Object.values(accept).join(", ")}</strong>
-            </span>
+            </p>
           ) : (
             "يمكنك تحميل أي نوع من الملفات"
           )}

@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
+import { APP_CURRENCY } from "@/lib/constants"
 import { formatDate } from "@/lib/format-date"
 import type { Projects } from "@prisma/client"
 
@@ -21,7 +22,7 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
     { name: "projectStudyCase" as const, title: "عرض دراسة الجدوى" },
   ] as const
 
-  const getPropertyValue = (propertyName: (typeof properties)[number]["name"]) => {
+  function getPropertyValue(propertyName: (typeof properties)[number]["name"]) {
     if (propertyName === "projectProfitsCollectDate") {
       return formatDate({ date: project[propertyName].toISOString() })
     }
@@ -29,6 +30,10 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
       return ""
     }
     return project[propertyName]?.toString() ?? ""
+  }
+
+  function addCurrencySuffix(value: number | string) {
+    return Number(value) ? `${value} ${APP_CURRENCY}` : value
   }
 
   const projectCompletedPercentage = Number(
@@ -81,15 +86,17 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
                 key={property.name}
                 className="flex flex-col gap-7 select-none bg-background p-5 data-[state=inactive]:hidden"
               >
-                <div className="flex items-center justify-end gap-2">
-                  <span className="text-sm text-muted-foreground rtl">
-                    {property.name === "projectStudyCase" && project.projectStudyCaseVisibility
-                      ? ""
-                      : getPropertyValue(property.name)}
-                  </span>
-                  <Badge variant="outline" className="text-xs rounded-full font-light">
-                    {property.title}
-                  </Badge>
+                <div className="flex items-center justify-end md:justify-center gap-2">
+                  {property.name === "projectStudyCase" &&
+                  project.projectStudyCaseVisibility ? null : (
+                    <Badge
+                      variant="outline"
+                      className="text-xs md:text-sm md:font-bold rounded-full font-light"
+                      dir="auto"
+                    >
+                      {addCurrencySuffix(getPropertyValue(property.name))}
+                    </Badge>
+                  )}
                 </div>
                 {property.name === "projectStudyCase" && project.projectStudyCaseVisibility
                   ? project.projectStudyCase.map((image, idx) => (
