@@ -4,111 +4,115 @@ import { Calendar, Pin } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { formatDate } from "@/lib/format-date"
+import { scrollToView } from "@/lib/scroll-to-view"
 import type { Projects } from "@prisma/client"
 
 export function ProjectIntro({ project }: { project: Projects }) {
+  const randomImages = project.projectImages.sort(() => Math.random() - 0.5).slice(0, 3)
+
   return (
-    <section className="bg-background py-12 font-dm_sans md:py-20">
-      <div className="container">
-        <div className="grid grid-cols-1 items-center justify-center gap-20 lg:grid-cols-2">
-          <div>
-            <div className="flex max-w-[40.625rem] flex-col gap-8">
-              <h1 className="font-serif text-4xl text-foreground lg:text-5xl xl:text-6xl">
-                {project.projectName}
-              </h1>
-              <p className="text-balance text-lg text-muted-foreground leading-loose">
-                {project.projectDescription}
-              </p>
-              <div className="flex flex-col gap-1.5 py-4 select-none">
-                <div className="flex items-center gap-2">
-                  <Pin className="size-4 stroke-muted2-foreground" />
-                  <p className="text-lg font-medium text-muted2-foreground">
-                    {project.projectLocation}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="size-4 stroke-muted2-foreground" />
-                  <p className="text-lg font-medium text-muted2-foreground">
-                    <span className="text-muted-foreground">يبدأ بتاريخ: </span>
-                    {formatDate({ date: project.projectStartDate.toISOString() })}
-                  </p>
-                </div>
-                <svg
-                  className="w-[4.375rem] fill-muted-foreground xl:w-[8rem] rotate-180 mr-8"
-                  viewBox="0 0 131 174"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M123.385 5.96661C123.548 6.77895 123.021 7.56919 122.209 7.73166C115.896 8.99415 109.63 9.96037 103.486 10.9077C99.0811 11.5869 94.7393 12.2564 90.4886 13.0183C80.1979 14.8631 70.1037 17.2952 59.8744 21.8151C41.5635 29.906 25.0024 41.8876 14.0337 58.7365C8.37592 67.4273 4.29836 78.5442 3.60483 89.504C2.91206 100.452 5.59556 111.123 13.2956 119.15C17.2013 123.222 22.165 126.554 27.7033 129.043C26.3041 123.491 25.7088 117.6 26.1196 111.355C27.0927 96.5641 39.1649 88.8778 52.0447 87.6439C64.8739 86.4148 79.2577 91.4779 85.4762 102.943C88.8209 109.11 89.0032 115.236 86.7021 120.549C84.4187 125.822 79.7615 130.137 73.7 132.917C63.9444 137.39 51.9845 138.282 40.6769 136.184C37.8771 135.664 35.1075 134.96 32.412 134.076C37.8412 148.683 49.141 160.796 61.9724 170.755C62.6268 171.263 62.7456 172.205 62.2377 172.86C61.7298 173.514 60.7875 173.633 60.133 173.125C46.4556 162.51 34.1037 149.186 28.7723 132.754C22.0105 130.053 15.8772 126.176 11.1305 121.227C2.69861 112.436 -0.119486 100.855 0.610818 89.3145C1.34036 77.7856 5.61055 66.1764 11.5195 57.0997C22.8909 39.6323 39.9827 27.3247 58.6619 19.071C69.1997 14.4148 79.5552 11.9305 89.9592 10.0654C94.3905 9.27105 98.7725 8.59677 103.176 7.91915C109.222 6.98883 115.309 6.05221 121.62 4.78992C122.433 4.62745 123.223 5.15427 123.385 5.96661ZM31.2114 130.479C34.4288 131.674 37.7946 132.598 41.2243 133.234C52.0581 135.245 63.3684 134.354 72.4495 130.19C77.9974 127.646 82.0229 123.805 83.9492 119.357C85.8579 114.95 85.7769 109.79 82.8391 104.373C77.3783 94.3052 64.3988 89.4741 52.3308 90.6302C40.3135 91.7815 29.9547 98.7598 29.1131 111.552C28.6714 118.266 29.4591 124.568 31.2114 130.479Z"
-                  ></path>
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M114.056 1.72566C114.207 0.911209 114.99 0.373802 115.805 0.525328C115.89 0.541148 116.012 0.563426 116.166 0.591592C117.344 0.806885 120.403 1.36614 123.271 2.01411C124.885 2.37873 126.488 2.78252 127.676 3.18084C128.255 3.37485 128.823 3.59596 129.256 3.84814C129.46 3.96696 129.753 4.15933 129.988 4.44833C130.241 4.75995 130.578 5.40289 130.28 6.16935C129.856 7.25995 128.921 8.03458 128.094 8.58288C127.232 9.15452 126.215 9.65136 125.335 10.0779L125.264 10.1127C124.363 10.5492 123.633 10.9033 123.11 11.2487C122.902 11.386 122.778 11.4897 122.71 11.5572C122.597 12.2744 121.977 12.8231 121.228 12.8231C120.4 12.8231 119.728 12.1516 119.728 11.3231C119.728 10.6196 120.043 10.064 120.366 9.67844C120.683 9.29947 121.082 8.99272 121.457 8.745C122.152 8.28613 123.048 7.85224 123.862 7.45814C123.917 7.43145 123.972 7.40493 124.026 7.3786C124.936 6.93764 125.77 6.52466 126.436 6.08262C126.489 6.04781 126.539 6.01368 126.587 5.98025C125.557 5.64496 124.135 5.28497 122.61 4.94034C119.811 4.30799 116.823 3.76151 115.632 3.54375C115.473 3.5147 115.346 3.49149 115.256 3.47472C114.442 3.32319 113.904 2.54011 114.056 1.72566ZM127.788 6.46672C127.788 6.46675 127.785 6.46476 127.779 6.46068C127.785 6.46465 127.788 6.46669 127.788 6.46672Z"
-                  ></path>
-                </svg>
-                <Button variant={"pressable"} size="sm" className="mx-14 my-2.5">
-                  إبدأ الاستثمار
-                </Button>
+    <section className="container mx-auto py-12 md:py-14 px-5">
+      <div className="grid grid-cols-1 items-center justify-center gap-10 md:grid-cols-2">
+        <div className="relative mx-auto aspect-square w-full order-1 md:order-2">
+          <div className="absolute left-[4.33%] top-[5.04%] z-20 w-[42.25%]">
+            <div className="relative w-full pb-[116.6666666861111%]">
+              <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
+                <Image
+                  src={randomImages[0]?.imgDisplayPath ?? ""}
+                  alt={project.projectName}
+                  className="block w-full h-full object-cover rounded-md"
+                  draggable="false"
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                />
               </div>
             </div>
           </div>
-          <div className="relative mx-auto aspect-[0.990343348_/_1] w-full max-w-[42.5rem]">
-            <div className="relative mx-auto aspect-[0.990343348/_1] w-full max-w-[42.5rem]">
-              <div className="absolute left-[4.33%] top-[5.04%] z-20 w-[42.25%]">
-                <div
-                  className="relative w-full pb-[116.6666666861111%]"
-                  data-radix-aspect-ratio-wrapper=""
-                >
-                  <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
-                    <Image
-                      src={project.projectImages[0]?.imgDisplayPath ?? ""}
-                      alt={project.projectName}
-                      className="block w-full h-full object-cover rounded-md"
-                      draggable="false"
-                      fill
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="absolute bottom-[12.87%] right-[8.23%] z-20 w-[42.25%]">
-                <div
-                  className="relative w-full pb-[126.66666670044445%]"
-                  data-radix-aspect-ratio-wrapper=""
-                >
-                  <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
-                    <Image
-                      src={project.projectImages[1]?.imgDisplayPath ?? ""}
-                      alt={project.projectName}
-                      className="block w-full h-full object-cover rounded-md"
-                      draggable="false"
-                      fill
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="absolute bottom-[5%] left-[10.94%] z-30 w-[42.25%]">
-                <div
-                  className="relative w-full pb-[111.79487177537935%]"
-                  data-radix-aspect-ratio-wrapper=""
-                >
-                  <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
-                    <Image
-                      src={project.projectImages[2]?.imgDisplayPath ?? ""}
-                      alt={project.projectName}
-                      className="block w-full h-full object-cover rounded-md"
-                      draggable="false"
-                      fill
-                    />
-                  </div>
-                </div>
+          <div className="absolute bottom-[12.87%] right-[8.23%] z-20 w-[42.25%]">
+            <div className="relative w-full pb-[126.66666670044445%]">
+              <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
+                <Image
+                  src={randomImages[1]?.imgDisplayPath ?? ""}
+                  alt={project.projectName}
+                  className="block w-full h-full object-cover rounded-md"
+                  draggable="false"
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                />
               </div>
             </div>
+          </div>
+          <div className="absolute bottom-[5%] left-[10.94%] z-30 w-[42.25%]">
+            <div className="relative w-full pb-[111.79487177537935%]">
+              <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
+                <Image
+                  src={randomImages[2]?.imgDisplayPath ?? ""}
+                  alt={project.projectName}
+                  className="block w-full h-full object-cover rounded-md"
+                  draggable="false"
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                />
+              </div>
+            </div>
+          </div>
 
-            <BackgroundDrawings />
+          <BackgroundDrawings />
+        </div>
+        <div className="flex flex-col gap-4 order-1">
+          <h1 className="text-4xl text-foreground lg:text-5xl xl:text-6xl">
+            {project.projectName}
+          </h1>
+          <p className="text-balance text-lg text-muted-foreground leading-loose">
+            {project.projectDescription}
+          </p>
+          <div className="flex flex-col gap-1.5 py-4 select-none">
+            <div className="flex items-center gap-2">
+              <Pin className="size-4 stroke-muted2-foreground" />
+              <p className="text-sm">{project.projectLocation}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="size-4 stroke-muted2-foreground" />
+              <p className="text-sm">
+                <span className="text-muted-foreground">يبدأ بتاريخ: </span>
+                {formatDate({ date: project.projectStartDate.toISOString() })}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="size-4 stroke-muted2-foreground" />
+              <p className="text-sm">
+                <span className="text-muted-foreground">ينتهي بتاريخ: </span>
+                {formatDate({ date: project.projectEndDate.toISOString() })}
+              </p>
+            </div>
+            <svg
+              className="w-[4.375rem] fill-muted-foreground xl:w-[8rem] rotate-180 mr-8"
+              viewBox="0 0 131 174"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M123.385 5.96661C123.548 6.77895 123.021 7.56919 122.209 7.73166C115.896 8.99415 109.63 9.96037 103.486 10.9077C99.0811 11.5869 94.7393 12.2564 90.4886 13.0183C80.1979 14.8631 70.1037 17.2952 59.8744 21.8151C41.5635 29.906 25.0024 41.8876 14.0337 58.7365C8.37592 67.4273 4.29836 78.5442 3.60483 89.504C2.91206 100.452 5.59556 111.123 13.2956 119.15C17.2013 123.222 22.165 126.554 27.7033 129.043C26.3041 123.491 25.7088 117.6 26.1196 111.355C27.0927 96.5641 39.1649 88.8778 52.0447 87.6439C64.8739 86.4148 79.2577 91.4779 85.4762 102.943C88.8209 109.11 89.0032 115.236 86.7021 120.549C84.4187 125.822 79.7615 130.137 73.7 132.917C63.9444 137.39 51.9845 138.282 40.6769 136.184C37.8771 135.664 35.1075 134.96 32.412 134.076C37.8412 148.683 49.141 160.796 61.9724 170.755C62.6268 171.263 62.7456 172.205 62.2377 172.86C61.7298 173.514 60.7875 173.633 60.133 173.125C46.4556 162.51 34.1037 149.186 28.7723 132.754C22.0105 130.053 15.8772 126.176 11.1305 121.227C2.69861 112.436 -0.119486 100.855 0.610818 89.3145C1.34036 77.7856 5.61055 66.1764 11.5195 57.0997C22.8909 39.6323 39.9827 27.3247 58.6619 19.071C69.1997 14.4148 79.5552 11.9305 89.9592 10.0654C94.3905 9.27105 98.7725 8.59677 103.176 7.91915C109.222 6.98883 115.309 6.05221 121.62 4.78992C122.433 4.62745 123.223 5.15427 123.385 5.96661ZM31.2114 130.479C34.4288 131.674 37.7946 132.598 41.2243 133.234C52.0581 135.245 63.3684 134.354 72.4495 130.19C77.9974 127.646 82.0229 123.805 83.9492 119.357C85.8579 114.95 85.7769 109.79 82.8391 104.373C77.3783 94.3052 64.3988 89.4741 52.3308 90.6302C40.3135 91.7815 29.9547 98.7598 29.1131 111.552C28.6714 118.266 29.4591 124.568 31.2114 130.479Z"
+              ></path>
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M114.056 1.72566C114.207 0.911209 114.99 0.373802 115.805 0.525328C115.89 0.541148 116.012 0.563426 116.166 0.591592C117.344 0.806885 120.403 1.36614 123.271 2.01411C124.885 2.37873 126.488 2.78252 127.676 3.18084C128.255 3.37485 128.823 3.59596 129.256 3.84814C129.46 3.96696 129.753 4.15933 129.988 4.44833C130.241 4.75995 130.578 5.40289 130.28 6.16935C129.856 7.25995 128.921 8.03458 128.094 8.58288C127.232 9.15452 126.215 9.65136 125.335 10.0779L125.264 10.1127C124.363 10.5492 123.633 10.9033 123.11 11.2487C122.902 11.386 122.778 11.4897 122.71 11.5572C122.597 12.2744 121.977 12.8231 121.228 12.8231C120.4 12.8231 119.728 12.1516 119.728 11.3231C119.728 10.6196 120.043 10.064 120.366 9.67844C120.683 9.29947 121.082 8.99272 121.457 8.745C122.152 8.28613 123.048 7.85224 123.862 7.45814C123.917 7.43145 123.972 7.40493 124.026 7.3786C124.936 6.93764 125.77 6.52466 126.436 6.08262C126.489 6.04781 126.539 6.01368 126.587 5.98025C125.557 5.64496 124.135 5.28497 122.61 4.94034C119.811 4.30799 116.823 3.76151 115.632 3.54375C115.473 3.5147 115.346 3.49149 115.256 3.47472C114.442 3.32319 113.904 2.54011 114.056 1.72566ZM127.788 6.46672C127.788 6.46675 127.785 6.46476 127.779 6.46068C127.785 6.46465 127.788 6.46669 127.788 6.46672Z"
+              ></path>
+            </svg>
+            <Button
+              variant={"pressable"}
+              size="sm"
+              className="mx-14 my-2.5"
+              onClick={e => {
+                const buttonRect = e.currentTarget.getBoundingClientRect()
+                scrollToView(buttonRect.top)
+              }}
+            >
+              إبدأ الاستثمار
+            </Button>
           </div>
         </div>
       </div>

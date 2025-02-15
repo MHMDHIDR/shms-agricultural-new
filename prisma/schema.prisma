@@ -61,7 +61,7 @@ model Projects {
     projectSpecialPercentageCode String?
     projectStockProfits          Int
     projectDescription           String
-    projectTerms                 String?
+    projectTerms                 String
     updateImg                    Boolean?
     updatePercentage             Boolean?
     projectAdded                 Int?
