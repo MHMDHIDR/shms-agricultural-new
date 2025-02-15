@@ -1,4 +1,4 @@
-import { Mail, MapPinPlus, Phone } from "lucide-react"
+import { Mail, Phone } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
 import Divider from "@/components/custom/divider"
