@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { sendPurchaseConfirmationEmail } from "@/lib/email/purchase-confirmation"
+import { projectSchema } from "@/schemas/project"
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
 
 export const projectRouter = createTRPCRouter({
@@ -168,6 +169,61 @@ export const projectRouter = createTRPCRouter({
         // Log email error but don't fail the transaction
         console.error("Failed to send confirmation email:", error)
       }
+
+      return { success: true }
+    }),
+
+  create: protectedProcedure.input(projectSchema).mutation(async ({ ctx, input }) => {
+    const project = await ctx.db.projects.create({
+      data: {
+        ...input,
+        projectImages: [], // Will be updated after file upload
+        projectStudyCase: [], // Will be updated after file upload
+        projectStatus: "pending",
+      },
+    })
+
+    return project.id
+  }),
+
+  updateById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        data: projectSchema.partial(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, data } = input
+
+      const project = await ctx.db.projects.update({
+        where: { id },
+        data: {
+          ...data,
+          projectImages: data.projectImages?.map(path => ({
+            imgDisplayName: path.split("/").pop() ?? "",
+            imgDisplayPath: path,
+          })),
+          projectStudyCase: data.projectStudyCase
+            ? [
+                {
+                  imgDisplayName: data.projectStudyCase.split("/").pop() ?? "",
+                  imgDisplayPath: data.projectStudyCase,
+                },
+              ]
+            : undefined,
+        },
+      })
+
+      return project
+    }),
+
+  deleteById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.projects.delete({
+        where: { id: input.id },
+      })
 
       return { success: true }
     }),

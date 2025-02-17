@@ -2,6 +2,7 @@ import { File, X } from "lucide-react"
 import Image from "next/image"
 import React, { useCallback, useState } from "react"
 import { useDropzone } from "react-dropzone"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 type FileUploadProps = {
@@ -11,6 +12,7 @@ type FileUploadProps = {
   maxFiles?: number
   className?: string
   isPreviewHidden?: boolean
+  multiple?: boolean
 }
 
 export function FileUpload({
@@ -20,39 +22,42 @@ export function FileUpload({
   maxFiles,
   className,
   isPreviewHidden = false,
+  multiple = false,
 }: FileUploadProps) {
-  const [preview, setPreview] = useState<string | null>(null)
-  const [fileName, setFileName] = useState<string | null>(null)
+  const [previews, setPreviews] = useState<Array<{ url: string; name: string }>>([])
 
-  const clearPreview = () => {
-    if (preview) {
-      URL.revokeObjectURL(preview)
-    }
-    setPreview(null)
-    setFileName(null)
+  const clearPreviews = () => {
+    previews.forEach(preview => URL.revokeObjectURL(preview.url))
+    setPreviews([])
     onFilesSelected([])
+  }
+
+  const removePreview = (index: number) => {
+    setPreviews(prev => {
+      const newPreviews = [...prev]
+      URL.revokeObjectURL(newPreviews[index]!.url)
+      newPreviews.splice(index, 1)
+      return newPreviews
+    })
   }
 
   const onDrop = useCallback(
     (acceptedFiles: Array<File>) => {
-      const file = acceptedFiles[0]
-      if (!file) return
-
-      // Clear previous preview
-      if (preview) {
-        URL.revokeObjectURL(preview)
+      // Clear previous previews if not multiple
+      if (!multiple) {
+        previews.forEach(preview => URL.revokeObjectURL(preview.url))
+        setPreviews([])
       }
 
-      // If it's an image, create preview URL
-      if (file.type.startsWith("image/")) {
-        const previewUrl = URL.createObjectURL(file)
-        setPreview(previewUrl)
-      }
+      const newPreviews = acceptedFiles.map(file => ({
+        url: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
+        name: file.name,
+      }))
 
-      setFileName(file.name)
+      setPreviews(prev => (multiple ? [...prev, ...newPreviews] : newPreviews))
       onFilesSelected(acceptedFiles)
     },
-    [onFilesSelected, preview],
+    [multiple, onFilesSelected, previews],
   )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -61,8 +66,9 @@ export function FileUpload({
       typeof accept === "string"
         ? { [accept]: [] }
         : (accept ?? { "image/*": [".jpeg", ".jpg", ".png", ".webp"] }),
-    maxFiles: maxFiles ?? 1,
+    maxFiles: maxFiles ?? (multiple ? undefined : 1),
     disabled,
+    multiple,
   })
 
   return (
@@ -71,8 +77,16 @@ export function FileUpload({
         {...getRootProps()}
         className={`relative rounded-lg border-2 border-dashed p-4 text-center ${isDragActive ? "border-primary bg-primary/10" : "border-gray-300"} ${disabled ? "cursor-not-allowed opacity-50" : "hover:border-primary cursor-pointer"}`}
       >
-        <input id="fileUploadInput" {...getInputProps()} multiple={false} />
-        {isDragActive ? <p>اسحب الملف هنا...</p> : <p>اسحب وأفلت الملف هنا، أو انقر للاختيار</p>}
+        <input {...getInputProps()} />
+        {isDragActive ? (
+          <p>اسحب الملفات هنا...</p>
+        ) : (
+          <p>
+            {multiple
+              ? "اسحب وأفلت الملفات هنا، أو انقر للاختيار"
+              : "اسحب وأفلت الملف هنا، أو انقر للاختيار"}
+          </p>
+        )}
         <small className="text-primary/75 text-xs">
           {accept ? (
             <p className="flex flex-col items-center justify-center gap-1">
@@ -85,37 +99,54 @@ export function FileUpload({
         </small>
       </div>
 
-      {!isPreviewHidden && (preview ?? fileName) && (
-        <div className="relative mt-4 flex items-center gap-4 rounded-lg border p-4">
-          {preview ? (
-            <Image
-              src={preview}
-              alt="Preview"
-              className="h-20 w-20 rounded-lg object-cover"
-              width={80}
-              height={80}
-            />
-          ) : (
-            <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-100">
-              <File className="h-8 w-8 text-gray-400" />
+      {!isPreviewHidden && previews.length > 0 && (
+        <div className="flex flex-wrap gap-3">
+          {previews.map((preview, index) => (
+            <div
+              key={preview.url || preview.name}
+              className="relative flex items-center gap-2.5 rounded-lg border p-2"
+            >
+              {preview.url ? (
+                <Image
+                  src={preview.url}
+                  alt={preview.name}
+                  className="h-16 w-16 rounded-lg object-cover"
+                  width={64}
+                  height={64}
+                />
+              ) : (
+                <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100">
+                  <File className="h-8 w-8 text-gray-400" />
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={e => {
+                  e.stopPropagation()
+                  removePreview(index)
+                }}
+                className="absolute top-0 right-0 cursor-pointer rounded-full bg-red-400 p-1 hover:bg-red-600"
+              >
+                <X className="h-4 w-4 text-white" />
+              </button>
             </div>
-          )}
-
-          <div className="flex-1">
-            <p className="text-sm font-medium">{fileName}</p>
-          </div>
-
-          <button
-            type="button"
-            onClick={e => {
-              e.stopPropagation()
-              clearPreview()
-            }}
-            className="absolute top-2 right-2 cursor-pointer rounded-full bg-red-400 p-1 hover:bg-red-600"
-          >
-            <X className="h-4 w-4 text-white" />
-          </button>
+          ))}
         </div>
+      )}
+
+      {!isPreviewHidden && previews.length > 0 && (
+        <Button
+          type="button"
+          variant="destructive"
+          onClick={e => {
+            e.stopPropagation()
+            clearPreviews()
+          }}
+          className="w-full px-4 py-2 text-sm cursor-pointer"
+        >
+          مسح الكل
+        </Button>
       )}
     </div>
   )

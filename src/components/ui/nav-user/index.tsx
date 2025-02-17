@@ -32,8 +32,8 @@ export function NavUser({ user }: { user: Session["user"] }) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.image!} alt={user.name!} />
+              <Avatar className="h-8 w-8 rounded-lg cursor-pointer">
+                <AvatarImage src={user.image ?? "/logo.svg"} alt={user.name!} />
                 <AvatarFallback className="rounded-lg">
                   {fallbackUsername(user.name!)}
                 </AvatarFallback>
