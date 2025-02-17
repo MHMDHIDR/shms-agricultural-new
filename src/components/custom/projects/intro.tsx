@@ -108,7 +108,8 @@ export function ProjectIntro({ project }: { project: Projects }) {
               className="mx-14 my-2.5"
               onClick={e => {
                 const buttonRect = e.currentTarget.getBoundingClientRect()
-                scrollToView(buttonRect.x)
+                const scrollPosition = window.innerWidth > 768 ? buttonRect.x : buttonRect.y
+                scrollToView(scrollPosition * 1.5)
               }}
             >
               إبدأ الاستثمار

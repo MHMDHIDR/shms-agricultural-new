@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select"
 import { APP_CURRENCY } from "@/lib/constants"
 import { api } from "@/trpc/react"
+import { LoadingCard } from "../loading"
 import type { Projects } from "@prisma/client"
 
 export function StockPurchaseForm({ project }: { project: Projects }) {
@@ -34,13 +35,8 @@ export function StockPurchaseForm({ project }: { project: Projects }) {
   }, [])
 
   const { data: userData, isLoading: isLoadingUser } = api.user.getUserById.useQuery(
-    {
-      id: session?.user?.id ?? "",
-    },
-    {
-      enabled: !!session?.user?.id,
-      retry: 1,
-    },
+    { id: session?.user?.id ?? "" },
+    { enabled: !!session?.user?.id, retry: 1 },
   )
 
   const { mutate: validateCode, isPending: isValidating } =
@@ -70,15 +66,13 @@ export function StockPurchaseForm({ project }: { project: Projects }) {
 
   // Show loading state during initial client-side render
   if (!isClient || status === "loading" || isLoadingUser) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    )
+    return <LoadingCard renderedSkeletons={8} className="h-28" />
   }
 
-  // Handle unauthenticated state
-  if (!session?.user) {
+  if (status === "unauthenticated") {
+    const currentPath = `/projects/${project.id}?step=purchase`
+    const signInUrl = `/signin?callbackUrl=${encodeURIComponent(currentPath)}`
+    window.location.href = signInUrl
     return null
   }
 

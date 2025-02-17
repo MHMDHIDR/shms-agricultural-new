@@ -59,8 +59,8 @@ export function ProjectStepper({
   const purchaseData = typeof window !== "undefined" ? localStorage.getItem("purchase_data") : null
 
   const canAccessStep = (stepToCheck: string) => {
-    const stepIdx = steps.findIndex(s => s.id === stepToCheck)
-    const currentIdx = steps.findIndex(s => s.id === currentStep)
+    const stepIdx = steps.findIndex(step => step.id === stepToCheck)
+    const currentIdx = steps.findIndex(step => step.id === currentStep)
 
     // Can always go back
     if (stepIdx < currentIdx) return true
@@ -87,12 +87,14 @@ export function ProjectStepper({
             router.push(`/projects/${projectId}?step=${step.id}`)
           }
         }}
+        className="justify-center"
       >
         {steps.map(({ id, title, description }) => (
           <StepperItem
             key={id}
             step={steps.findIndex(s => s.id === id)}
             disabled={!canAccessStep(id)}
+            className="cursor-pointer"
           >
             <StepperTrigger>
               <StepperIndicator />

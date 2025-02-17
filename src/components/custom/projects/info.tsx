@@ -53,7 +53,6 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
 
   const handleStartInvestment = () => {
     if (!session?.user) {
-      // Encode the callback URL
       const callbackUrl = encodeURIComponent(`/projects/${project.id}?step=purchase`)
       router.push(`/signin?callbackUrl=${callbackUrl}`)
       return

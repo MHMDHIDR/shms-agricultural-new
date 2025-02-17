@@ -47,14 +47,8 @@ export function SignInForm() {
 
       setTheme(result.theme ?? "light")
       toast.success("تم تسجيل الدخول بنجاح")
-      router.refresh()
 
-      // Redirect to callback URL if exists
-      if (callbackUrl) {
-        router.push(callbackUrl)
-      } else {
-        router.push("/")
-      }
+      router.push(callbackUrl ?? "/")
     } catch (error) {
       console.error("Sign in error:", error)
       toast.error("حدث خطأ اثناء تسجيل الدخول")
