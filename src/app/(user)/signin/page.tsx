@@ -11,14 +11,27 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
 }
 
-export default async function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string }>
+}) {
   const session = await auth()
   const user = session?.user
+  const searchParamsProp = await searchParams
+  const callbackUrl = searchParamsProp.callbackUrl
 
-  if (user?.role === "admin") {
-    redirect("/admin")
-  } else if (user?.role === "user") {
-    redirect("/dashboard")
+  if (user) {
+    if (callbackUrl) {
+      redirect(decodeURIComponent(callbackUrl))
+    }
+
+    // Otherwise, use role-based redirects
+    if (user.role === "admin") {
+      redirect("/admin")
+    } else {
+      redirect("/dashboard")
+    }
   }
 
   return (

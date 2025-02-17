@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 import { useTheme } from "next-themes"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
@@ -26,6 +26,8 @@ export function SignInForm() {
   const { setTheme } = useTheme()
   const toast = useToast()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl")
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -46,7 +48,13 @@ export function SignInForm() {
       setTheme(result.theme ?? "light")
       toast.success("تم تسجيل الدخول بنجاح")
       router.refresh()
-      router.push("/")
+
+      // Redirect to callback URL if exists
+      if (callbackUrl) {
+        router.push(callbackUrl)
+      } else {
+        router.push("/")
+      }
     } catch (error) {
       console.error("Sign in error:", error)
       toast.error("حدث خطأ اثناء تسجيل الدخول")

@@ -1,8 +1,9 @@
 "use client"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs"
+import { useSession } from "next-auth/react"
 import Image from "next/image"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
@@ -11,6 +12,8 @@ import { formatDate } from "@/lib/format-date"
 import type { Projects } from "@prisma/client"
 
 export function Info({ project }: { project: Projects & { projectDuration: string } }) {
+  const router = useRouter()
+  const { data: session } = useSession()
   const randomImages = project.projectImages.sort(() => Math.random() - 0.5).slice(0, 3)
 
   const properties = [
@@ -47,6 +50,17 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
       100,
     ),
   )
+
+  const handleStartInvestment = () => {
+    if (!session?.user) {
+      // Encode the callback URL
+      const callbackUrl = encodeURIComponent(`/projects/${project.id}?step=purchase`)
+      router.push(`/signin?callbackUrl=${callbackUrl}`)
+      return
+    }
+
+    router.push(`/projects/${project.id}?step=purchase`)
+  }
 
   return (
     <section className="container mx-auto py-14">
@@ -165,11 +179,9 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
           <p className="text-xl font-extrabold text-muted-foreground mb-4">
             إبدأ ببناء المستقبل، استثمر في هذا المشروع الآن
           </p>
-          <Link href={`/projects/${project.id}/buy`}>
-            <Button variant="pressable" className="w-fit">
-              إبدأ الاستثمار
-            </Button>
-          </Link>
+          <Button variant="pressable" className="w-fit" onClick={handleStartInvestment}>
+            إبدأ الاستثمار
+          </Button>
         </div>
       </div>
     </section>

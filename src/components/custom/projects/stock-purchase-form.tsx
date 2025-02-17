@@ -1,0 +1,231 @@
+"use client"
+
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { TermsDialog } from "@/components/custom/projects/terms-dialog"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { APP_CURRENCY } from "@/lib/constants"
+import { api } from "@/trpc/react"
+import type { Projects } from "@prisma/client"
+
+export function StockPurchaseForm({ project }: { project: Projects }) {
+  const router = useRouter()
+  const { data: session, status } = useSession()
+  const [selectedStocks, setSelectedStocks] = useState(0)
+  const [percentageCode, setPercentageCode] = useState("")
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const [newPercentage, setNewPercentage] = useState(0)
+  const [showTerms, setShowTerms] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  const { data: userData, isLoading: isLoadingUser } = api.user.getUserById.useQuery(
+    {
+      id: session?.user?.id ?? "",
+    },
+    {
+      enabled: !!session?.user?.id,
+      retry: 1,
+    },
+  )
+
+  const { mutate: validateCode, isPending: isValidating } =
+    api.projects.validatePercentageCode.useMutation({
+      onSuccess: data => {
+        setNewPercentage(data.percentage)
+      },
+    })
+
+  // Calculate available stocks using userData instead of session
+  const purchasedStocksForProject =
+    userData?.stocks
+      ?.filter(stock => stock.id === project.id)
+      .reduce((acc, curr) => acc + curr.stocks, 0) ?? 0
+
+  const remainingUserLimit = userData?.stockLimit
+    ? userData.stockLimit - purchasedStocksForProject
+    : 0
+
+  const maxPurchaseAmount = Math.min(remainingUserLimit, project.projectAvailableStocks)
+
+  const baseProfit = selectedStocks * project.projectStockProfits
+  const bonusProfit = (baseProfit * newPercentage) / 100
+  const totalProfit = baseProfit + bonusProfit
+  const totalPayment = selectedStocks * project.projectStockPrice
+  const totalReturn = totalPayment + totalProfit
+
+  // Show loading state during initial client-side render
+  if (!isClient || status === "loading" || isLoadingUser) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    )
+  }
+
+  // Handle unauthenticated state
+  if (!session?.user) {
+    return null
+  }
+
+  // Handle missing user data
+  if (!userData) {
+    return null
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!acceptedTerms || selectedStocks === 0) return
+
+    // Store purchase data in localStorage for confirmation step
+    localStorage.setItem(
+      "purchase_data",
+      JSON.stringify({
+        projectId: project.id,
+        stocks: selectedStocks,
+        percentageCode,
+        newPercentage,
+        totalPayment,
+        totalProfit,
+        totalReturn,
+        userData: {
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phone,
+          doc: userData.doc,
+        },
+      }),
+    )
+
+    router.push(`/projects/${project.id}?step=confirm`)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
+      <div className="space-y-4">
+        <div>
+          <Label>اسم المشروع</Label>
+          <div className="p-2 border rounded mt-1">{project.projectName}</div>
+        </div>
+
+        <div>
+          <Label>قيمة السهم الواحد</Label>
+          <div className="p-2 border rounded mt-1">
+            {project.projectStockPrice} {APP_CURRENCY}
+          </div>
+        </div>
+
+        <div>
+          <Label>اختيار عدد الأسهم</Label>
+          <Select
+            dir="rtl"
+            onValueChange={value => setSelectedStocks(Number(value))}
+            value={String(selectedStocks)}
+            disabled={maxPurchaseAmount === 0}
+          >
+            <SelectTrigger className="w-full border-gray-900">
+              <SelectValue
+                placeholder={maxPurchaseAmount === 0 ? "غير متاح" : "اختيار عدد الأسهم"}
+              />
+            </SelectTrigger>
+            <SelectContent avoidCollisions={false}>
+              {Array.from({ length: maxPurchaseAmount }, (_, i) => (
+                <SelectItem className="font-bold" key={i + 1} value={String(i + 1)}>
+                  {i + 1}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-sm text-muted-foreground mt-1">
+            {maxPurchaseAmount === 0
+              ? "لا يوجد أسهم متاحة"
+              : `يمكنك شراء حتى ${maxPurchaseAmount} سهم`}
+          </p>
+        </div>
+
+        <div>
+          <Label>رمز خاص لزيادة النسبة (اختياري)</Label>
+          <div className="flex gap-2 mt-1">
+            <Input
+              value={percentageCode}
+              onChange={e => setPercentageCode(e.target.value)}
+              placeholder="أدخل الرمز"
+            />
+            <Button
+              type="button"
+              onClick={() => validateCode({ projectId: project.id, code: percentageCode })}
+              disabled={!percentageCode || isValidating}
+            >
+              تحقق
+            </Button>
+          </div>
+        </div>
+
+        <div>
+          <Label>إجمالي الدفع</Label>
+          <div className="p-2 border rounded mt-1">
+            {totalPayment} {APP_CURRENCY}
+          </div>
+        </div>
+
+        <div>
+          <Label>الربح المتوقع</Label>
+          <div className="p-2 border rounded mt-1">
+            {totalProfit} {APP_CURRENCY}
+            {newPercentage > 0 && (
+              <span className="text-green-600 text-sm mr-2">(زيادة {newPercentage}%)</span>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <Label>العائد الإجمالي مع رأس المال</Label>
+          <div className="p-2 border rounded mt-1">
+            {totalReturn} {APP_CURRENCY}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Checkbox id="terms" checked={acceptedTerms} onClick={() => setShowTerms(true)} />
+          <Label htmlFor="terms" className="text-sm">
+            أوافق على{" "}
+            <button
+              type="button"
+              className="text-primary underline"
+              onClick={() => setShowTerms(true)}
+            >
+              شروط المشروع
+            </button>
+          </Label>
+        </div>
+      </div>
+
+      <TermsDialog
+        open={showTerms}
+        onOpenChange={setShowTerms}
+        terms={project.projectTerms}
+        onAccept={() => {
+          setAcceptedTerms(true)
+        }}
+      />
+
+      <Button type="submit" className="w-full" disabled={!acceptedTerms || selectedStocks === 0}>
+        متابعة
+      </Button>
+    </form>
+  )
+}
