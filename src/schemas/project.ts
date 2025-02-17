@@ -2,8 +2,6 @@ import { z } from "zod"
 
 export const projectSchema = z.object({
   projectName: z.string().min(3, "اسم المشروع يجب أن يكون 3 أحرف على الأقل"),
-  projectImages: z.array(z.string()),
-  projectStudyCase: z.string(),
   projectLocation: z.string().min(3, "موقع المشروع يجب أن يكون 3 أحرف على الأقل"),
   projectStartDate: z.date({
     required_error: "تاريخ بداية المشروع مطلوب",
@@ -23,6 +21,8 @@ export const projectSchema = z.object({
   projectStockProfits: z.number().min(0, "أرباح السهم يجب أن تكون 0 أو أكبر"),
   projectDescription: z.string().min(10, "وصف المشروع يجب أن يكون 10 أحرف على الأقل"),
   projectTerms: z.string().min(10, "شروط المشروع يجب أن تكون 10 أحرف على الأقل"),
+  projectImages: z.array(z.string()).optional(),
+  projectStudyCase: z.array(z.string()).optional(),
 })
 
 export type ProjectInput = z.infer<typeof projectSchema>

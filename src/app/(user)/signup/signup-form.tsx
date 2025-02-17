@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { PhoneInput } from "@/components/ui/phone-input"
 import { useToast } from "@/hooks/use-toast"
+import { convertToBase64 } from "@/lib/convert-file-to-base64"
 import { optimizeImage } from "@/lib/optimize-image"
 import { signupSchema } from "@/schemas/signup"
 import { api } from "@/trpc/react"
@@ -59,22 +60,6 @@ export function SignUpForm({ sn }: { sn: number }) {
   const { mutateAsync: uploadFiles } = api.S3.uploadFiles.useMutation()
   const { mutateAsync: createUser, isPending: isCreatingUser } = api.auth.create.useMutation()
   const { mutateAsync: updateUser, isPending: isUpdatingUser } = api.user.updatePublic.useMutation()
-
-  const convertToBase64 = async (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const result = reader.result
-        if (typeof result === "string") {
-          resolve(result)
-        } else {
-          reject(new Error("Failed to read file as base64"))
-        }
-      }
-      reader.onerror = reject
-      reader.readAsDataURL(file)
-    })
-  }
 
   const processFile = async (
     file: File,

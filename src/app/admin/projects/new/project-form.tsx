@@ -30,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
+import { convertToBase64 } from "@/lib/convert-file-to-base64"
 import { projectSchema } from "@/schemas/project"
 import { api } from "@/trpc/react"
 import type { ProjectInput } from "@/schemas/project"
@@ -55,6 +56,10 @@ export function ProjectForm() {
       projectTotalStocks: 0,
       projectStockPrice: 0,
       projectStockProfits: 0,
+      projectStartDate: undefined,
+      projectEndDate: undefined,
+      projectInvestDate: undefined,
+      projectProfitsCollectDate: undefined,
     },
   })
 
@@ -74,6 +79,8 @@ export function ProjectForm() {
   }
 
   const uploadSelectedFiles = async (projectId: string) => {
+    console.log("Starting uploadSelectedFiles", { projectId })
+
     const filesToUpload: { type: "projectImages" | "projectStudyCase"; files: File[] }[] = []
 
     if (selectedFiles.projectImages?.length) {
@@ -83,6 +90,8 @@ export function ProjectForm() {
       filesToUpload.push({ type: "projectStudyCase", files: selectedFiles.projectStudyCase })
     }
 
+    console.log("Files to upload", { filesToUpload })
+
     if (filesToUpload.length === 0) return {}
 
     setIsUploading(true)
@@ -90,19 +99,30 @@ export function ProjectForm() {
       const uploadResults: Record<string, string[]> = {}
 
       for (const { type, files } of filesToUpload) {
+        console.log(`Processing ${type} files`, { fileCount: files.length })
+
+        const fileData = await Promise.all(
+          files.map(async file => {
+            const base64 = await convertToBase64(file)
+            return {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              lastModified: file.lastModified,
+              base64,
+            }
+          }),
+        )
+
+        console.log(`Uploading ${type} files to S3`)
         const urls = await uploadFiles({
           entityId: `project-${type}/${projectId}`,
-          fileData: files.map(file => ({
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            lastModified: file.lastModified,
-            base64: "",
-          })),
+          fileData,
         })
 
         if (urls && urls.length > 0) {
           uploadResults[type] = urls
+          console.log(`${type} files uploaded successfully`, { urls })
         }
       }
 
@@ -115,38 +135,71 @@ export function ProjectForm() {
     }
   }
 
-  // Function to convert markdown to HTML
   const convertToHtml = (markdown: string) => {
     return md.render(markdown)
   }
 
-  // Modify the onSubmit function to convert markdown to HTML before submission
   const onSubmit = async (data: ProjectInput) => {
+    console.log("Form submission started", { data })
+
     try {
-      // Convert project terms to HTML
+      // File validation
+      if (!selectedFiles.projectImages?.length) {
+        toast.error("الرجاء اختيار صور المشروع")
+        console.log("Missing project images")
+        return
+      }
+
+      if (!selectedFiles.projectStudyCase?.length) {
+        toast.error("الرجاء اختيار ملف دراسة الجدوى")
+        console.log("Missing project study case")
+        return
+      }
+
+      console.log("Files validated successfully", { selectedFiles })
+
+      // Create project without files first
+      const { projectImages, projectStudyCase, ...projectData } = data
       const dataWithHtml = {
-        ...data,
+        ...projectData,
         projectTerms: convertToHtml(data.projectTerms),
         projectDescription: convertToHtml(data.projectDescription),
       }
+
+      console.log("Attempting to create project", { dataWithHtml })
 
       const newProjectId = await createProject(dataWithHtml)
       if (!newProjectId) {
         throw new Error("حدث خطأ أثناء إضافة المشروع")
       }
 
+      console.log("Project created successfully", { newProjectId })
+
+      // Then handle file uploads
+      console.log("Starting file upload process")
       const uploadedUrls = await uploadSelectedFiles(newProjectId)
-      if (uploadedUrls) {
+      console.log("Files uploaded successfully", { uploadedUrls })
+
+      if (uploadedUrls.projectImages || uploadedUrls.projectStudyCase) {
+        const updateData = {
+          projectImages: uploadedUrls.projectImages?.filter((url): url is string => !!url) ?? [],
+          projectStudyCase:
+            uploadedUrls.projectStudyCase?.filter((url): url is string => !!url) ?? [],
+        }
+        console.log("Updating project with file URLs", { updateData })
+
         await updateProject({
           id: newProjectId,
-          data: uploadedUrls,
+          data: updateData,
         })
+        console.log("Project updated with file URLs successfully")
       }
 
       toast.success("تم إضافة المشروع بنجاح")
       router.refresh()
       router.push("/admin/projects")
     } catch (error) {
+      console.error("Form submission error:", error)
       const errorMsg = error instanceof Error ? error.message : "حدث خطأ أثناء إضافة المشروع"
       toast.error(errorMsg)
     }
@@ -235,7 +288,7 @@ export function ProjectForm() {
                   <Input
                     type="date"
                     {...field}
-                    value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                    value={field.value ? field.value.toISOString().split("T")[0] : ""}
                     onChange={e => field.onChange(new Date(e.target.value))}
                     className="flex justify-end cursor-pointer"
                   />
@@ -255,7 +308,7 @@ export function ProjectForm() {
                   <Input
                     type="date"
                     {...field}
-                    value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                    value={field.value ? field.value.toISOString().split("T")[0] : ""}
                     onChange={e => field.onChange(new Date(e.target.value))}
                     className="flex justify-end cursor-pointer"
                   />
@@ -277,7 +330,7 @@ export function ProjectForm() {
                   <Input
                     type="date"
                     {...field}
-                    value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                    value={field.value ? field.value.toISOString().split("T")[0] : ""}
                     onChange={e => field.onChange(new Date(e.target.value))}
                     className="flex justify-end cursor-pointer"
                   />
@@ -297,7 +350,7 @@ export function ProjectForm() {
                   <Input
                     type="date"
                     {...field}
-                    value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                    value={field.value ? field.value.toISOString().split("T")[0] : ""}
                     onChange={e => field.onChange(new Date(e.target.value))}
                     className="flex justify-end cursor-pointer"
                   />

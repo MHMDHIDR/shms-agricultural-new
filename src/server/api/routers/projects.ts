@@ -187,12 +187,7 @@ export const projectRouter = createTRPCRouter({
   }),
 
   updateById: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        data: projectSchema.partial(),
-      }),
-    )
+    .input(z.object({ id: z.string(), data: projectSchema.partial() }))
     .mutation(async ({ ctx, input }) => {
       const { id, data } = input
 
@@ -200,18 +195,14 @@ export const projectRouter = createTRPCRouter({
         where: { id },
         data: {
           ...data,
-          projectImages: data.projectImages?.map(path => ({
-            imgDisplayName: path.split("/").pop() ?? "",
-            imgDisplayPath: path,
+          projectImages: data.projectImages?.map(url => ({
+            imgDisplayName: url.split("/").pop() ?? "",
+            imgDisplayPath: url,
           })),
-          projectStudyCase: data.projectStudyCase
-            ? [
-                {
-                  imgDisplayName: data.projectStudyCase.split("/").pop() ?? "",
-                  imgDisplayPath: data.projectStudyCase,
-                },
-              ]
-            : undefined,
+          projectStudyCase: data.projectStudyCase?.map(url => ({
+            imgDisplayName: url.split("/").pop() ?? "",
+            imgDisplayPath: url,
+          })),
         },
       })
 
