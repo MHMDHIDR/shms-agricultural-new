@@ -1,8 +1,10 @@
 "use client"
 
 import { useSession } from "next-auth/react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React from "react"
+import { Button } from "@/components/ui/button"
 import {
   Stepper,
   StepperDescription,
@@ -54,6 +56,8 @@ export function ProjectStepper({
   projectId: string
 }) {
   const { data: session } = useSession()
+  const sessionRole = session?.user?.role
+
   const router = useRouter()
   const stepIndex = steps.findIndex(s => s.id === currentStep)
   const purchaseData = typeof window !== "undefined" ? localStorage.getItem("purchase_data") : null
@@ -107,6 +111,14 @@ export function ProjectStepper({
           </StepperItem>
         ))}
       </Stepper>
+
+      {sessionRole === "admin" && (
+        <Link href={`/admin/projects/${project.id}`} className="block text-center">
+          <Button variant={"pressable"} size={"sm"} className="cursor-pointer text-xs px-1.5">
+            تعديل المشروع
+          </Button>
+        </Link>
+      )}
 
       <div className="mt-8">
         {currentStep === "info" && (

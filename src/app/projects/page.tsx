@@ -2,8 +2,10 @@ import clsx from "clsx"
 import Image from "next/image"
 import Link from "next/link"
 import NoRecords from "@/components/custom/no-records"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription } from "@/components/ui/card"
 import { APP_DESCRIPTION, APP_LOGO, APP_TITLE } from "@/lib/constants"
+import { auth } from "@/server/auth"
 import { api } from "@/trpc/server"
 import type { Metadata } from "next"
 
@@ -13,6 +15,9 @@ export const metadata: Metadata = {
 }
 
 export default async function ProjectsPage() {
+  const session = await auth()
+  const sessionRole = session?.user?.role
+
   const { projects, count, role } = await api.projects.getAll()
 
   return (
@@ -56,13 +61,26 @@ export default async function ProjectsPage() {
                     className="h-56 w-full object-cover md:h-72"
                   />
                   <div className="absolute bottom-0 w-full bg-gradient-to-t from-black via-black/50 to-transparent p-4 transition-[padding] group-hover:pb-6">
-                    <CardDescription className="flex flex-col gap-y-1.5 text-white">
+                    <CardDescription className="flex flex-col gap-y-0 text-white">
                       <strong className="w-fit text-sm transition-colors group-hover:text-green-500 md:text-base">
                         {project.projectName}
                       </strong>
-                      <span className="text-xs text-gray-300 md:text-sm">
-                        {project.projectLocation}
-                      </span>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-300 md:text-sm">
+                          {project.projectLocation}
+                        </span>
+                        {sessionRole === "admin" && (
+                          <Link href={`/admin/projects/${project.id}`}>
+                            <Button
+                              variant={"ghost"}
+                              size={"sm"}
+                              className="cursor-pointer text-xs px-1.5"
+                            >
+                              تعديل
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
                     </CardDescription>
                   </div>
                 </CardContent>
