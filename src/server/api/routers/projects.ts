@@ -174,40 +174,31 @@ export const projectRouter = createTRPCRouter({
     }),
 
   create: protectedProcedure.input(projectSchema).mutation(async ({ ctx, input }) => {
+    // Validate that we have both images and study case
+    if (!input.projectImages.length || !input.projectStudyCase) {
+      throw new Error("صور المشروع ودراسة الجدوى مطلوبة")
+    }
+
     const project = await ctx.db.projects.create({
       data: {
         ...input,
-        projectImages: [], // Will be updated after file upload
-        projectStudyCase: [], // Will be updated after file upload
+        projectAvailableStocks: input.projectTotalStocks,
+        projectImages: input.projectImages.map(url => ({
+          imgDisplayName: url.split("/").pop() ?? "",
+          imgDisplayPath: url,
+        })),
+        projectStudyCase: [
+          {
+            imgDisplayName: input.projectStudyCase.split("/").pop() ?? "",
+            imgDisplayPath: input.projectStudyCase,
+          },
+        ],
         projectStatus: "pending",
       },
     })
 
     return project.id
   }),
-
-  updateById: protectedProcedure
-    .input(z.object({ id: z.string(), data: projectSchema.partial() }))
-    .mutation(async ({ ctx, input }) => {
-      const { id, data } = input
-
-      const project = await ctx.db.projects.update({
-        where: { id },
-        data: {
-          ...data,
-          projectImages: data.projectImages?.map(url => ({
-            imgDisplayName: url.split("/").pop() ?? "",
-            imgDisplayPath: url,
-          })),
-          projectStudyCase: data.projectStudyCase?.map(url => ({
-            imgDisplayName: url.split("/").pop() ?? "",
-            imgDisplayPath: url,
-          })),
-        },
-      })
-
-      return project
-    }),
 
   deleteById: protectedProcedure
     .input(z.object({ id: z.string() }))

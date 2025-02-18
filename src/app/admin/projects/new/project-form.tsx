@@ -31,19 +31,39 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { convertToBase64 } from "@/lib/convert-file-to-base64"
+import { optimizeImage } from "@/lib/optimize-image"
 import { projectSchema } from "@/schemas/project"
 import { api } from "@/trpc/react"
 import type { ProjectInput } from "@/schemas/project"
 
+type FileSelectionType = {
+  projectImages: File[]
+  projectStudyCase: File[]
+}
+
 export function ProjectForm() {
   const [isUploading, setIsUploading] = useState(false)
-  const [selectedFiles, setSelectedFiles] = useState<{
-    projectImages?: File[]
-    projectStudyCase?: File[]
-  }>({})
+  const [selectedFiles, setSelectedFiles] = useState<Partial<FileSelectionType>>({})
 
   const toast = useToast()
   const router = useRouter()
+
+  const formatDateValue = (value: Date | undefined) => {
+    if (!value) return ""
+    try {
+      return value instanceof Date && !isNaN(value.getTime())
+        ? value.toISOString().split("T")[0]
+        : ""
+    } catch {
+      return ""
+    }
+  }
+
+  // Add this helper function to safely parse dates
+  const parseDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return !isNaN(date.getTime()) ? date : undefined
+  }
 
   const form = useForm<ProjectInput>({
     resolver: zodResolver(projectSchema),
@@ -52,7 +72,6 @@ export function ProjectForm() {
       projectLocation: "",
       projectDescription: "",
       projectTerms: "",
-      projectAvailableStocks: 0,
       projectTotalStocks: 0,
       projectStockPrice: 0,
       projectStockProfits: 0,
@@ -60,73 +79,108 @@ export function ProjectForm() {
       projectEndDate: undefined,
       projectInvestDate: undefined,
       projectProfitsCollectDate: undefined,
+      projectImages: [],
+      projectStudyCase: "",
     },
   })
 
-  // Initialize MarkdownIt
   const md = new MarkdownIt()
-
   const { mutateAsync: uploadFiles } = api.S3.uploadFiles.useMutation()
-  const { mutateAsync: createProject, isPending } = api.projects.create.useMutation()
-  const { mutateAsync: updateProject, isPending: isUpdating } =
-    api.projects.updateById.useMutation()
+  const { mutateAsync: createProject, isPending: isCreatingProject } =
+    api.projects.create.useMutation()
 
-  const handleFileSelection = (files: File[], type: "projectImages" | "projectStudyCase") => {
+  const processFile = async (
+    file: File,
+  ): Promise<{
+    name: string
+    type: string
+    size: number
+    lastModified: number
+    base64: string
+  }> => {
+    const base64 = await convertToBase64(file)
+    if (file.type.startsWith("image/")) {
+      try {
+        const optimizedBase64 = await optimizeImage({
+          base64,
+          quality: 70,
+        })
+        return {
+          name: file.name.replace(/\.[^.]+$/, ".webp"),
+          type: "image/webp",
+          size: optimizedBase64.length,
+          lastModified: file.lastModified,
+          base64: optimizedBase64,
+        }
+      } catch (error) {
+        console.error("Image optimization failed:", error)
+        return {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          lastModified: file.lastModified,
+          base64,
+        }
+      }
+    }
+    return {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      lastModified: file.lastModified,
+      base64,
+    }
+  }
+
+  const handleFileSelection = (files: File[], type: keyof FileSelectionType) => {
     setSelectedFiles(prev => ({
       ...prev,
       [type]: files,
     }))
+
+    // VERY IMPORTANT: Update form values when files are selected
+    if (type === "projectImages" && files.length > 0) {
+      form.setValue("projectImages", ["temp-image"])
+    }
+    if (type === "projectStudyCase" && files.length > 0) {
+      form.setValue("projectStudyCase", "temp-study")
+    }
   }
 
   const uploadSelectedFiles = async (projectId: string) => {
-    console.log("Starting uploadSelectedFiles", { projectId })
-
-    const filesToUpload: { type: "projectImages" | "projectStudyCase"; files: File[] }[] = []
+    const uploads: { type: keyof FileSelectionType; files: File[] }[] = []
 
     if (selectedFiles.projectImages?.length) {
-      filesToUpload.push({ type: "projectImages", files: selectedFiles.projectImages })
+      uploads.push({ type: "projectImages", files: selectedFiles.projectImages })
     }
     if (selectedFiles.projectStudyCase?.length) {
-      filesToUpload.push({ type: "projectStudyCase", files: selectedFiles.projectStudyCase })
+      uploads.push({ type: "projectStudyCase", files: selectedFiles.projectStudyCase })
     }
 
-    console.log("Files to upload", { filesToUpload })
-
-    if (filesToUpload.length === 0) return {}
+    if (uploads.length === 0) return { projectImages: [], projectStudyCase: "" }
 
     setIsUploading(true)
     try {
-      const uploadResults: Record<string, string[]> = {}
+      const results: { projectImages: string[]; projectStudyCase: string } = {
+        projectImages: [],
+        projectStudyCase: "",
+      }
 
-      for (const { type, files } of filesToUpload) {
-        console.log(`Processing ${type} files`, { fileCount: files.length })
-
-        const fileData = await Promise.all(
-          files.map(async file => {
-            const base64 = await convertToBase64(file)
-            return {
-              name: file.name,
-              type: file.type,
-              size: file.size,
-              lastModified: file.lastModified,
-              base64,
-            }
-          }),
-        )
-
-        console.log(`Uploading ${type} files to S3`)
+      for (const { type, files } of uploads) {
+        const fileData = await Promise.all(files.map(processFile))
         const urls = await uploadFiles({
           entityId: `project-${type}/${projectId}`,
           fileData,
         })
 
-        if (urls && urls.length > 0) {
-          uploadResults[type] = urls
-          console.log(`${type} files uploaded successfully`, { urls })
+        if (type === "projectImages") {
+          results.projectImages = urls
+        } else {
+          results.projectStudyCase = urls[0] ?? ""
         }
       }
 
-      return uploadResults
+      return results
     } catch (error) {
       console.error("File upload error:", error)
       throw error
@@ -135,79 +189,46 @@ export function ProjectForm() {
     }
   }
 
-  const convertToHtml = (markdown: string) => {
-    return md.render(markdown)
-  }
-
   const onSubmit = async (data: ProjectInput) => {
-    console.log("Form submission started", { data })
+    if (!selectedFiles.projectImages?.length || !selectedFiles.projectStudyCase?.length) {
+      toast.error("يجب تحميل صور المشروع وملف دراسة الجدوى")
+      return
+    }
 
     try {
-      // File validation
-      if (!selectedFiles.projectImages?.length) {
-        toast.error("الرجاء اختيار صور المشروع")
-        console.log("Missing project images")
-        return
+      const projectId = crypto.randomUUID()
+      const uploadedUrls = await uploadSelectedFiles(projectId)
+
+      if (!uploadedUrls.projectImages.length || !uploadedUrls.projectStudyCase) {
+        throw new Error("فشل في تحميل الملفات")
       }
 
-      if (!selectedFiles.projectStudyCase?.length) {
-        toast.error("الرجاء اختيار ملف دراسة الجدوى")
-        console.log("Missing project study case")
-        return
-      }
+      // Create project with uploaded files
+      const newProjectId = await createProject({
+        ...data,
+        projectTerms: md.render(data.projectTerms),
+        projectImages: uploadedUrls.projectImages,
+        projectStudyCase: uploadedUrls.projectStudyCase,
+      })
 
-      console.log("Files validated successfully", { selectedFiles })
-
-      // Create project without files first
-      const { projectImages, projectStudyCase, ...projectData } = data
-      const dataWithHtml = {
-        ...projectData,
-        projectTerms: convertToHtml(data.projectTerms),
-        projectDescription: convertToHtml(data.projectDescription),
-      }
-
-      console.log("Attempting to create project", { dataWithHtml })
-
-      const newProjectId = await createProject(dataWithHtml)
       if (!newProjectId) {
         throw new Error("حدث خطأ أثناء إضافة المشروع")
       }
 
-      console.log("Project created successfully", { newProjectId })
-
-      // Then handle file uploads
-      console.log("Starting file upload process")
-      const uploadedUrls = await uploadSelectedFiles(newProjectId)
-      console.log("Files uploaded successfully", { uploadedUrls })
-
-      if (uploadedUrls.projectImages || uploadedUrls.projectStudyCase) {
-        const updateData = {
-          projectImages: uploadedUrls.projectImages?.filter((url): url is string => !!url) ?? [],
-          projectStudyCase:
-            uploadedUrls.projectStudyCase?.filter((url): url is string => !!url) ?? [],
-        }
-        console.log("Updating project with file URLs", { updateData })
-
-        await updateProject({
-          id: newProjectId,
-          data: updateData,
-        })
-        console.log("Project updated with file URLs successfully")
-      }
-
+      setSelectedFiles({})
       toast.success("تم إضافة المشروع بنجاح")
-      router.refresh()
-      router.push("/admin/projects")
+      router.push(`/admin/projects`)
     } catch (error) {
-      console.error("Form submission error:", error)
       const errorMsg = error instanceof Error ? error.message : "حدث خطأ أثناء إضافة المشروع"
       toast.error(errorMsg)
     }
   }
 
+  const isLoading = isCreatingProject || isUploading
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mx-3">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
@@ -227,7 +248,6 @@ export function ProjectForm() {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="projectStudyCase"
@@ -246,7 +266,6 @@ export function ProjectForm() {
             )}
           />
         </div>
-
         <div className="grid gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
@@ -261,7 +280,6 @@ export function ProjectForm() {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="projectLocation"
@@ -276,7 +294,6 @@ export function ProjectForm() {
             )}
           />
         </div>
-
         <div className="grid gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
@@ -287,9 +304,11 @@ export function ProjectForm() {
                 <FormControl>
                   <Input
                     type="date"
-                    {...field}
-                    value={field.value ? field.value.toISOString().split("T")[0] : ""}
-                    onChange={e => field.onChange(new Date(e.target.value))}
+                    value={formatDateValue(field.value)}
+                    onChange={e => {
+                      const date = parseDate(e.target.value)
+                      field.onChange(date)
+                    }}
                     className="flex justify-end cursor-pointer"
                   />
                 </FormControl>
@@ -297,7 +316,6 @@ export function ProjectForm() {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="projectEndDate"
@@ -307,9 +325,11 @@ export function ProjectForm() {
                 <FormControl>
                   <Input
                     type="date"
-                    {...field}
-                    value={field.value ? field.value.toISOString().split("T")[0] : ""}
-                    onChange={e => field.onChange(new Date(e.target.value))}
+                    value={formatDateValue(field.value)}
+                    onChange={e => {
+                      const date = parseDate(e.target.value)
+                      field.onChange(date)
+                    }}
                     className="flex justify-end cursor-pointer"
                   />
                 </FormControl>
@@ -318,7 +338,6 @@ export function ProjectForm() {
             )}
           />
         </div>
-
         <div className="grid gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
@@ -329,9 +348,11 @@ export function ProjectForm() {
                 <FormControl>
                   <Input
                     type="date"
-                    {...field}
-                    value={field.value ? field.value.toISOString().split("T")[0] : ""}
-                    onChange={e => field.onChange(new Date(e.target.value))}
+                    value={formatDateValue(field.value)}
+                    onChange={e => {
+                      const date = parseDate(e.target.value)
+                      field.onChange(date)
+                    }}
                     className="flex justify-end cursor-pointer"
                   />
                 </FormControl>
@@ -339,7 +360,6 @@ export function ProjectForm() {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="projectProfitsCollectDate"
@@ -349,9 +369,11 @@ export function ProjectForm() {
                 <FormControl>
                   <Input
                     type="date"
-                    {...field}
-                    value={field.value ? field.value.toISOString().split("T")[0] : ""}
-                    onChange={e => field.onChange(new Date(e.target.value))}
+                    value={formatDateValue(field.value)}
+                    onChange={e => {
+                      const date = parseDate(e.target.value)
+                      field.onChange(date)
+                    }}
                     className="flex justify-end cursor-pointer"
                   />
                 </FormControl>
@@ -360,19 +382,19 @@ export function ProjectForm() {
             )}
           />
         </div>
-
         <div className="grid gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
-            name="projectAvailableStocks"
+            name="projectTotalStocks"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>عدد الأسهم المتاحة</FormLabel>
+                <FormLabel>إجمالي عدد الأسهم المتاحة</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
                     {...field}
                     onChange={e => field.onChange(Number(e.target.value))}
+                    min={1}
                   />
                 </FormControl>
                 <FormMessage />
@@ -391,15 +413,13 @@ export function ProjectForm() {
                     type="number"
                     {...field}
                     onChange={e => field.onChange(Number(e.target.value))}
+                    min={1}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
             name="projectStockProfits"
@@ -411,6 +431,7 @@ export function ProjectForm() {
                     type="number"
                     {...field}
                     onChange={e => field.onChange(Number(e.target.value))}
+                    min={1}
                   />
                 </FormControl>
                 <FormMessage />
@@ -418,7 +439,6 @@ export function ProjectForm() {
             )}
           />
         </div>
-
         <FormField
           control={form.control}
           name="projectDescription"
@@ -439,7 +459,6 @@ export function ProjectForm() {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="projectTerms"
@@ -458,9 +477,7 @@ export function ProjectForm() {
                       <DialogTitle>شروط المشروع</DialogTitle>
                       <DialogDescription>الرجاء قراءة تعليمات استخدام markdown</DialogDescription>
                     </DialogHeader>
-
                     <MarkdownHelp />
-
                     <DialogFooter className="justify-center!">
                       <DialogClose className="cursor-pointer" asChild>
                         <Button variant="destructive">
@@ -486,14 +503,8 @@ export function ProjectForm() {
             </FormItem>
           )}
         />
-
-        <Button
-          type="submit"
-          variant="pressable"
-          className="w-full"
-          disabled={isPending || isUploading}
-        >
-          {(isPending || isUploading) && <Loader2 className="mr-2 animate-spin" />}
+        <Button type="submit" variant="pressable" className="w-full" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 animate-spin" />}
           إضافة المشروع
         </Button>
       </form>

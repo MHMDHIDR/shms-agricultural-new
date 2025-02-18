@@ -75,7 +75,7 @@ export default function ProfitsPercentageForm({ projects }: { projects: Projects
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mx-3.5 space-y-6" dir="rtl">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mx-3.5 space-y-6 mb-10" dir="rtl">
         <FormField
           control={form.control}
           name="projectId"
@@ -153,7 +153,11 @@ export default function ProfitsPercentageForm({ projects }: { projects: Projects
           </span>
         </FormItem>
 
-        <Button type="submit" disabled={isUpdating || !form.formState.isValid} className="w-full">
+        <Button
+          type="submit"
+          disabled={isUpdating || !form.formState.isValid}
+          className="w-full cursor-pointer"
+        >
           {isUpdating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

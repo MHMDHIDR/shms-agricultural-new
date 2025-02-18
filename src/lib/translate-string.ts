@@ -84,7 +84,7 @@ export const translateSring = (string: string) => {
       return "نشط"
     }
     case "pending": {
-      return "معلق"
+      return "قيد المراجعة"
     }
     case "block": {
       return "محظور"

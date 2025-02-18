@@ -15,14 +15,13 @@ export const projectSchema = z.object({
   projectProfitsCollectDate: z.date({
     required_error: "تاريخ جمع الأرباح مطلوب",
   }),
-  projectAvailableStocks: z.number().min(1, "عدد الأسهم المتاحة يجب أن يكون أكبر من 0"),
   projectTotalStocks: z.number().min(1, "إجمالي عدد الأسهم يجب أن يكون أكبر من 0"),
   projectStockPrice: z.number().min(1, "سعر السهم يجب أن يكون أكبر من 0"),
   projectStockProfits: z.number().min(0, "أرباح السهم يجب أن تكون 0 أو أكبر"),
   projectDescription: z.string().min(10, "وصف المشروع يجب أن يكون 10 أحرف على الأقل"),
   projectTerms: z.string().min(10, "شروط المشروع يجب أن تكون 10 أحرف على الأقل"),
-  projectImages: z.array(z.string()).optional(),
-  projectStudyCase: z.array(z.string()).optional(),
+  projectImages: z.array(z.string()).min(1, "صور المشروع مطلوبة"),
+  projectStudyCase: z.string().min(1, "دراسة الجدوى مطلوبة"),
 })
 
 export type ProjectInput = z.infer<typeof projectSchema>

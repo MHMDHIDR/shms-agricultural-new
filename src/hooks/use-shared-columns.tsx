@@ -488,7 +488,7 @@ export function useSharedColumns<T extends BaseEntity>({
       ),
       cell: ({ row }) => {
         const project = row.original as unknown as Project
-        return (
+        return project.projectSpecialPercentageCode ? (
           <span>
             <CopyText
               text={project.projectSpecialPercentageCode ?? ""}
@@ -496,6 +496,12 @@ export function useSharedColumns<T extends BaseEntity>({
             />
             {project.projectSpecialPercentageCode}
           </span>
+        ) : (
+          <Link href="/admin/profits-percentage">
+            <Button variant={"pressable"} size={"sm"} className="text-xs">
+              إضف نسبة زيادة ربح
+            </Button>
+          </Link>
         )
       },
     },
@@ -513,7 +519,15 @@ export function useSharedColumns<T extends BaseEntity>({
       ),
       cell: ({ row }) => {
         const project = row.original as unknown as Project
-        return <span>{project.projectSpecialPercentage}%</span>
+        return project.projectSpecialPercentage ? (
+          <span>{project.projectSpecialPercentage}%</span>
+        ) : (
+          <Link href="/admin/profits-percentage">
+            <Button variant={"pressable"} size={"sm"} className="text-xs">
+              إضف نسبة زيادة ربح
+            </Button>
+          </Link>
+        )
       },
     },
     {

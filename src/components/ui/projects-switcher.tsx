@@ -61,13 +61,13 @@ export function ProjectsSwitcher({
             {projects.map(project => (
               <DropdownLinkItem
                 key={project.name}
-                className="gap-3 p-2 text-right"
+                className="gap-3 p-2 text-right rtl"
                 href={`/admin/projects/${project.id}`}
               >
-                {project.name}
                 <div className="flex size-6 items-center justify-center rounded-sm border">
                   <project.logo className="size-4 shrink-0" />
                 </div>
+                {project.name}
               </DropdownLinkItem>
             ))}
             <DropdownMenuSeparator />

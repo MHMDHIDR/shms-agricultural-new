@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { EyeIcon, EyeOffIcon } from "lucide-react"
-import { notFound, redirect } from "next/navigation"
+import { redirect } from "next/navigation"
 import { useEffect, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/hooks/use-toast"
 import { calculatePasswordStrength } from "@/lib/calculate-password-strength"
-import { validateToken } from "@/lib/validate-token"
 import { signupSchema } from "@/schemas/signup"
 import { api } from "@/trpc/react"
 
