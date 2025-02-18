@@ -4,9 +4,16 @@ import { z } from "zod"
 export const signupSchema = z.object({
   name: z.string().min(2, "الاسم يجب أن يكون أكثر من حرفين"),
   email: z.string().email("البريد الإلكتروني غير صالح"),
-  phone: z.string().refine(value => isValidPhoneNumber(value), {
-    message: "رقم الهاتف غير صالح",
-  }),
+  phone: z.string().refine(
+    value => {
+      // For phone numbers, add + if not present before validation
+      const phoneNumberToValidate = value.startsWith("+") ? value : `+${value}`
+      return isValidPhoneNumber(phoneNumberToValidate)
+    },
+    {
+      message: "رقم الهاتف غير صالح",
+    },
+  ),
   nationality: z.string().min(2, "الرجاء اختيار الجنسية"),
   dateOfBirth: z.date({
     required_error: "تاريخ الميلاد مطلوب",

@@ -77,7 +77,7 @@ export function FileUpload({
         {...getRootProps()}
         className={`relative rounded-lg border-2 border-dashed p-4 text-center ${isDragActive ? "border-primary bg-primary/10" : "border-gray-300"} ${disabled ? "cursor-not-allowed opacity-50" : "hover:border-primary cursor-pointer"}`}
       >
-        <input {...getInputProps()} />
+        <input id="fileUploadInput" {...getInputProps()} />
         {isDragActive ? (
           <p>اسحب الملفات هنا...</p>
         ) : (
@@ -104,18 +104,18 @@ export function FileUpload({
           {previews.map((preview, index) => (
             <div
               key={preview.url || preview.name}
-              className="relative flex items-center gap-2.5 rounded-lg border p-2"
+              className="relative flex flex-wrap items-center gap-2.5 rounded-lg border p-2"
             >
               {preview.url ? (
                 <Image
                   src={preview.url}
                   alt={preview.name}
-                  className="h-16 w-16 rounded-lg object-cover"
-                  width={64}
-                  height={64}
+                  className="min-h-12 max-h-12 min-w-12 max-w-12 rounded-lg object-cover"
+                  width={48}
+                  height={48}
                 />
               ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
                   <File className="h-8 w-8 text-gray-400" />
                 </div>
               )}
@@ -143,7 +143,7 @@ export function FileUpload({
             e.stopPropagation()
             clearPreviews()
           }}
-          className="w-full px-4 py-2 text-sm cursor-pointer"
+          className="w-fit px-4 py-2 text-sm cursor-pointer"
         >
           مسح الكل
         </Button>

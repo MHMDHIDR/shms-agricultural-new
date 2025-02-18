@@ -2,8 +2,8 @@ import { hash } from "bcryptjs"
 import { z } from "zod"
 import { extractS3FileName } from "@/lib/extract-s3-filename"
 import { signupSchema, updatePublicSchema } from "@/schemas/signup"
+import { createCaller } from "@/server/api/root"
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
-import { createCaller } from "../root"
 import type { Prisma } from "@prisma/client"
 
 const updateUserSchema = signupSchema.omit({ confirmPassword: true }).partial()
@@ -112,11 +112,7 @@ export const userRouter = createTRPCRouter({
         for (const stock of user.stocks) {
           await ctx.db.projects.update({
             where: { id: stock.id },
-            data: {
-              projectAvailableStocks: {
-                increment: stock.stocks,
-              },
-            },
+            data: { projectAvailableStocks: { increment: stock.stocks } },
           })
         }
       }

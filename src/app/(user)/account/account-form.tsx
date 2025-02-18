@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { FileUpload } from "@/components/custom/file-upload"
 import SelectCountry from "@/components/custom/select-country"
@@ -35,6 +35,7 @@ import type { User } from "@prisma/client"
 
 export function AccountForm({ user }: { user: User }) {
   const [isLoading, setIsLoading] = useState(false)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [files, setFiles] = useState<{
     image?: File[]
     doc?: File[]
@@ -92,11 +93,24 @@ export function AccountForm({ user }: { user: User }) {
   })
 
   const handleFilesSelected = (selectedFiles: File[], type: "image" | "doc") => {
+    if (type === "image" && selectedFiles.length > 0) {
+      const previewUrl = URL.createObjectURL(selectedFiles[0] ?? new Blob())
+      setImagePreview(previewUrl)
+    }
+
     setFiles(prev => ({
       ...prev,
       [type]: selectedFiles,
     }))
   }
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview)
+      }
+    }
+  }, [imagePreview])
 
   const processAndUploadFile = async (file: File | undefined, type: "image" | "doc") => {
     if (!file) return null
@@ -194,17 +208,14 @@ export function AccountForm({ user }: { user: User }) {
               "pointer-events-none opacity-50": !isEditingEnabled,
             })}
           >
-            {form.watch("image") ? (
+            {(imagePreview ?? form.watch("image")) ? (
               <Image
-                src={
-                  files.image && files.image.length > 0
-                    ? URL.createObjectURL(files.image[0] ?? new Blob())
-                    : (form.watch("image") ?? "")
-                }
+                src={imagePreview ?? form.watch("image") ?? ""}
                 alt={`Profile Image of ${user?.name}`}
-                width={112}
-                height={112}
-                className="h-28 w-28 rounded-full object-cover shadow"
+                width={80}
+                height={80}
+                className="h-20 w-20 rounded-full object-cover object-top shadow transition-all hover:opacity-80"
+                onError={() => setImagePreview(null)}
               />
             ) : (
               <Avatar className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-200 transition-colors group-hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700">
@@ -224,6 +235,40 @@ export function AccountForm({ user }: { user: User }) {
             isPreviewHidden={true}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="doc"
+          render={() => (
+            <FormItem>
+              <div className="flex gap-x-3 mb-4 items-center">
+                <FormLabel>المستند الشخصي</FormLabel>
+                {user.doc && (
+                  <Link
+                    href={user.doc}
+                    target="_blank"
+                    className="pressable text-xs"
+                    rel="noopener noreferrer"
+                  >
+                    عرض المستند الحالي
+                  </Link>
+                )}
+              </div>
+              <FormControl>
+                <div className="space-y-2">
+                  <FileUpload
+                    onFilesSelected={files => handleFilesSelected(files, "doc")}
+                    accept={{ "application/pdf": [".pdf"] }}
+                    maxFiles={1}
+                    disabled={!isEditingEnabled}
+                  />
+                </div>
+              </FormControl>
+              <FormDescription>يجب أن لا يتجاوز حجم الملف 5 ميجابايت</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
@@ -318,8 +363,11 @@ export function AccountForm({ user }: { user: User }) {
                   className="flex justify-end border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
                   disabled={!isEditingEnabled}
                   {...field}
-                  onChange={e => field.onChange(new Date(e.target.value))}
-                  value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                  onChange={e => {
+                    const date = e.target.value ? new Date(e.target.value) : null
+                    field.onChange(date)
+                  }}
+                  value={field.value instanceof Date ? field.value.toISOString().split("T")[0] : ""}
                 />
               </FormControl>
               <FormMessage />
@@ -370,40 +418,6 @@ export function AccountForm({ user }: { user: User }) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="doc"
-          render={() => (
-            <FormItem>
-              <div className="flex gap-x-3 mb-4 items-center">
-                <FormLabel>المستند الشخصي</FormLabel>
-                {user.doc && (
-                  <Link
-                    href={user.doc}
-                    target="_blank"
-                    className="pressable text-xs"
-                    rel="noopener noreferrer"
-                  >
-                    عرض المستند الحالي
-                  </Link>
-                )}
-              </div>
-              <FormControl>
-                <div className="space-y-2">
-                  <FileUpload
-                    onFilesSelected={files => handleFilesSelected(files, "doc")}
-                    accept={{ "application/pdf": [".pdf"] }}
-                    maxFiles={1}
-                    disabled={!isEditingEnabled}
-                  />
-                </div>
-              </FormControl>
-              <FormDescription>يجب أن لا يتجاوز حجم الملف 5 ميجابايت</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <div className="flex justify-start gap-x-4">
           {!isEditingEnabled ? (
             <Button
@@ -425,6 +439,7 @@ export function AccountForm({ user }: { user: User }) {
               <Button
                 type="button"
                 variant="outline"
+                className="cursor-pointer"
                 onClick={() => {
                   setIsEditingEnabled(false)
                   form.reset()

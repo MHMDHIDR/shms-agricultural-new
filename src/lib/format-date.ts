@@ -112,6 +112,30 @@ function formatDateToString(date: Date): string {
 }
 
 /**
+ * Format a date value to a string in 'yyyy-MM-dd' format
+ * @param value The date value to format
+ * @returns Formatted date string
+ */
+export function formatDateValue(value: Date | undefined) {
+  if (!value) return ""
+  try {
+    return value instanceof Date && !isNaN(value.getTime()) ? value.toISOString().split("T")[0] : ""
+  } catch {
+    return ""
+  }
+}
+
+/**
+ * Parse a date string to a Date object
+ * @param dateString The date string to parse
+ * @returns Parsed date object or undefined if invalid
+ */
+export function parseDate(dateString: string) {
+  const date = new Date(dateString)
+  return !isNaN(date.getTime()) ? date : undefined
+}
+
+/**
  * Compare two dates
  * @param dateA First date
  * @param dateB Second date

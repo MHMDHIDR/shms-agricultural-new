@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { convertToBase64 } from "@/lib/convert-file-to-base64"
+import { formatDateValue, parseDate } from "@/lib/format-date"
 import { optimizeImage } from "@/lib/optimize-image"
 import { projectSchema } from "@/schemas/project"
 import { api } from "@/trpc/react"
@@ -47,23 +48,6 @@ export function ProjectForm() {
 
   const toast = useToast()
   const router = useRouter()
-
-  const formatDateValue = (value: Date | undefined) => {
-    if (!value) return ""
-    try {
-      return value instanceof Date && !isNaN(value.getTime())
-        ? value.toISOString().split("T")[0]
-        : ""
-    } catch {
-      return ""
-    }
-  }
-
-  // Add this helper function to safely parse dates
-  const parseDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return !isNaN(date.getTime()) ? date : undefined
-  }
 
   const form = useForm<ProjectInput>({
     resolver: zodResolver(projectSchema),

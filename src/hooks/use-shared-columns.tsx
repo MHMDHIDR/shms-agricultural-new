@@ -156,7 +156,7 @@ function ActionCell<T extends BaseEntity>({
         title={getDeleteDialogTitle(entityType, entity)}
         description="لا يمكن التراجع عن هذا الإجراء."
         buttonText={isDeleting ? "جاري الحذف..." : "حذف"}
-        buttonClass="bg-destructive hover:bg-destructive/90"
+        buttonClass="bg-destructive text-white hover:bg-destructive/90"
         onConfirm={handleDelete}
       />
     </>

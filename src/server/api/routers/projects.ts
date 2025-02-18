@@ -1,6 +1,8 @@
 import { z } from "zod"
 import { sendPurchaseConfirmationEmail } from "@/lib/email/purchase-confirmation"
+import { extractS3FileName } from "@/lib/extract-s3-filename"
 import { projectSchema } from "@/schemas/project"
+import { createCaller } from "@/server/api/root"
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
 
 export const projectRouter = createTRPCRouter({
@@ -203,8 +205,68 @@ export const projectRouter = createTRPCRouter({
   deleteById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.projects.delete({
-        where: { id: input.id },
+      const caller = createCaller(ctx)
+
+      // remove project images and study case from s3
+      const project = await ctx.db.projects.findUnique({ where: { id: input.id } })
+      if (project) {
+        // Delete project images
+        if (project.projectImages) {
+          for (const image of project.projectImages) {
+            const oldFileKey = extractS3FileName(image.imgDisplayPath)
+            if (oldFileKey) {
+              await caller.S3.deleteFile({ fileName: oldFileKey })
+            }
+          }
+        }
+        // Delete study case
+        if (project.projectStudyCase) {
+          for (const study of project.projectStudyCase) {
+            const oldFileKey = extractS3FileName(study.imgDisplayPath)
+            if (oldFileKey) {
+              await caller.S3.deleteFile({ fileName: oldFileKey })
+            }
+          }
+        }
+      }
+
+      await ctx.db.projects.delete({ where: { id: input.id } })
+      return { success: true }
+    }),
+
+  deleteManyById: protectedProcedure
+    .input(z.object({ ids: z.array(z.string()) }))
+    .mutation(async ({ ctx, input }) => {
+      const caller = createCaller(ctx)
+
+      // Remove all projects' files from S3 and delete projects
+      const projects = await ctx.db.projects.findMany({
+        where: { id: { in: input.ids } },
+      })
+
+      for (const project of projects) {
+        // Delete project images
+        if (project.projectImages) {
+          for (const image of project.projectImages) {
+            const oldFileKey = extractS3FileName(image.imgDisplayPath)
+            if (oldFileKey) {
+              await caller.S3.deleteFile({ fileName: oldFileKey })
+            }
+          }
+        }
+        // Delete study case
+        if (project.projectStudyCase) {
+          for (const study of project.projectStudyCase) {
+            const oldFileKey = extractS3FileName(study.imgDisplayPath)
+            if (oldFileKey) {
+              await caller.S3.deleteFile({ fileName: oldFileKey })
+            }
+          }
+        }
+      }
+
+      await ctx.db.projects.deleteMany({
+        where: { id: { in: input.ids } },
       })
 
       return { success: true }

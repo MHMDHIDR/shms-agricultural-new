@@ -9,6 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { TableToolbar } from "@/components/custom/data-table/table-toolbar"
 import NoRecords from "@/components/custom/no-records"
@@ -23,6 +24,7 @@ import {
 } from "@/components/ui/table"
 import { useSharedColumns } from "@/hooks/use-shared-columns"
 import { useToast } from "@/hooks/use-toast"
+import { api } from "@/trpc/react"
 import type { BulkAction } from "@/components/custom/data-table/table-toolbar"
 import type { Projects } from "@prisma/client"
 import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table"
@@ -40,13 +42,41 @@ export default function ProjectsClientPage({
   const [rowSelection, setRowSelection] = useState({})
   const [globalFilter, setGlobalFilter] = useState("")
   const toast = useToast()
+  const utils = api.useUtils()
+  const router = useRouter()
+
+  // Define mutations at component level
+  const handleDeleteSingleProject = api.projects.deleteById.useMutation({
+    onSuccess: () => {
+      toast.success("تم حذف المشروع بنجاح")
+      void utils.projects.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ أثناء حذف المشروع")
+    },
+    onMutate: () => {
+      toast.loading("جاري حذف المشروع ...")
+    },
+  })
+
+  const handleDeleteManyProjects = api.projects.deleteManyById.useMutation({
+    onSuccess: () => {
+      toast.success("تم حذف المشاريع المحددة بنجاح")
+      void utils.projects.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ أثناء حذف المشاريع")
+    },
+    onMutate: () => {
+      toast.loading("جاري حذف المشاريع ...")
+    },
+  })
 
   // Handle project actions
-  const handleDeleteProject = (_id: string) => {
-    void (async () => {
-      // Implement delete functionality
-      toast.error("Delete functionality not implemented yet")
-    })()
+  const handleDeleteProject = (id: string) => {
+    void handleDeleteSingleProject.mutate({ id })
   }
 
   const handleActivateProject = (_id: string) => {
@@ -103,7 +133,7 @@ export default function ProjectsClientPage({
         label: "حذف المحدد",
         onClick: () => {
           const ids = selectedRows.map(row => row.id)
-          toast.success(`Selected IDs: ${ids.join(", ")}`)
+          void handleDeleteManyProjects.mutate({ ids })
         },
         variant: "destructive",
       },
