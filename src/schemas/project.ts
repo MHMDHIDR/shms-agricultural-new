@@ -15,6 +15,7 @@ export const projectSchema = z.object({
   projectProfitsCollectDate: z.date({
     required_error: "تاريخ جمع الأرباح مطلوب",
   }),
+  projectStatus: z.enum(["pending", "active"]),
   projectTotalStocks: z.number().min(1, "إجمالي عدد الأسهم يجب أن يكون أكبر من 0"),
   projectStockPrice: z.number().min(1, "سعر السهم يجب أن يكون أكبر من 0"),
   projectStockProfits: z.number().min(0, "أرباح السهم يجب أن تكون 0 أو أكبر"),

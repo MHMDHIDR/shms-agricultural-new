@@ -73,23 +73,45 @@ export default function ProjectsClientPage({
     },
   })
 
+  const handleActivateSingleProject = api.projects.update.useMutation({
+    onSuccess: () => {
+      toast.success("تم تفعيل المشروع بنجاح")
+      void utils.projects.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ أثناء تفعيل المشروع")
+    },
+    onMutate: () => {
+      toast.loading("جاري تفعيل المشروع ...")
+    },
+  })
+
+  const handleDeactivateSingleProject = api.projects.update.useMutation({
+    onSuccess: () => {
+      toast.success("تم تعطيل المشروع بنجاح")
+      void utils.projects.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ أثناء تعطيل المشروع")
+    },
+    onMutate: () => {
+      toast.loading("جاري تعطيل المشروع ...")
+    },
+  })
+
   // Handle project actions
   const handleDeleteProject = (id: string) => {
     void handleDeleteSingleProject.mutate({ id })
   }
 
-  const handleActivateProject = (_id: string) => {
-    void (async () => {
-      // Implement activate functionality
-      toast.success("Activate functionality not implemented yet")
-    })()
+  const handleActivateProject = (id: string) => {
+    void handleActivateSingleProject.mutate({ id, projectStatus: "active" })
   }
 
-  const handleDeactivateProject = (_id: string) => {
-    void (async () => {
-      // Implement deactivate functionality
-      toast.success("Deactivate functionality not implemented yet")
-    })()
+  const handleDeactivateProject = (id: string) => {
+    void handleDeactivateSingleProject.mutate({ id, projectStatus: "pending" })
   }
 
   const { columns, filterFields } = useSharedColumns<Projects>({

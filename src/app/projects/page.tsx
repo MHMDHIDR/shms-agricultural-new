@@ -2,11 +2,11 @@ import clsx from "clsx"
 import Image from "next/image"
 import Link from "next/link"
 import NoRecords from "@/components/custom/no-records"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription } from "@/components/ui/card"
 import { APP_DESCRIPTION, APP_LOGO, APP_TITLE } from "@/lib/constants"
 import { auth } from "@/server/auth"
 import { api } from "@/trpc/server"
+import EditButton from "./edit-button"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -69,17 +69,7 @@ export default async function ProjectsPage() {
                         <span className="text-xs text-gray-300 md:text-sm">
                           {project.projectLocation}
                         </span>
-                        {sessionRole === "admin" && (
-                          <Link href={`/admin/projects/${project.id}`}>
-                            <Button
-                              variant={"ghost"}
-                              size={"sm"}
-                              className="cursor-pointer text-xs px-1.5"
-                            >
-                              تعديل
-                            </Button>
-                          </Link>
-                        )}
+                        {sessionRole === "admin" && <EditButton projectId={project.id} />}
                       </div>
                     </CardDescription>
                   </div>

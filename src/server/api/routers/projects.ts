@@ -5,6 +5,8 @@ import { projectSchema } from "@/schemas/project"
 import { createCaller } from "@/server/api/root"
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
 
+const updateProjectSchema = projectSchema.partial()
+
 export const projectRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const session = ctx.session
@@ -21,9 +23,7 @@ export const projectRouter = createTRPCRouter({
   getProjectById: publicProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.db.projects.findUnique({
-        where: { id: input.projectId },
-      })
+      return await ctx.db.projects.findUnique({ where: { id: input.projectId } })
     }),
 
   updateProfitsPercentage: protectedProcedure
@@ -270,5 +270,30 @@ export const projectRouter = createTRPCRouter({
       })
 
       return { success: true }
+    }),
+
+  update: protectedProcedure
+    .input(updateProjectSchema.extend({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...data } = input
+
+      const project = await ctx.db.projects.update({
+        where: { id },
+        data: {
+          ...data,
+          projectImages: data.projectImages?.map(url => ({
+            imgDisplayName: url.split("/").pop() ?? "",
+            imgDisplayPath: url,
+          })),
+          projectStudyCase: [
+            {
+              imgDisplayName: data.projectStudyCase?.split("/").pop() ?? "",
+              imgDisplayPath: data.projectStudyCase ?? "",
+            },
+          ],
+        },
+      })
+
+      return project
     }),
 })
