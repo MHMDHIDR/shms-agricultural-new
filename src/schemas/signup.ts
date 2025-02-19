@@ -31,6 +31,7 @@ export const signupSchema = z.object({
     .regex(/[^A-Za-z0-9]/, 'يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل مثل "!@#$%^&*"'),
   confirmPassword: z.string(),
   theme: z.enum(["light", "dark"]).default("light"),
+  accountStatus: z.enum(["active", "block", "pending"]).optional().default("pending"),
   image: z.string().default(""),
   doc: z.string().default(""),
 })

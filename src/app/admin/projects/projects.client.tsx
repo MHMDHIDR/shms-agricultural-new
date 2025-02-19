@@ -45,7 +45,6 @@ export default function ProjectsClientPage({
   const utils = api.useUtils()
   const router = useRouter()
 
-  // Define mutations at component level
   const handleDeleteSingleProject = api.projects.deleteById.useMutation({
     onSuccess: () => {
       toast.success("تم حذف المشروع بنجاح")

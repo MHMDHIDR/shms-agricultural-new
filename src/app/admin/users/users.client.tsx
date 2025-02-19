@@ -8,9 +8,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { TableToolbar } from "@/components/custom/data-table/table-toolbar"
 import NoRecords from "@/components/custom/no-records"
+import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -21,9 +24,15 @@ import {
 } from "@/components/ui/table"
 import { useSharedColumns } from "@/hooks/use-shared-columns"
 import { useToast } from "@/hooks/use-toast"
+import { api } from "@/trpc/react"
 import type { BulkAction } from "@/components/custom/data-table/table-toolbar"
 import type { User } from "@prisma/client"
-import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table"
+import type {
+  ColumnFiltersState,
+  SortingState,
+  Table as TableType,
+  VisibilityState,
+} from "@tanstack/react-table"
 
 export default function UsersClientPage({ users, count }: { users: User[]; count: number }) {
   const [sorting, setSorting] = useState<SortingState>([])
@@ -32,27 +41,62 @@ export default function UsersClientPage({ users, count }: { users: User[]; count
   const [rowSelection, setRowSelection] = useState({})
   const [globalFilter, setGlobalFilter] = useState("")
   const toast = useToast()
+  const utils = api.useUtils()
+  const router = useRouter()
+
+  const handleDeleteSingleUser = api.user.delete.useMutation({
+    onSuccess: () => {
+      toast.success("تم حذف المستخدم بنجاح")
+      void utils.user.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ أثناء حذف المستخدم")
+    },
+    onMutate: () => {
+      toast.loading("جاري حذف المستخدم ...")
+    },
+  })
+
+  const handleBlockSingleUser = api.user.update.useMutation({
+    onSuccess: () => {
+      toast.success("تم حظر المستخدم بنجاح")
+      void utils.user.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ أثناء حظر المستخدم")
+    },
+    onMutate: () => {
+      toast.loading("جاري حظر المستخدم ...")
+    },
+  })
+
+  const handleUnblockSingleUser = api.user.update.useMutation({
+    onSuccess: () => {
+      toast.success("تم إلغاء حظر المستخدم بنجاح")
+      void utils.user.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ أثناء إلغاء حظر المستخدم")
+    },
+    onMutate: () => {
+      toast.loading("جاري إلغاء حظر المستخدم ...")
+    },
+  })
 
   // Handle user actions
-  const handleDeleteUser = (_id: string) => {
-    void (async () => {
-      // Implement delete functionality
-      toast.error("Delete functionality not implemented yet")
-    })()
+  const handleDeleteUser = (id: string) => {
+    void handleDeleteSingleUser.mutate({ id })
   }
 
-  const handleBlockUser = (_id: string) => {
-    void (async () => {
-      // Implement block functionality
-      toast.loading("Block functionality not implemented yet")
-    })()
+  const handleBlockUser = (id: string) => {
+    void handleBlockSingleUser.mutate({ id, accountStatus: "block" })
   }
 
-  const handleUnblockUser = (_id: string) => {
-    void (async () => {
-      // Implement unblock functionality
-      toast.success("Unblock functionality not implemented yet")
-    })()
+  const handleUnblockUser = (id: string) => {
+    void handleUnblockSingleUser.mutate({ id, accountStatus: "active" })
   }
 
   const { columns, filterFields } = useSharedColumns<User>({
@@ -145,6 +189,7 @@ export default function UsersClientPage({ users, count }: { users: User[]; count
         filterFields={filterFields}
       />
 
+      <TablePagination table={table} />
       <div className="rounded-md border px-2.5">
         <Table>
           <TableHeader className="select-none">
@@ -181,6 +226,34 @@ export default function UsersClientPage({ users, count }: { users: User[]; count
           </TableBody>
         </Table>
       </div>
+      <TablePagination table={table} />
+    </div>
+  )
+}
+
+function TablePagination({ table }: { table: TableType<User> }) {
+  return (
+    <div className="flex gap-x-3">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => table.previousPage()}
+        disabled={!table.getCanPreviousPage()}
+        className="cursor-pointer"
+      >
+        <ChevronRightIcon className="h-4 w-4" />
+        السابق
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => table.nextPage()}
+        disabled={!table.getCanNextPage()}
+        className="cursor-pointer"
+      >
+        التالي
+        <ChevronLeftIcon className="h-4 w-4" />
+      </Button>
     </div>
   )
 }

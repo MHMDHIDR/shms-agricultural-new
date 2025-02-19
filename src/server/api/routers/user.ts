@@ -98,10 +98,15 @@ export const userRouter = createTRPCRouter({
     return ctx.db.user.update({ where: { id: input.id }, data: updateData })
   }),
 
+  /**
+   * Deleting the user will just mark the user as deleted
+   * and return the stocks to the projects
+   * @param id - The id of the user to delete
+   * @returns The updated user
+   */
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // Get user's stocks
       const user = await ctx.db.user.findUnique({
         where: { id: input.id },
         select: { stocks: true },
