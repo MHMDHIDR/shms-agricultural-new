@@ -2,7 +2,11 @@ import { notFound } from "next/navigation"
 import { api } from "@/trpc/server"
 import { ProjectForm } from "../new/project-form"
 
-export default async function EditProject({ params }: { params: Promise<{ projectId: string }> }) {
+export default async function EditProjectPage({
+  params,
+}: {
+  params: Promise<{ projectId: string }>
+}) {
   const { projectId } = await params
   const project = await api.projects.getProjectById({ projectId })
 

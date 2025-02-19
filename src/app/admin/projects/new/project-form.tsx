@@ -1,10 +1,10 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Projects } from "@prisma/client"
 import { Loader2, X } from "lucide-react"
+import { marked } from "marked"
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import TurndownService from "turndown"
 import { FileUpload } from "@/components/custom/file-upload"
@@ -33,12 +33,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { convertToBase64 } from "@/lib/convert-file-to-base64"
 import { formatDateValue, parseDate } from "@/lib/format-date"
+import { generateMongoId } from "@/lib/generate-model-id"
 import { optimizeImage } from "@/lib/optimize-image"
 import { projectSchema } from "@/schemas/project"
 import { api } from "@/trpc/react"
 import type { ProjectInput } from "@/schemas/project"
-
-const MarkdownIt = require("markdown-it")
+import type { Projects } from "@prisma/client"
 
 type FileSelectionType = {
   projectImages: File[]
@@ -53,37 +53,8 @@ type ProjectFormProps = {
 export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<Partial<FileSelectionType>>({})
-
   const toast = useToast()
   const router = useRouter()
-
-  const md = useMemo(() => {
-    return MarkdownIt({
-      html: true,
-      xhtmlOut: true,
-      breaks: true,
-      linkify: true,
-      typographer: true,
-      quotes: '""',
-      maxNesting: 100,
-      enable: [
-        "code",
-        "fence",
-        "blockquote",
-        "hr",
-        "list",
-        "reference",
-        "heading",
-        "lheading",
-        "paragraph",
-        "newline",
-        "escape",
-        "link",
-        "image",
-        "emphasis",
-      ],
-    })
-  }, [])
 
   const turndown = new TurndownService()
 
@@ -115,8 +86,12 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
             projectProfitsCollectDate: undefined,
             projectImages: [],
             projectStudyCase: "",
+            projectStatus: "pending",
           },
   })
+
+  // Add this after useForm to watch changes
+  form.watch(data => console.log("Form values changed", data))
 
   const { mutateAsync: uploadFiles } = api.S3.uploadFiles.useMutation()
   const { mutateAsync: createProject, isPending: isCreatingProject } =
@@ -225,28 +200,36 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
   }
 
   const onSubmit = async (data: ProjectInput) => {
+    console.log("Form validation state:", form.formState.errors)
+    if (Object.keys(form.formState.errors).length > 0) {
+      console.error("Form validation failed:", form.formState.errors)
+      return
+    }
+
+    console.log("Form submission started", { data, isEditing, selectedFiles })
+
     if (
       !isEditing &&
       (!selectedFiles.projectImages?.length || !selectedFiles.projectStudyCase?.length)
     ) {
+      console.error("File validation failed", { selectedFiles })
       toast.error("يجب تحميل صور المشروع وملف دراسة الجدوى")
       return
     }
 
     try {
-      let uploadedUrls = {
-        projectImages: [] as string[],
-        projectStudyCase: "",
+      const projectId = isEditing ? project!.id : generateMongoId()
+      const uploadedUrls = await uploadSelectedFiles(projectId)
+
+      if (!uploadedUrls.projectImages.length || !uploadedUrls.projectStudyCase) {
+        throw new Error("فشل في تحميل الملفات")
       }
 
-      if (Object.keys(selectedFiles).length > 0) {
-        const projectId = isEditing ? project!.id : crypto.randomUUID()
-        uploadedUrls = await uploadSelectedFiles(projectId)
-      }
-
+      const markdownProjectTerms = await marked(data.projectTerms)
       const projectData = {
         ...data,
-        projectTerms: md.render(data.projectTerms),
+        id: projectId,
+        projectTerms: markdownProjectTerms,
         projectImages: uploadedUrls.projectImages.length
           ? uploadedUrls.projectImages
           : data.projectImages,
@@ -254,24 +237,30 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
       }
 
       if (isEditing) {
-        await updateProject({
-          id: project!.id,
-          ...projectData,
-        })
+        await updateProject({ ...projectData })
         toast.success("تم تحديث المشروع بنجاح")
+        router.refresh()
       } else {
+        console.log("Creating new project", projectData)
         const newProjectId = await createProject(projectData)
+        console.log("Project created with ID", newProjectId)
         if (!newProjectId) {
           throw new Error("حدث خطأ أثناء إضافة المشروع")
         }
         toast.success("تم إضافة المشروع بنجاح")
+        router.push(`/admin/projects/${newProjectId}`)
       }
 
       setSelectedFiles({})
-      router.refresh()
     } catch (error) {
-      console.error("Error -->", error)
-
+      console.error("Submission error", error)
+      if (error instanceof Error) {
+        console.error("Error details", {
+          message: error.message,
+          stack: error.stack,
+          cause: error.cause,
+        })
+      }
       const errorMsg = error instanceof Error ? error.message : "حدث خطأ أثناء حفظ المشروع"
       toast.error(errorMsg)
     }

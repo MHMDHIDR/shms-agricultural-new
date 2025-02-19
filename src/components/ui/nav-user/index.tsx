@@ -38,6 +38,7 @@ export function NavUser({ user }: { user: Session["user"] }) {
                   src={user.image ?? "/logo.svg"}
                   alt={user.name ?? APP_TITLE}
                   className="object-top"
+                  blurDataURL={user?.blurImageDataURL ?? "/logo.svg"}
                 />
                 <AvatarFallback className="rounded-lg">
                   {fallbackUsername(user.name ?? APP_TITLE)}
