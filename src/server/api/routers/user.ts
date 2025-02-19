@@ -122,10 +122,9 @@ export const userRouter = createTRPCRouter({
         }
       }
 
-      // Mark user as deleted
-      return ctx.db.user.update({
+      await ctx.db.user.update({
         where: { id: input.id },
-        data: { isDeleted: true },
+        data: { stocks: [], isDeleted: true, accountStatus: "block" },
       })
     }),
 })

@@ -343,6 +343,7 @@ export function useSharedColumns<T extends BaseEntity>({
       ),
       cell: ({ row }) => {
         const user = row.original as unknown as UserType
+        const isDeleted = user.isDeleted
         return (
           <span
             className={clsx("rounded-full border px-2.5 py-0.5 select-none", {
@@ -351,7 +352,7 @@ export function useSharedColumns<T extends BaseEntity>({
               "bg-yellow-50 text-yellow-600": user.accountStatus === "pending",
             })}
           >
-            {translateSring(user.accountStatus)}
+            {isDeleted ? translateSring("userDeleted") : translateSring(user.accountStatus)}
           </span>
         )
       },

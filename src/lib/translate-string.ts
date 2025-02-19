@@ -89,6 +89,9 @@ export const translateSring = (string: string) => {
     case "block": {
       return "محظور"
     }
+    case "userDeleted": {
+      return "محذوف"
+    }
     case "completed": {
       return "مكتمل"
     }
