@@ -1,11 +1,9 @@
 import { z } from "zod"
 import { sendPurchaseConfirmationEmail } from "@/lib/email/purchase-confirmation"
 import { extractS3FileName } from "@/lib/extract-s3-filename"
-import { projectSchema } from "@/schemas/project"
+import { projectSchema, updateProjectSchema } from "@/schemas/project"
 import { createCaller } from "@/server/api/root"
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
-
-const updateProjectSchema = projectSchema.partial()
 
 export const projectRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -40,7 +38,6 @@ export const projectRouter = createTRPCRouter({
         data: {
           projectSpecialPercentage: input.percentage,
           projectSpecialPercentageCode: input.percentageCode,
-          updatePercentage: true,
         },
       })
 
@@ -55,7 +52,6 @@ export const projectRouter = createTRPCRouter({
         data: {
           projectSpecialPercentage: null,
           projectSpecialPercentageCode: null,
-          updatePercentage: true,
         },
       })
 
@@ -274,7 +270,7 @@ export const projectRouter = createTRPCRouter({
     }),
 
   update: protectedProcedure
-    .input(updateProjectSchema.extend({ id: z.string() }))
+    .input(updateProjectSchema.partial().extend({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input
 

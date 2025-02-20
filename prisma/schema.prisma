@@ -63,7 +63,6 @@ model Projects {
     projectDescription           String
     projectTerms                 String
     updateImg                    Boolean?
-    updatePercentage             Boolean?
     projectAdded                 Int?
     projectDeleted               Int?
     projectUpdated               Int?

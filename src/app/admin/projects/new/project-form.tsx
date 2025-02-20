@@ -35,9 +35,9 @@ import { convertToBase64 } from "@/lib/convert-file-to-base64"
 import { formatDateValue, parseDate } from "@/lib/format-date"
 import { generateMongoId } from "@/lib/generate-model-id"
 import { optimizeImage } from "@/lib/optimize-image"
-import { projectSchema } from "@/schemas/project"
+import { projectSchema, updateProjectSchema } from "@/schemas/project"
 import { api } from "@/trpc/react"
-import type { ProjectInput } from "@/schemas/project"
+import type { ProjectInput, UpdateProjectInput } from "@/schemas/project"
 import type { Projects } from "@prisma/client"
 
 type FileSelectionType = {
@@ -58,8 +58,10 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
 
   const turndown = new TurndownService()
 
-  const form = useForm<ProjectInput>({
-    resolver: zodResolver(projectSchema),
+  type FormInput = typeof isEditing extends true ? UpdateProjectInput : ProjectInput
+
+  const form = useForm<FormInput>({
+    resolver: zodResolver(isEditing ? updateProjectSchema : projectSchema),
     defaultValues:
       isEditing && project
         ? {
@@ -89,9 +91,6 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
             projectStatus: "pending",
           },
   })
-
-  // Add this after useForm to watch changes
-  form.watch(data => console.log("Form values changed", data))
 
   const { mutateAsync: uploadFiles } = api.S3.uploadFiles.useMutation()
   const { mutateAsync: createProject, isPending: isCreatingProject } =
@@ -200,14 +199,12 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
   }
 
   const onSubmit = async (data: ProjectInput) => {
-    console.log("Form validation state:", form.formState.errors)
     if (Object.keys(form.formState.errors).length > 0) {
       console.error("Form validation failed:", form.formState.errors)
       return
     }
 
-    console.log("Form submission started", { data, isEditing, selectedFiles })
-
+    // Only check for required files in create mode
     if (
       !isEditing &&
       (!selectedFiles.projectImages?.length || !selectedFiles.projectStudyCase?.length)
@@ -221,7 +218,8 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
       const projectId = isEditing ? project!.id : generateMongoId()
       const uploadedUrls = await uploadSelectedFiles(projectId)
 
-      if (!uploadedUrls.projectImages.length || !uploadedUrls.projectStudyCase) {
+      // Only check uploaded files in create mode
+      if (!isEditing && (!uploadedUrls.projectImages.length || !uploadedUrls.projectStudyCase)) {
         throw new Error("فشل في تحميل الملفات")
       }
 
@@ -230,10 +228,13 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
         ...data,
         id: projectId,
         projectTerms: markdownProjectTerms,
-        projectImages: uploadedUrls.projectImages.length
-          ? uploadedUrls.projectImages
-          : data.projectImages,
-        projectStudyCase: uploadedUrls.projectStudyCase || data.projectStudyCase,
+        // Only update images/study case if new files were uploaded
+        ...(uploadedUrls.projectImages.length && {
+          projectImages: uploadedUrls.projectImages,
+        }),
+        ...(uploadedUrls.projectStudyCase && {
+          projectStudyCase: uploadedUrls.projectStudyCase,
+        }),
       }
 
       if (isEditing) {
@@ -241,9 +242,7 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
         toast.success("تم تحديث المشروع بنجاح")
         router.refresh()
       } else {
-        console.log("Creating new project", projectData)
         const newProjectId = await createProject(projectData)
-        console.log("Project created with ID", newProjectId)
         if (!newProjectId) {
           throw new Error("حدث خطأ أثناء إضافة المشروع")
         }
