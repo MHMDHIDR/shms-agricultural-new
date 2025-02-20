@@ -204,7 +204,7 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
       return
     }
 
-    // Only check for required files in create mode
+    // Files are required only when creating a new project
     if (
       !isEditing &&
       (!selectedFiles.projectImages?.length || !selectedFiles.projectStudyCase?.length)
@@ -218,7 +218,6 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
       const projectId = isEditing ? project!.id : generateMongoId()
       const uploadedUrls = await uploadSelectedFiles(projectId)
 
-      // Only check uploaded files in create mode
       if (!isEditing && (!uploadedUrls.projectImages.length || !uploadedUrls.projectStudyCase)) {
         throw new Error("فشل في تحميل الملفات")
       }
@@ -434,6 +433,7 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
                   <Input
                     type="number"
                     {...field}
+                    onWheel={e => e.currentTarget.blur()}
                     onChange={e => field.onChange(Number(e.target.value))}
                     min={1}
                   />
@@ -453,6 +453,7 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
                   <Input
                     type="number"
                     {...field}
+                    onWheel={e => e.currentTarget.blur()}
                     onChange={e => field.onChange(Number(e.target.value))}
                     min={1}
                   />
@@ -471,6 +472,7 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
                   <Input
                     type="number"
                     {...field}
+                    onWheel={e => e.currentTarget.blur()}
                     onChange={e => field.onChange(Number(e.target.value))}
                     min={1}
                   />

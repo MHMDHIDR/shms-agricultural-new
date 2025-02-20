@@ -129,6 +129,7 @@ export default function ProfitsPercentageForm({ projects }: { projects: Projects
                   className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
                   {...field}
                   onChange={e => field.onChange(Number(e.target.value))}
+                  onWheel={e => e.currentTarget.blur()}
                 />
               </FormControl>
               <FormMessage />
