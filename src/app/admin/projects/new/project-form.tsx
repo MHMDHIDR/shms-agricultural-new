@@ -37,6 +37,7 @@ import { generateMongoId } from "@/lib/generate-model-id"
 import { optimizeImage } from "@/lib/optimize-image"
 import { projectSchema, updateProjectSchema } from "@/schemas/project"
 import { api } from "@/trpc/react"
+import type { UploadedFile } from "@/components/custom/file-upload"
 import type { ProjectInput, UpdateProjectInput } from "@/schemas/project"
 import type { Projects } from "@prisma/client"
 
@@ -57,6 +58,12 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
   const router = useRouter()
 
   const turndown = new TurndownService()
+
+  const { mutate: deleteProjectFile } = api.projects.deleteProjectFile.useMutation({
+    onSuccess: () => {
+      router.refresh()
+    },
+  })
 
   type FormInput = typeof isEditing extends true ? UpdateProjectInput : ProjectInput
 
@@ -198,6 +205,36 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
     }
   }
 
+  const handleDeleteProjectImage = async (file: UploadedFile) => {
+    if (!isEditing || !project?.id) return
+
+    try {
+      deleteProjectFile({
+        projectId: project.id,
+        fileUrl: file.imgDisplayPath,
+        fileType: "image",
+      })
+    } catch (error) {
+      console.error("Failed to delete project image:", error)
+      toast.error("فشل في حذف الصورة")
+    }
+  }
+
+  const handleDeleteProjectStudyCase = async (file: UploadedFile) => {
+    if (!isEditing || !project?.id) return
+
+    try {
+      deleteProjectFile({
+        projectId: project.id,
+        fileUrl: file.imgDisplayPath,
+        fileType: "studyCase",
+      })
+    } catch (error) {
+      console.error("Failed to delete study case:", error)
+      toast.error("فشل في حذف ملف دراسة الجدوى")
+    }
+  }
+
   const onSubmit = async (data: ProjectInput) => {
     if (Object.keys(form.formState.errors).length > 0) {
       console.error("Form validation failed:", form.formState.errors)
@@ -278,6 +315,9 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
                 <FormLabel>صور المشروع</FormLabel>
                 <FormControl>
                   <FileUpload
+                    uploadedFiles={isEditing && project?.projectImages ? project.projectImages : []}
+                    fileType="image"
+                    onDeleteUploadedFile={handleDeleteProjectImage}
                     onFilesSelected={files => handleFileSelection(files, "projectImages")}
                     accept={{ "image/*": [".jpeg", ".jpg", ".png", ".webp"] }}
                     disabled={isUploading}
@@ -296,6 +336,11 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
                 <FormLabel>دراسة الجدوى</FormLabel>
                 <FormControl>
                   <FileUpload
+                    uploadedFiles={
+                      isEditing && project?.projectStudyCase ? project.projectStudyCase : []
+                    }
+                    fileType="studyCase"
+                    onDeleteUploadedFile={handleDeleteProjectStudyCase}
                     onFilesSelected={files => handleFileSelection(files, "projectStudyCase")}
                     accept={{ "application/pdf": [".pdf"] }}
                     disabled={isUploading}

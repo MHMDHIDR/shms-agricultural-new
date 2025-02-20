@@ -101,25 +101,47 @@ export default function ProjectsClientPage({
     },
   })
 
-  // Handle project actions
+  const handleTogglingProjectStudyCaseVisibility = api.projects.update.useMutation({
+    onSuccess: () => {
+      toast.success("تم تعديل حالة ظهور دراسة الجدوى بنجاح")
+      void utils.projects.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ أثناء تعديل حالة ظهور دراسة الجدوى")
+    },
+    onMutate: () => {
+      toast.loading("جاري تعديل حالة ظهور دراسة الجدوى ...")
+    },
+  })
+
   const handleDeleteProject = (id: string) => {
     void handleDeleteSingleProject.mutate({ id })
   }
 
-  const handleActivateProject = (id: string) => {
-    void handleActivateSingleProject.mutate({ id, projectStatus: "active" })
+  const handleToggleProjectStatus = (id: string, status: "active" | "pending") => {
+    if (status === "active") {
+      void handleActivateSingleProject.mutate({ id, projectStatus: "active" })
+    } else {
+      void handleDeactivateSingleProject.mutate({ id, projectStatus: "pending" })
+    }
   }
 
-  const handleDeactivateProject = (id: string) => {
-    void handleDeactivateSingleProject.mutate({ id, projectStatus: "pending" })
+  const handleToggleProjectStudyCaseVisibility = (id: string) => {
+    void handleTogglingProjectStudyCaseVisibility.mutate({
+      id,
+      projectStudyCaseVisibility: !projects.find(project => project.id === id)
+        ?.projectStudyCaseVisibility,
+    })
   }
 
   const { columns, filterFields } = useSharedColumns<Projects>({
     entityType: "projects",
     actions: {
       onDelete: handleDeleteProject,
-      onActivate: handleActivateProject,
-      onDeactivate: handleDeactivateProject,
+      onActivate: id => handleToggleProjectStatus(id, "active"),
+      onDeactivate: id => handleToggleProjectStatus(id, "pending"),
+      onToggleStudyCaseVisibility: id => handleToggleProjectStudyCaseVisibility(id),
       basePath: "/projects",
     },
   })

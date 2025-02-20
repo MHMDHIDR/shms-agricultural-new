@@ -18,7 +18,7 @@ export function ProjectIntro({ project }: { project: Projects }) {
             <div className="relative w-full pb-[116.6666666861111%]">
               <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
                 <Image
-                  src={randomImages[0]?.imgDisplayPath ?? ""}
+                  src={randomImages[0]?.imgDisplayPath ?? "/our-services/preparation.webp"}
                   alt={project.projectName}
                   className="block w-full h-full object-cover rounded-md"
                   draggable="false"
@@ -32,7 +32,7 @@ export function ProjectIntro({ project }: { project: Projects }) {
             <div className="relative w-full pb-[126.66666670044445%]">
               <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
                 <Image
-                  src={randomImages[1]?.imgDisplayPath ?? ""}
+                  src={randomImages[1]?.imgDisplayPath ?? "/our-services/farming.webp"}
                   alt={project.projectName}
                   className="block w-full h-full object-cover rounded-md"
                   draggable="false"
@@ -46,7 +46,7 @@ export function ProjectIntro({ project }: { project: Projects }) {
             <div className="relative w-full pb-[111.79487177537935%]">
               <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
                 <Image
-                  src={randomImages[2]?.imgDisplayPath ?? ""}
+                  src={randomImages[2]?.imgDisplayPath ?? "/our-services/harvest.webp"}
                   alt={project.projectName}
                   className="block w-full h-full object-cover rounded-md"
                   draggable="false"

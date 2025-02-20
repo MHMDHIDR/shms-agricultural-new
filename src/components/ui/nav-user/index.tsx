@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { APP_TITLE } from "@/lib/constants"
+import { APP_LOGO_SVG, APP_TITLE } from "@/lib/constants"
 import { fallbackUsername } from "@/lib/fallback-username"
 import { handleSignout } from "./actions"
 import type { Session } from "next-auth"
@@ -35,10 +35,10 @@ export function NavUser({ user }: { user: Session["user"] }) {
             >
               <Avatar className="h-8 w-8 rounded-lg cursor-pointer">
                 <AvatarImage
-                  src={user.image ?? "/logo.svg"}
+                  src={user.image ?? APP_LOGO_SVG}
                   alt={user.name ?? APP_TITLE}
                   className="object-top"
-                  blurDataURL={user?.blurImageDataURL ?? "/logo.svg"}
+                  blurDataURL={user?.blurImageDataURL ?? APP_LOGO_SVG}
                 />
                 <AvatarFallback className="rounded-lg">
                   {fallbackUsername(user.name ?? APP_TITLE)}

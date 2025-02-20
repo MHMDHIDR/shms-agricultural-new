@@ -9,3 +9,7 @@ export const ADMIN_EMAIL = "info@shmsagricultural.com"
 export const ADMIN_PHONE = "+97471190459"
 
 export const APP_CURRENCY = "ر.ق"
+
+export const APP_LOGO_SVG = "/logo.svg"
+
+export const APP_LOGO_SLOGAN = "/logo-slogan.svg"

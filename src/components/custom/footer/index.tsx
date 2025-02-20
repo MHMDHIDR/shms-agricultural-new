@@ -2,7 +2,7 @@ import { Facebook, Instagram, Twitter, Youtube } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import Divider from "@/components/custom/divider"
-import { APP_TITLE } from "@/lib/constants"
+import { APP_LOGO_SVG, APP_TITLE } from "@/lib/constants"
 import { api } from "@/trpc/server"
 import FooterWrapper from "./footer-wrapper"
 
@@ -49,7 +49,7 @@ export default async function Footer() {
               <div>
                 <span className="flex items-center justify-center gap-4 lg:justify-start">
                   <Image
-                    src="/logo.svg"
+                    src={APP_LOGO_SVG}
                     alt="logo"
                     className="h-10 w-10 md:h-20 md:w-20"
                     width={56}

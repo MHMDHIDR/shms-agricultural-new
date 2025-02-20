@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import { ArrowUpDown, Ban, CheckCircle, MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { ArrowUpDown, Ban, CheckCircle, Eye, MoreHorizontal, Pencil, Trash } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { ConfirmationDialog } from "@/components/custom/confirmation-dialog"
@@ -38,6 +38,7 @@ type TableActions = {
   onUnblock?: (id: string) => void
   onActivate?: (id: string) => void
   onDeactivate?: (id: string) => void
+  onToggleStudyCaseVisibility?: (id: string) => void
   basePath: "/projects" | "/users" | "/operations" | "/profits-percentage"
 }
 
@@ -141,6 +142,14 @@ function ActionCell<T extends BaseEntity>({
             >
               <CheckCircle className="mr-2 h-4 w-4" />
               {(row.original as unknown as Project).projectStatus === "pending" ? "تفعيل" : "تعطيل"}
+            </DropdownMenuItem>
+          )}
+          {entityType === "projects" && actions.onToggleStudyCaseVisibility && (
+            <DropdownMenuItem onClick={() => actions.onToggleStudyCaseVisibility?.(entity.id)}>
+              <Eye className="mr-2 h-4 w-4" />
+              {(row.original as unknown as Project).projectStudyCaseVisibility
+                ? "إخفاء دراسة الجدوى"
+                : "إظهار دراسة الجدوى"}
             </DropdownMenuItem>
           )}
           <DropdownMenuItem className="text-red-600" onClick={() => setIsDeleteDialogOpen(true)}>
@@ -409,6 +418,32 @@ export function useSharedColumns<T extends BaseEntity>({
       filterFn: (row, _id, filterValues: string[]) => {
         const value = (row.original as unknown as Project).projectStatus
         return filterValues.includes(value)
+      },
+    },
+    {
+      accessorKey: "projectStudyCaseVisibility",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("projectStudyCaseVisibility")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const project = row.original as unknown as Project
+        return (
+          <span
+            className={clsx("rounded-full border px-2.5 py-0.5 select-none", {
+              "bg-green-50 text-green-600": project.projectStudyCaseVisibility,
+              "bg-yellow-50 text-yellow-600": !project.projectStudyCaseVisibility,
+            })}
+          >
+            {project.projectStudyCaseVisibility ? "معروض" : "مخفي"}
+          </span>
+        )
       },
     },
     {

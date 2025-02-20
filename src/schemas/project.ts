@@ -34,6 +34,7 @@ export const projectSchema = baseProjectSchema.extend({
 export const updateProjectSchema = baseProjectSchema.extend({
   projectImages: z.array(z.string()).optional(),
   projectStudyCase: z.string().optional(),
+  projectStudyCaseVisibility: z.boolean().optional(),
 })
 
 export type ProjectInput = z.infer<typeof projectSchema>

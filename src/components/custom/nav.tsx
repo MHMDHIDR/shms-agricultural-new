@@ -25,7 +25,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { APP_TITLE } from "@/lib/constants"
+import { APP_LOGO_SVG, APP_TITLE } from "@/lib/constants"
 import { fallbackUsername, truncateUsername } from "@/lib/fallback-username"
 import { cn } from "@/lib/utils"
 import type { Session } from "next-auth"
@@ -181,7 +181,7 @@ function Avatar({ user, className }: { user: Session["user"] | undefined; classN
         <AvatarImage
           src={user.image}
           alt={user.name ?? APP_TITLE}
-          blurDataURL={user?.blurImageDataURL ?? "/logo.svg"}
+          blurDataURL={user?.blurImageDataURL ?? APP_LOGO_SVG}
           className="object-cover object-top"
         />
       ) : (

@@ -17,7 +17,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { APP_TITLE } from "@/lib/constants"
+import { APP_LOGO_SVG, APP_TITLE } from "@/lib/constants"
 
 export function ProjectsSwitcher({
   projects,
@@ -47,7 +47,7 @@ export function ProjectsSwitcher({
                     <ChevronsUpDown size={14} className="mr-4" />
                   </>
                 ) : (
-                  <Image alt={APP_TITLE} src="/logo.svg" width={36} height={36} />
+                  <Image alt={APP_TITLE} src={APP_LOGO_SVG} width={36} height={36} />
                 )}
               </strong>
             </SidebarMenuButton>

@@ -44,7 +44,7 @@ export const translateSring = (string: string) => {
       return "دراسة الجدوى"
     }
     case "projectStudyCaseVisibility": {
-      return "إظهار دراسة الجدوى"
+      return "ظهور دراسة الجدوى"
     }
     case "projectAvailableStocks": {
       return "الأسهم المتاحة"

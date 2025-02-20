@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { calculateNewAvailableStocks } from "@/lib/calculate-new-available-stocks"
 import { sendPurchaseConfirmationEmail } from "@/lib/email/purchase-confirmation"
 import { extractS3FileName } from "@/lib/extract-s3-filename"
 import { projectSchema, updateProjectSchema } from "@/schemas/project"
@@ -274,6 +275,32 @@ export const projectRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input
 
+      // If projectTotalStocks is being updated, adjust available stocks
+      if (input.projectTotalStocks) {
+        const currentProject = await ctx.db.projects.findUnique({
+          where: { id },
+          select: {
+            projectTotalStocks: true,
+            projectAvailableStocks: true,
+          },
+        })
+
+        if (currentProject) {
+          const newAvailableStocks = calculateNewAvailableStocks(
+            currentProject.projectTotalStocks,
+            input.projectTotalStocks,
+            currentProject.projectAvailableStocks,
+          )
+
+          await ctx.db.projects.update({
+            where: { id },
+            data: {
+              projectAvailableStocks: newAvailableStocks,
+            },
+          })
+        }
+      }
+
       const project = await ctx.db.projects.update({
         where: { id },
         data: {
@@ -282,15 +309,64 @@ export const projectRouter = createTRPCRouter({
             imgDisplayName: url.split("/").pop() ?? "",
             imgDisplayPath: url,
           })),
-          projectStudyCase: [
-            {
-              imgDisplayName: data.projectStudyCase?.split("/").pop() ?? "",
-              imgDisplayPath: data.projectStudyCase ?? "",
-            },
-          ],
+          projectStudyCase: data.projectStudyCase
+            ? [
+                {
+                  imgDisplayName: data.projectStudyCase.split("/").pop() ?? "",
+                  imgDisplayPath: data.projectStudyCase,
+                },
+              ]
+            : undefined,
         },
       })
 
       return project
+    }),
+
+  deleteProjectFile: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        fileUrl: z.string(),
+        fileType: z.enum(["image", "studyCase"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const caller = createCaller(ctx)
+      const fileKey = extractS3FileName(input.fileUrl)
+
+      if (!fileKey) {
+        throw new Error("Invalid file URL")
+      }
+
+      // Delete file from S3
+      await caller.S3.deleteFile({ fileName: fileKey })
+
+      // Update project record based on file type
+      if (input.fileType === "image") {
+        await ctx.db.projects.update({
+          where: { id: input.projectId },
+          data: {
+            projectImages: {
+              deleteMany: {
+                where: { imgDisplayPath: input.fileUrl },
+              },
+            },
+          },
+        })
+      } else {
+        await ctx.db.projects.update({
+          where: { id: input.projectId },
+          data: {
+            projectStudyCase: {
+              deleteMany: {
+                where: { imgDisplayPath: input.fileUrl },
+              },
+            },
+          },
+        })
+      }
+
+      return { success: true }
     }),
 })
