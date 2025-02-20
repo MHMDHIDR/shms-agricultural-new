@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { services } from "@/schemas/contact"
 
-export default function OurServices() {
+export default function OurServices({ children }: { children: React.ReactNode }) {
   const serviceIndex = 4
 
   return (
@@ -19,9 +19,7 @@ export default function OurServices() {
             الابتكار التعاوني والدعم المخصص.
           </p>
           <div className="mt-8 flex flex-col gap-4 lg:flex-row">
-            <Button className="gap-2" size="lg" asChild>
-              <Link href="/signup">ابدأ الآن</Link>
-            </Button>
+            {children}
             <Button variant="outline" size="lg" className="gap-2" asChild>
               <Link href={`/contact?service=${services[serviceIndex]}`}>
                 {services[serviceIndex]}
