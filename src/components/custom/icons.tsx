@@ -151,6 +151,10 @@ export function ShmsIcon({ className }: { className?: string }) {
 
 export function Metric({ amount }: { amount: number }) {
   const [currentAmount, setCurrentAmount] = useState(0)
+  const formattedAmount = new Intl.NumberFormat("ar-EG", {
+    minimumIntegerDigits: 6,
+    useGrouping: true,
+  }).format(Math.round(currentAmount))
 
   useEffect(() => {
     const duration = 1000 // 1 second animation
@@ -173,7 +177,6 @@ export function Metric({ amount }: { amount: number }) {
   }, [amount])
 
   const progress = (currentAmount / amount) * 100 || 0
-  const rotation = (progress * 360) / 100
 
   return (
     <div className="relative">
@@ -197,8 +200,8 @@ export function Metric({ amount }: { amount: number }) {
           style={{ transition: "stroke-dashoffset 0.05s linear" }}
         />
       </svg>
-      <strong className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-bold text-black">
-        {Math.round(currentAmount)} {APP_CURRENCY}
+      <strong className="absolute text-xl left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-bold text-black">
+        {formattedAmount} {APP_CURRENCY}
       </strong>
     </div>
   )

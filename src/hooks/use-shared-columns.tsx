@@ -53,7 +53,7 @@ type TableActions = {
   onDepositCapital?: (id: string) => void
   onDepositProfits?: (id: string) => void
   onResetCredits?: (id: string) => void
-  basePath: "/projects" | "/users" | "/operations" | "/profits-percentage"
+  basePath: "/projects" | "/users" | "/operations" | "/withdrawals" | "/profits-percentage"
 }
 
 type SharedColumnsProps = {
@@ -744,6 +744,7 @@ export function useSharedColumns<T extends BaseEntity>({
         const withdrawAction = row.original as unknown as WithdrawAction & {
           user: Pick<UserType, "name">
         }
+
         return (
           <span className="whitespace-nowrap">
             <CopyText text={withdrawAction.user.name} className="ml-2 inline h-4 w-4" />
