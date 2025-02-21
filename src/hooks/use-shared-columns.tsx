@@ -1028,6 +1028,12 @@ export function useSharedColumns<T extends BaseEntity>({
   const actionsColumn: ColumnDef<T> = {
     id: "actions",
     header: translateSring("actions"),
+    enableHiding: false,
+    enablePinning: true,
+    enableSorting: false,
+    meta: {
+      pinned: "right",
+    },
     cell: ({ row }) => (
       <ActionCell<T> row={row as Row<T>} entityType={entityType} actions={actions} />
     ),

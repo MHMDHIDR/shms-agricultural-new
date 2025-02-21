@@ -8,6 +8,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import clsx from "clsx"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -187,12 +188,16 @@ export default function ProjectsClientPage({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
+    enableColumnPinning: true,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
       globalFilter,
+      columnPinning: {
+        right: ["actions"],
+      },
     },
   })
 
@@ -269,13 +274,22 @@ export default function ProjectsClientPage({
           <TableHeader className="select-none">
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableHead key={header.id} className="text-center">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map(header => {
+                  const isPinned = header.column.getIsPinned()
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={clsx(
+                        "text-center",
+                        isPinned && "sticky left-0 bg-background shadow-[1px_0_0_0_#e5e7eb]",
+                      )}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  )
+                })}
               </TableRow>
             ))}
           </TableHeader>
@@ -283,11 +297,20 @@ export default function ProjectsClientPage({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id} className="text-center">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map(cell => {
+                    const isPinned = cell.column.getIsPinned()
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={clsx(
+                          "text-center",
+                          isPinned && "sticky left-0 bg-background shadow-[1px_0_0_0_#e5e7eb]",
+                        )}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    )
+                  })}
                 </TableRow>
               ))
             ) : (
