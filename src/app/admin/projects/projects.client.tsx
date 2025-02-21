@@ -115,6 +115,32 @@ export default function ProjectsClientPage({
     },
   })
 
+  const handleDepositMutation = api.projects.deposit.useMutation({
+    onSuccess: data => {
+      void utils.projects.getAll.invalidate()
+      toast.success(data.message)
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ أثناء عملية الإيداع")
+    },
+    onMutate: () => {
+      toast.loading("جاري تنفيذ العملية ...")
+    },
+  })
+
+  const handleDepositCapitalCredits = (id: string) => {
+    void handleDepositMutation.mutate({ projectId: id, depositType: "capital" })
+  }
+
+  const handleDepositProfitsCredits = (id: string) => {
+    void handleDepositMutation.mutate({ projectId: id, depositType: "profits" })
+  }
+
+  const handleResetCredits = (id: string) => {
+    void handleDepositMutation.mutate({ projectId: id, depositType: "reset" })
+  }
+
   const handleDeleteProject = (id: string) => {
     void handleDeleteSingleProject.mutate({ id })
   }
@@ -142,6 +168,9 @@ export default function ProjectsClientPage({
       onActivate: id => handleToggleProjectStatus(id, "active"),
       onDeactivate: id => handleToggleProjectStatus(id, "pending"),
       onToggleStudyCaseVisibility: id => handleToggleProjectStudyCaseVisibility(id),
+      onDepositCapital: handleDepositCapitalCredits,
+      onDepositProfits: handleDepositProfitsCredits,
+      onResetCredits: handleResetCredits,
       basePath: "/projects",
     },
   })

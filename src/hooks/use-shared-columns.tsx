@@ -1,5 +1,16 @@
 import clsx from "clsx"
-import { ArrowUpDown, Ban, CheckCircle, Eye, MoreHorizontal, Pencil, Trash } from "lucide-react"
+import {
+  ArrowUpDown,
+  Ban,
+  CheckCircle,
+  CircleDollarSign,
+  Eye,
+  HandCoins,
+  ListRestart,
+  MoreHorizontal,
+  Pencil,
+  Trash,
+} from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { ConfirmationDialog } from "@/components/custom/confirmation-dialog"
@@ -39,6 +50,9 @@ type TableActions = {
   onActivate?: (id: string) => void
   onDeactivate?: (id: string) => void
   onToggleStudyCaseVisibility?: (id: string) => void
+  onDepositCapital?: (id: string) => void
+  onDepositProfits?: (id: string) => void
+  onResetCredits?: (id: string) => void
   basePath: "/projects" | "/users" | "/operations" | "/profits-percentage"
 }
 
@@ -90,6 +104,9 @@ function ActionCell<T extends BaseEntity>({
   actions: TableActions
 }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isDepositCapitalDialogOpen, setIsDepositCapitalDialogOpen] = useState(false)
+  const [isDepositProfitsDialogOpen, setIsDepositProfitsDialogOpen] = useState(false)
+  const [isResetCreditsDialogOpen, setIsResetCreditsDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const entity = row.original
 
@@ -98,6 +115,21 @@ function ActionCell<T extends BaseEntity>({
     actions.onDelete?.(entity.id)
     setIsDeleting(false)
     setIsDeleteDialogOpen(false)
+  }
+
+  const handleDepositCapital = async () => {
+    actions.onDepositCapital?.(entity.id)
+    setIsDepositCapitalDialogOpen(false)
+  }
+
+  const handleDepositProfits = async () => {
+    actions.onDepositProfits?.(entity.id)
+    setIsDepositProfitsDialogOpen(false)
+  }
+
+  const handleResetCredits = async () => {
+    actions.onResetCredits?.(entity.id)
+    setIsResetCreditsDialogOpen(false)
   }
 
   return (
@@ -152,6 +184,24 @@ function ActionCell<T extends BaseEntity>({
                 : "إظهار دراسة الجدوى"}
             </DropdownMenuItem>
           )}
+          {entityType === "projects" && actions.onDepositCapital && (
+            <DropdownMenuItem onClick={() => setIsDepositCapitalDialogOpen(true)}>
+              <CircleDollarSign className="mr-2 h-4 w-4" />
+              إيداع رأس المال
+            </DropdownMenuItem>
+          )}
+          {entityType === "projects" && actions.onDepositProfits && (
+            <DropdownMenuItem onClick={() => setIsDepositProfitsDialogOpen(true)}>
+              <HandCoins className="mr-2 h-4 w-4" />
+              إيداع الأرباح
+            </DropdownMenuItem>
+          )}
+          {entityType === "projects" && actions.onResetCredits && (
+            <DropdownMenuItem onClick={() => setIsResetCreditsDialogOpen(true)}>
+              <ListRestart className="mr-2 h-4 w-4" />
+              إعادة تعيين الرصيد
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem className="text-red-600" onClick={() => setIsDeleteDialogOpen(true)}>
             <Trash className="mr-2 h-4 w-4" />
             حذف
@@ -167,6 +217,42 @@ function ActionCell<T extends BaseEntity>({
         buttonText={isDeleting ? "جاري الحذف..." : "حذف"}
         buttonClass="bg-destructive text-white hover:bg-destructive/90"
         onConfirm={handleDelete}
+      />
+
+      <ConfirmationDialog
+        open={isDepositCapitalDialogOpen}
+        onOpenChange={setIsDepositCapitalDialogOpen}
+        title={`هل أنت متأكد من إيداع رأس المال للمشروع ${
+          (entity as unknown as Project).projectName
+        }؟`}
+        description="سيتم إيداع رأس المال لجميع المستثمرين في هذا المشروع."
+        buttonText="إيداع"
+        buttonClass="bg-primary text-white hover:bg-primary/90"
+        onConfirm={handleDepositCapital}
+      />
+
+      <ConfirmationDialog
+        open={isDepositProfitsDialogOpen}
+        onOpenChange={setIsDepositProfitsDialogOpen}
+        title={`هل أنت متأكد من إيداع الأرباح للمشروع ${
+          (entity as unknown as Project).projectName
+        }؟`}
+        description="سيتم إيداع الأرباح لجميع المستثمرين في هذا المشروع."
+        buttonText="إيداع"
+        buttonClass="bg-primary text-white hover:bg-primary/90"
+        onConfirm={handleDepositProfits}
+      />
+
+      <ConfirmationDialog
+        open={isResetCreditsDialogOpen}
+        onOpenChange={setIsResetCreditsDialogOpen}
+        title={`هل أنت متأكد من إعادة تعيين الرصيد للمشروع ${
+          (entity as unknown as Project).projectName
+        }؟`}
+        description="سيتم إعادة تعيين الرصيد لجميع المستثمرين في هذا المشروع."
+        buttonText="إعادة تعيين"
+        buttonClass="bg-destructive text-white hover:bg-destructive/90"
+        onConfirm={handleResetCredits}
       />
     </>
   )

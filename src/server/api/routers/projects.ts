@@ -369,4 +369,147 @@ export const projectRouter = createTRPCRouter({
 
       return { success: true }
     }),
+
+  deposit: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        depositType: z.enum(["capital", "profits", "reset"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { projectId, depositType } = input
+
+      // Find all users with stocks for the specific project
+      const users = await ctx.db.user.findMany({
+        where: {
+          stocks: {
+            some: {
+              id: projectId,
+            },
+          },
+        },
+      })
+
+      const project = await ctx.db.projects.findUnique({
+        where: { id: projectId },
+      })
+
+      if (!project) {
+        throw new Error("المشروع غير موجود")
+      }
+
+      if (depositType === "reset") {
+        // Handle reset operation
+        for (const user of users) {
+          if (!user.stocks) continue
+
+          let updatedStocks = [...user.stocks]
+          let creditsToDeduct = 0
+
+          // Calculate credits to deduct and reset deposit flags
+          updatedStocks = updatedStocks.map(stock => {
+            if (stock.id === projectId) {
+              const baseStockValue = stock.stocks * project.projectStockPrice
+
+              if (stock.capitalDeposited) {
+                creditsToDeduct += baseStockValue
+              }
+
+              if (stock.profitsDeposited) {
+                const profitPercentage = stock.newPercentage || 0
+                const stockProfits = project.projectStockProfits
+                const additionalProfit = stockProfits * (profitPercentage / 100)
+                const totalStockProfit = (stockProfits + additionalProfit) * stock.stocks
+                creditsToDeduct += totalStockProfit
+              }
+
+              return {
+                ...stock,
+                capitalDeposited: false,
+                profitsDeposited: false,
+              }
+            }
+            return stock
+          })
+
+          if (creditsToDeduct > 0) {
+            await ctx.db.user.update({
+              where: { id: user.id },
+              data: {
+                credits: { decrement: creditsToDeduct },
+                stocks: updatedStocks,
+              },
+            })
+          }
+        }
+
+        return {
+          success: true,
+          message: "تم إعادة تعيين الرصيد للمشروع المحدد",
+        }
+      } else {
+        // Handle capital and profits deposits
+        for (const user of users) {
+          if (!user.stocks) continue
+
+          let totalCredits = 0
+          let updatedStocks = [...user.stocks]
+
+          updatedStocks = updatedStocks.map(stock => {
+            if (stock.id === projectId) {
+              const stockCredits = stock.stocks * project.projectStockPrice
+
+              if (depositType === "capital") {
+                if (stock.capitalDeposited) {
+                  throw new Error("تم إيداع رأس المال لهذا المشروع سابقاً!")
+                }
+                totalCredits += stockCredits
+                return { ...stock, capitalDeposited: true }
+              } else if (depositType === "profits") {
+                if (stock.profitsDeposited) {
+                  throw new Error("تم إيداع الأرباح لهذا المشروع سابقاً!")
+                }
+
+                const profitPercentage = stock.newPercentage || 0
+                const stockProfits = project.projectStockProfits
+                const additionalProfit = stockProfits * (profitPercentage / 100)
+                const totalStockProfit = stockProfits + additionalProfit
+
+                if (stock.capitalDeposited) {
+                  totalCredits += totalStockProfit * stock.stocks
+                } else {
+                  totalCredits += totalStockProfit * stock.stocks + stockCredits
+                }
+
+                return {
+                  ...stock,
+                  capitalDeposited: true,
+                  profitsDeposited: true,
+                }
+              }
+            }
+            return stock
+          })
+
+          if (totalCredits > 0) {
+            await ctx.db.user.update({
+              where: { id: user.id },
+              data: {
+                credits: { increment: totalCredits },
+                stocks: updatedStocks,
+              },
+            })
+          }
+        }
+
+        return {
+          success: true,
+          message:
+            depositType === "capital"
+              ? "تم إيداع رأس المال للمشروع المحدد"
+              : "تم إيداع الأرباح للمشروع المحدد",
+        }
+      }
+    }),
 })
