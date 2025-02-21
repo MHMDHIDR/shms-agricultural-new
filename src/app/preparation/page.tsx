@@ -19,11 +19,11 @@ export default async function Preparation() {
   const serviceIndex = 0
 
   return (
-    <main className="flex min-h-screen flex-col items-center">
+    <main className="flex min-h-full flex-col items-center -mb-22">
       <h1 className="mt-10 text-2xl select-none">التحضير للموسم الزراعي</h1>
 
       <div className="flex w-full flex-col items-center">
-        <div className="relative my-12 w-full min-w-screen">
+        <div className="relative mt-12 w-full min-w-screen">
           <Image
             src="/our-services/preparation.webp"
             width={1200}

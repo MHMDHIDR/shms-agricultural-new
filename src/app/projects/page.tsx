@@ -19,6 +19,7 @@ export default async function ProjectsPage() {
   const sessionRole = session?.user?.role
 
   const { projects, count, role } = await api.projects.getAll()
+  const { count: investorsCount } = await api.user.getInvestors()
 
   return (
     <main className="flex min-h-screen flex-col items-center pt-8 md:pt-14">
@@ -51,6 +52,11 @@ export default async function ProjectsPage() {
                       {project.projectStatus === "active" ? "مفعل" : "غير مفعل"}
                     </span>
                   ) : null}
+                  <div className="absolute top-0 w-full bg-gradient-to-t from-transparent via-black/50 to-black py-2 px-4">
+                    <strong className="text-lime-500 text-xs md:text-sm">
+                      إنضم إلى {investorsCount} من المستثمرين الناجحين
+                    </strong>
+                  </div>
                   <Image
                     key={project.id}
                     src={project.projectImages[0]?.imgDisplayPath ?? APP_LOGO}

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function Contact() {
   return (
-    <section className="flex select-none flex-col h-screen min-h-screen items-center justify-center p-2.5">
+    <section className="flex select-none flex-col h-screen min-h-screen items-center justify-center p-2.5 pt-14">
       <div className="mt-14 flex w-full flex-col items-center text-center gap-y-10">
         <div>
           <span className="text-sm font-semibold">تواصل معنا</span>

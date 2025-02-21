@@ -40,6 +40,15 @@ export const userRouter = createTRPCRouter({
     return { users, count }
   }),
 
+  getInvestors: publicProcedure.query(async ({ ctx }) => {
+    const [users, count] = await Promise.all([
+      ctx.db.user.findMany({ where: { stocks: { some: {} } } }),
+      ctx.db.user.count({ where: { stocks: { some: {} } } }),
+    ])
+
+    return { users, count }
+  }),
+
   update: protectedProcedure
     .input(z.object({ id: z.string(), ...updateUserSchema.shape }))
     .mutation(async ({ ctx, input }) => {
