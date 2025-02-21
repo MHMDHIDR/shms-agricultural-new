@@ -109,7 +109,7 @@ export function StockPurchaseForm({ project }: { project: Projects }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto select-none">
       <div className="space-y-4">
         <div>
           <Label>اسم المشروع</Label>
@@ -194,16 +194,22 @@ export function StockPurchaseForm({ project }: { project: Projects }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Checkbox id="terms" checked={acceptedTerms} onClick={() => setShowTerms(true)} />
-          <Label htmlFor="terms" className="text-sm">
+          <Checkbox
+            id="terms"
+            className="cursor-pointer"
+            checked={acceptedTerms}
+            onClick={() => setShowTerms(true)}
+          />
+          <Label htmlFor="terms" className="text-sm cursor-pointer">
             أوافق على{" "}
-            <button
+            <Button
               type="button"
-              className="text-primary underline"
+              variant={"link"}
+              className="cursor-pointer"
               onClick={() => setShowTerms(true)}
             >
-              شروط المشروع
-            </button>
+              <strong>شروط المشروع</strong>
+            </Button>
           </Label>
         </div>
       </div>
@@ -212,9 +218,7 @@ export function StockPurchaseForm({ project }: { project: Projects }) {
         open={showTerms}
         onOpenChange={setShowTerms}
         terms={project.projectTerms}
-        onAccept={() => {
-          setAcceptedTerms(true)
-        }}
+        onAccept={() => setAcceptedTerms(true)}
       />
 
       <Button type="submit" className="w-full" disabled={!acceptedTerms || selectedStocks === 0}>

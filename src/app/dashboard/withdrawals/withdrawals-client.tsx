@@ -114,7 +114,7 @@ export default function WithdrawalsClient({ operations }: { operations: withdraw
                             <TableCell
                               key={cell.id}
                               className={clsx(
-                                "text-center",
+                                "text-center whitespace-nowrap",
                                 isPinned &&
                                   "sticky left-0 bg-background shadow-[1px_0_0_0_#e5e7eb]",
                               )}

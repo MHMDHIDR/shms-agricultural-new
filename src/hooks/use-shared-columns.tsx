@@ -25,6 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { APP_CURRENCY } from "@/lib/constants"
 import { formatDate } from "@/lib/format-date"
 import { translateSring } from "@/lib/translate-string"
 import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter"
@@ -714,7 +715,7 @@ export function useSharedColumns<T extends BaseEntity>({
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="cursor-pointer"
         >
-          {translateSring("id")}
+          {translateSring("id")} للعملية
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -724,6 +725,30 @@ export function useSharedColumns<T extends BaseEntity>({
           <span className="whitespace-nowrap">
             <CopyText text={withdrawAction.id} className="ml-2 inline h-4 w-4" />
             {withdrawAction.id}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "sn",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("sn")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction & {
+          user: Pick<UserType, "sn">
+        }
+        return (
+          <span className="whitespace-nowrap">
+            <CopyText text={withdrawAction.user.sn.toString()} className="ml-2 inline h-4 w-4" />
+            {withdrawAction.user.sn}
           </span>
         )
       },
@@ -754,30 +779,6 @@ export function useSharedColumns<T extends BaseEntity>({
       },
     },
     {
-      accessorKey: "sn",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="cursor-pointer"
-        >
-          {translateSring("sn")}
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const withdrawAction = row.original as unknown as WithdrawAction & {
-          user: Pick<UserType, "sn">
-        }
-        return (
-          <span className="whitespace-nowrap">
-            <CopyText text={withdrawAction.user.sn.toString()} className="ml-2 inline h-4 w-4" />
-            {withdrawAction.user.sn}
-          </span>
-        )
-      },
-    },
-    {
       accessorKey: "withdraw_amount",
       header: ({ column }) => (
         <Button
@@ -789,6 +790,14 @@ export function useSharedColumns<T extends BaseEntity>({
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction
+        return (
+          <strong className="text-primary">
+            {withdrawAction.withdraw_amount} {APP_CURRENCY}
+          </strong>
+        )
+      },
     },
     {
       accessorKey: "accounting_operation_status",

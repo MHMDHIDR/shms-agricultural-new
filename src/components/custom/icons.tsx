@@ -151,7 +151,7 @@ export function ShmsIcon({ className }: { className?: string }) {
 
 export function Metric({ amount }: { amount: number }) {
   const [currentAmount, setCurrentAmount] = useState(0)
-  const formattedAmount = new Intl.NumberFormat("ar-EG", {
+  const formattedAmount = new Intl.NumberFormat("ar-QA", {
     minimumIntegerDigits: 6,
     useGrouping: true,
   }).format(Math.round(currentAmount))
@@ -179,10 +179,10 @@ export function Metric({ amount }: { amount: number }) {
   const progress = (currentAmount / amount) * 100 || 0
 
   return (
-    <div className="relative">
+    <div>
       <svg
-        width="140"
-        height="140"
+        width="150"
+        height="150"
         viewBox="0 0 148 148"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -200,7 +200,7 @@ export function Metric({ amount }: { amount: number }) {
           style={{ transition: "stroke-dashoffset 0.05s linear" }}
         />
       </svg>
-      <strong className="absolute text-xl left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-bold text-black">
+      <strong className="absolute text-lg left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-bold text-black">
         {formattedAmount} {APP_CURRENCY}
       </strong>
     </div>

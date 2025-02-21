@@ -1,4 +1,4 @@
-import { withdrawAmountSchema } from "@/schemas/withdraw"
+import { createWithdrawAmountSchema } from "@/schemas/withdraw"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
 export const operationsRouter = createTRPCRouter({
@@ -49,7 +49,7 @@ export const operationsRouter = createTRPCRouter({
   }),
 
   createWithdrawRequest: protectedProcedure
-    .input(withdrawAmountSchema)
+    .input(createWithdrawAmountSchema(1000000))
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.db.user.findUnique({
         where: { id: ctx.session.user.id },
@@ -58,6 +58,10 @@ export const operationsRouter = createTRPCRouter({
 
       if (!user) {
         throw new Error("المستخدم غير موجود!")
+      }
+
+      if (user.credits === 0) {
+        throw new Error("حسابك لا يحتوي على رصيد للسحب!")
       }
 
       if (input.amount > user.credits) {

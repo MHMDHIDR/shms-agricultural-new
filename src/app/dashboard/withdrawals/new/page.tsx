@@ -15,8 +15,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { useCountUp } from "@/hooks/use-count-up"
 import { useToast } from "@/hooks/use-toast"
-import { withdrawAmountSchema } from "@/schemas/withdraw"
+import { APP_CURRENCY } from "@/lib/constants"
+import { createWithdrawAmountSchema } from "@/schemas/withdraw"
 import { api } from "@/trpc/react"
 import WithdrawNavigation from "../withdraw-navigation"
 import type { WithdrawFormData } from "@/schemas/withdraw"
@@ -26,24 +28,34 @@ export default function NewWithdrawPage() {
   const toast = useToast()
   const router = useRouter()
 
-  const form = useForm<WithdrawFormData>({
-    resolver: zodResolver(withdrawAmountSchema),
-    defaultValues: { amount: 0 },
+  const { data, isLoading: isLoadingCredits } = api.user.getUserInfo.useQuery({
+    select: { credits: true },
   })
+  const credits = useCountUp(data?.credits ?? 1)
 
   const { mutate: createWithdrawRequest, isPending: isSendingRequest } =
     api.operations.createWithdrawRequest.useMutation({
-      onSuccess: () => {
-        toast.success("تم إرسال طلب السحب بنجاح")
-        form.reset()
-        setShowConfirmation(false)
-        router.refresh()
+      onMutate: () => {
+        toast.loading("جاري إرسال الطلب...")
       },
       onError: error => {
         toast.error(error.message ?? "حدث خطأ غير متوقع!")
+      },
+      onSuccess: () => {
+        toast.success("تم إرسال طلب السحب بنجاح")
+        form.reset()
+        router.refresh()
+      },
+      onSettled: () => {
+        toast.dismiss()
         setShowConfirmation(false)
       },
     })
+
+  const form = useForm<WithdrawFormData>({
+    resolver: zodResolver(createWithdrawAmountSchema(data?.credits ?? 1000000)),
+    defaultValues: { amount: 0 },
+  })
 
   function onSubmit() {
     setShowConfirmation(true)
@@ -66,7 +78,12 @@ export default function NewWithdrawPage() {
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>المبلغ المطلوب سحبه</FormLabel>
+                  <FormLabel>
+                    رصيدك الحالي:
+                    <strong className="text-green-600 text-sm mr-2">
+                      {credits} {APP_CURRENCY}
+                    </strong>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -75,13 +92,18 @@ export default function NewWithdrawPage() {
                       onChange={e => field.onChange(Number(e.target.value))}
                       onWheel={e => e.currentTarget.blur()}
                       min={1}
+                      max={data?.credits ?? 1}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" variant={"pressable"} disabled={isSendingRequest}>
+            <Button
+              type="submit"
+              variant={"pressable"}
+              disabled={isSendingRequest || isLoadingCredits}
+            >
               {isSendingRequest ? "جاري إرسال الطلب..." : "إرسال طلب السحب"}
             </Button>
           </form>

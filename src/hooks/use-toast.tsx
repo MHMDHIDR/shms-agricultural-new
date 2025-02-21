@@ -14,6 +14,7 @@ type ToastFunctions = {
   success: (_message: string, _options?: Omit<ToastT, "message">) => void
   error: (_message: string, _options?: Omit<ToastT, "message">) => void
   loading: (_message: string, _options?: Omit<ToastT, "message">) => void
+  dismiss: () => void
 }
 
 const toastStyles: Record<ToastType, ToastStyles> = {
@@ -69,5 +70,6 @@ export function useToast(): ToastFunctions {
       showToast(message, "error", options),
     loading: (message: string, options?: Omit<ToastT, "message">) =>
       showToast(message, "loading", options),
+    dismiss: () => toast.dismiss(),
   }
 }

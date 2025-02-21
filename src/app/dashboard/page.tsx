@@ -17,13 +17,13 @@ export default async function Dashboard() {
 
   return (
     <section className="flex select-none flex-col h-screen items-center md:items-baseline px-2 md:px-9 pt-14">
-      <Card className="w-sm">
+      <Card className="w-lg">
         <CardHeader className="text-center">
           <CardTitle>رصيد الحساب</CardTitle>
           <CardDescription>رصيدك الحالي القابل للسحب</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="relative mx-auto h-34 w-fit">
+          <div className="relative mx-auto h-fit w-fit">
             <Metric amount={user?.credits ?? 0} />
           </div>
         </CardContent>
