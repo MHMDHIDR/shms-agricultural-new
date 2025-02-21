@@ -380,40 +380,36 @@ export const projectRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { projectId, depositType } = input
 
-      // Find all users with stocks for the specific project
-      const users = await ctx.db.user.findMany({
-        where: {
-          stocks: {
-            some: {
-              id: projectId,
+      if (depositType === "reset") {
+        // Keep existing reset logic
+        const project = await ctx.db.projects.findUnique({
+          where: { id: projectId },
+        })
+
+        if (!project) {
+          throw new Error("المشروع غير موجود")
+        }
+
+        const users = await ctx.db.user.findMany({
+          where: {
+            stocks: {
+              isEmpty: false,
             },
           },
-        },
-      })
+        })
 
-      const project = await ctx.db.projects.findUnique({
-        where: { id: projectId },
-      })
-
-      if (!project) {
-        throw new Error("المشروع غير موجود")
-      }
-
-      if (depositType === "reset") {
-        // Handle reset operation
         for (const user of users) {
-          if (!user.stocks) continue
+          if (!user.stocks || user.stocks.length === 0) continue
 
           let updatedStocks = [...user.stocks]
-          let creditsToDeduct = 0
+          let creditsToUpdate = 0
 
-          // Calculate credits to deduct and reset deposit flags
           updatedStocks = updatedStocks.map(stock => {
             if (stock.id === projectId) {
               const baseStockValue = stock.stocks * project.projectStockPrice
 
               if (stock.capitalDeposited) {
-                creditsToDeduct += baseStockValue
+                creditsToUpdate -= baseStockValue
               }
 
               if (stock.profitsDeposited) {
@@ -421,7 +417,7 @@ export const projectRouter = createTRPCRouter({
                 const stockProfits = project.projectStockProfits
                 const additionalProfit = stockProfits * (profitPercentage / 100)
                 const totalStockProfit = (stockProfits + additionalProfit) * stock.stocks
-                creditsToDeduct += totalStockProfit
+                creditsToUpdate -= totalStockProfit
               }
 
               return {
@@ -433,11 +429,11 @@ export const projectRouter = createTRPCRouter({
             return stock
           })
 
-          if (creditsToDeduct > 0) {
+          if (creditsToUpdate !== 0) {
             await ctx.db.user.update({
               where: { id: user.id },
               data: {
-                credits: { decrement: creditsToDeduct },
+                credits: { decrement: Math.abs(creditsToUpdate) },
                 stocks: updatedStocks,
               },
             })
@@ -449,49 +445,82 @@ export const projectRouter = createTRPCRouter({
           message: "تم إعادة تعيين الرصيد للمشروع المحدد",
         }
       } else {
-        // Handle capital and profits deposits
+        const project = await ctx.db.projects.findUnique({
+          where: { id: projectId },
+        })
+
+        if (!project) {
+          throw new Error("المشروع غير موجود")
+        }
+
+        const users = await ctx.db.user.findMany({
+          where: {
+            stocks: {
+              some: {
+                id: projectId,
+              },
+            },
+          },
+        })
+
+        // Iterate through each user
         for (const user of users) {
           if (!user.stocks) continue
 
           let totalCredits = 0
-          let updatedStocks = [...user.stocks]
+          const updatedStocks: typeof user.stocks = []
 
-          updatedStocks = updatedStocks.map(stock => {
+          // Iterate through user's stocks
+          for (const stock of user.stocks) {
             if (stock.id === projectId) {
+              // Only process stocks for this specific project
               const stockCredits = stock.stocks * project.projectStockPrice
 
-              if (depositType === "capital") {
-                if (stock.capitalDeposited) {
-                  throw new Error("تم إيداع رأس المال لهذا المشروع سابقاً!")
-                }
-                totalCredits += stockCredits
-                return { ...stock, capitalDeposited: true }
-              } else if (depositType === "profits") {
-                if (stock.profitsDeposited) {
-                  throw new Error("تم إيداع الأرباح لهذا المشروع سابقاً!")
-                }
+              if (depositType === "capital" && stock.capitalDeposited) {
+                throw new Error("تم إيداع رأس المال لهذا المشروع سابقاً!")
+              }
 
+              if (depositType === "profits" && stock.profitsDeposited) {
+                throw new Error("تم إيداع الأرباح لهذا المشروع سابقاً!")
+              }
+
+              if (depositType === "capital" && !stock.capitalDeposited) {
+                totalCredits += stockCredits
+                updatedStocks.push({ ...stock, capitalDeposited: true })
+              }
+
+              if (depositType === "profits" && !stock.profitsDeposited) {
+                // Calculate profits percentage
                 const profitPercentage = stock.newPercentage || 0
                 const stockProfits = project.projectStockProfits
+
+                // Calculate additional profit based on percentage
                 const additionalProfit = stockProfits * (profitPercentage / 100)
+
+                // Total profit for this stock
                 const totalStockProfit = stockProfits + additionalProfit
 
                 if (stock.capitalDeposited) {
+                  // If capital was already deposited, only add profits
                   totalCredits += totalStockProfit * stock.stocks
                 } else {
+                  // If capital wasn't deposited yet, add both capital and profits
                   totalCredits += totalStockProfit * stock.stocks + stockCredits
                 }
 
-                return {
+                updatedStocks.push({
                   ...stock,
                   capitalDeposited: true,
                   profitsDeposited: true,
-                }
+                })
               }
+            } else {
+              // Keep other projects' stocks unchanged
+              updatedStocks.push(stock)
             }
-            return stock
-          })
+          }
 
+          // Update user credits only if there are changes
           if (totalCredits > 0) {
             await ctx.db.user.update({
               where: { id: user.id },
