@@ -1,3 +1,7 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { APP_CURRENCY } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 import type { JSX } from "react"
 
@@ -142,5 +146,60 @@ export function ShmsIcon({ className }: { className?: string }) {
         />
       </defs>
     </svg>
+  )
+}
+
+export function Metric({ amount }: { amount: number }) {
+  const [currentAmount, setCurrentAmount] = useState(0)
+
+  useEffect(() => {
+    const duration = 1000 // 1 second animation
+    const steps = 60 // 60 frames per second
+    const increment = amount / steps
+    let currentStep = 0
+
+    const interval = setInterval(() => {
+      if (currentStep >= steps) {
+        clearInterval(interval)
+        setCurrentAmount(amount)
+        return
+      }
+
+      setCurrentAmount(prev => Math.min(prev + increment, amount))
+      currentStep++
+    }, duration / steps)
+
+    return () => clearInterval(interval)
+  }, [amount])
+
+  const progress = (currentAmount / amount) * 100 || 0
+  const rotation = (progress * 360) / 100
+
+  return (
+    <div className="relative">
+      <svg
+        width="140"
+        height="140"
+        viewBox="0 0 148 148"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ transform: "rotate(-90deg)" }}
+      >
+        <circle cx="74" cy="74" r="67" className="fill-none stroke-primary/20" strokeWidth="14" />
+        <circle
+          cx="74"
+          cy="74"
+          r="67"
+          className="fill-none stroke-primary"
+          strokeWidth="14"
+          strokeDasharray={421}
+          strokeDashoffset={421 - (progress * 421) / 100}
+          style={{ transition: "stroke-dashoffset 0.05s linear" }}
+        />
+      </svg>
+      <strong className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-bold text-black">
+        {Math.round(currentAmount)} {APP_CURRENCY}
+      </strong>
+    </div>
   )
 }

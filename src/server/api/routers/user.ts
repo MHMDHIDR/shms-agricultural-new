@@ -8,6 +8,32 @@ import type { Prisma } from "@prisma/client"
 
 const updateUserSchema = signupSchema.omit({ confirmPassword: true }).partial()
 
+const getUserInfoSchema = z.object({
+  select: z
+    .object({
+      name: z.boolean().optional(),
+      email: z.boolean().optional(),
+      phone: z.boolean().optional(),
+      nationality: z.boolean().optional(),
+      dateOfBirth: z.boolean().optional(),
+      address: z.boolean().optional(),
+      theme: z.boolean().optional(),
+      accountStatus: z.boolean().optional(),
+      image: z.boolean().optional(),
+      doc: z.boolean().optional(),
+      stocks: z.boolean().optional(),
+      stockLimit: z.boolean().optional(),
+      credits: z.boolean().optional(),
+      role: z.boolean().optional(),
+      isDeleted: z.boolean().optional(),
+      createdAt: z.boolean().optional(),
+      updatedAt: z.boolean().optional(),
+    })
+    .refine(obj => Object.keys(obj).length > 0, {
+      message: "At least one property must be selected",
+    }),
+})
+
 export const userRouter = createTRPCRouter({
   getUserThemeByCredentials: publicProcedure
     .input(z.object({ emailOrPhone: z.string() }))
@@ -136,4 +162,11 @@ export const userRouter = createTRPCRouter({
         data: { stocks: [], isDeleted: true, accountStatus: "block" },
       })
     }),
+
+  getUserInfo: protectedProcedure.input(getUserInfoSchema).query(async ({ ctx, input }) => {
+    return ctx.db.user.findUnique({
+      where: { id: ctx.session.user.id },
+      select: input.select,
+    })
+  }),
 })
