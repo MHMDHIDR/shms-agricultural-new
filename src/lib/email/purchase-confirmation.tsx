@@ -28,6 +28,7 @@ type PurchaseConfirmationEmailProps = {
     totalPayment: number
     totalProfit: number
     totalReturn: number
+    createdAt: Date
   }
 }
 

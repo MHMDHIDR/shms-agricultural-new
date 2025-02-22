@@ -162,7 +162,10 @@ export const projectRouter = createTRPCRouter({
         await sendPurchaseConfirmationEmail({
           user: result.user,
           project: result.project,
-          purchaseDetails: input,
+          purchaseDetails: {
+            ...input,
+            createdAt: new Date(),
+          },
         })
       } catch (error) {
         // Log email error but don't fail the transaction
@@ -550,6 +553,7 @@ export const projectRouter = createTRPCRouter({
         totalPayment: z.number(),
         totalProfit: z.number(),
         totalReturn: z.number(),
+        createdAt: z.date(),
       }),
     )
     .mutation(async ({ ctx, input }) => {

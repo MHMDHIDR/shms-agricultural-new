@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer-core"
 import { env } from "@/env"
 import { APP_CURRENCY, APP_TITLE } from "./constants"
+import { formatDate } from "./format-date"
 import type { Projects, User } from "@prisma/client"
 
 type PurchaseDetails = {
@@ -9,6 +10,7 @@ type PurchaseDetails = {
   totalPayment: number
   totalProfit: number
   totalReturn: number
+  createdAt: Date
 }
 
 export async function generatePurchasePDF(
@@ -92,6 +94,10 @@ export async function generatePurchasePDF(
         <tr>
           <td>العائد الإجمالي</td>
           <td>${purchaseDetails.totalReturn} ${APP_CURRENCY}</td>
+        </tr>
+        <tr>
+          <td>تاريخ الشراء</td>
+          <td>${formatDate({ date: purchaseDetails.createdAt.toISOString(), isFullTimestamp: true })}</td>
         </tr>
       </table>
 

@@ -292,6 +292,7 @@ export function useSharedColumns<T extends BaseEntity>({
   columns: ColumnDef<T>[]
   filterFields: DataTableFilterField[]
 } {
+  const toast = useToast()
   const filterFields: DataTableFilterField[] = [
     ...(entityType === "users"
       ? [
@@ -1109,13 +1110,12 @@ export function useSharedColumns<T extends BaseEntity>({
       ),
       cell: ({ row }) => {
         const stock = row.original as unknown as UserStock
-        const toast = useToast()
         const sendContract = api.projects.sendPurchaseContract.useMutation({
           onSuccess: () => {
             toast.success("تم إرسال عقد شراء الأسهم إلى بريدك الإلكتروني")
           },
-          onError: (err: TRPCClientErrorLike<any>) => {
-            toast.error(err.message ?? "حدث خطأ أثناء إرسال العقد")
+          onError: error => {
+            toast.error(error.message ?? "حدث خطأ أثناء إرسال العقد")
           },
           onMutate: () => {
             toast.loading("جاري إرسال العقد إلى بريدك الإلكتروني...")
@@ -1133,6 +1133,7 @@ export function useSharedColumns<T extends BaseEntity>({
             totalReturn:
               stock.stocks * stock.project.projectStockPrice +
               stock.project.projectStockProfits * stock.stocks * (1 + stock.newPercentage / 100),
+            createdAt: stock.createdAt,
           })
         }
 
