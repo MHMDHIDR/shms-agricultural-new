@@ -104,7 +104,7 @@ export default function ProfitsPercentageTable({ projects }: { projects: Project
         filterFields={filterFields}
       />
 
-      <div className="rounded-md border px-2.5">
+      <div className="rounded-md border">
         <Table>
           <TableHeader className="select-none">
             {table.getHeaderGroups().map(headerGroup => (

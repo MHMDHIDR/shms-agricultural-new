@@ -152,7 +152,7 @@ export function ShmsIcon({ className }: { className?: string }) {
 export function Metric({ amount }: { amount: number }) {
   const [currentAmount, setCurrentAmount] = useState(0)
   const formattedAmount = new Intl.NumberFormat("ar-QA", {
-    minimumIntegerDigits: 6,
+    minimumIntegerDigits: 4,
     useGrouping: true,
   }).format(Math.round(currentAmount))
 

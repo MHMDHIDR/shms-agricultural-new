@@ -64,11 +64,23 @@ export const translateSring = (string: string) => {
     case "projectStockProfits": {
       return "أرباح السهم"
     }
+    case "projectName": {
+      return "اسم المشروع"
+    }
     case "projectDescription": {
       return "وصف المشروع"
     }
     case "projectTerms": {
       return "شروط المشروع"
+    }
+    case "totalPayment": {
+      return "إجمالي المبلغ المدفوع"
+    }
+    case "totalProfit": {
+      return "إجمالي الربح"
+    }
+    case "totalReturn": {
+      return "إجمالي الربح من الأسهم ورأس المال"
     }
     case "stocks": {
       return "عدد الأسهم"

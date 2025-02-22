@@ -44,6 +44,22 @@ type Project = BaseEntity & Projects
 
 type WithdrawAction = BaseEntity & withdraw_actions
 
+type UserStock = {
+  id: string
+  stocks: number
+  newPercentage: number
+  percentageCode: string
+  createdAt: Date
+  capitalDeposited: boolean
+  profitsDeposited: boolean
+  project: {
+    projectName: string
+    projectStockPrice: number
+    projectStockProfits: number
+    projectProfitsCollectDate: Date
+  }
+}
+
 type TableActions = {
   onDelete?: (id: string) => void
   onBlock?: (id: string) => void
@@ -54,11 +70,17 @@ type TableActions = {
   onDepositCapital?: (id: string) => void
   onDepositProfits?: (id: string) => void
   onResetCredits?: (id: string) => void
-  basePath: "/projects" | "/users" | "/operations" | "/withdrawals" | "/profits-percentage"
+  basePath:
+    | "/projects"
+    | "/users"
+    | "/operations"
+    | "/withdrawals"
+    | "/profits-percentage"
+    | "/dashboard"
 }
 
 type SharedColumnsProps = {
-  entityType: "users" | "projects" | "withdraw_actions" | "profits_percentage"
+  entityType: "users" | "projects" | "withdraw_actions" | "profits_percentage" | "user_stocks"
   actions: TableActions
 }
 
@@ -319,7 +341,7 @@ export function useSharedColumns<T extends BaseEntity>({
           }
           onCheckedChange={(value: boolean) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
-          className="cursor-pointer"
+          className="cursor-pointer mx-3"
         />
       ),
       cell: ({ row }) => (
@@ -327,7 +349,7 @@ export function useSharedColumns<T extends BaseEntity>({
           checked={row.getIsSelected()}
           onCheckedChange={(value: boolean) => row.toggleSelected(!!value)}
           aria-label="Select row"
-          className="cursor-pointer"
+          className="cursor-pointer mx-3"
         />
       ),
       enableSorting: false,
@@ -372,9 +394,16 @@ export function useSharedColumns<T extends BaseEntity>({
     },
     {
       accessorKey: "stocks",
-      header: () => {
-        return <span className="whitespace-nowrap">{translateSring("stocks")}</span>
-      },
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer whitespace-nowrap"
+        >
+          {translateSring("stocks")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
       cell: ({ row }) => {
         const userStocks = (row.original as unknown as UserType).stocks
         const totalStocks = userStocks.reduce((acc, stock) => acc + stock.stocks, 0)
@@ -1035,6 +1064,162 @@ export function useSharedColumns<T extends BaseEntity>({
     },
   ]
 
+  const userStocksColumns: ColumnDef<T>[] = [
+    {
+      accessorKey: translateSring("projectName"),
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          اسم المشروع
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const stock = row.original as unknown as UserStock
+        return <span className="whitespace-nowrap">{stock.project.projectName}</span>
+      },
+    },
+    {
+      accessorKey: "stocks",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          عدد الأسهم
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+    {
+      accessorKey: "projectStockPrice",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          سعر السهم الواحد
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const stock = row.original as unknown as UserStock
+        return (
+          <span>
+            {stock.project.projectStockPrice} {APP_CURRENCY}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "totalPayment",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          إجمالي الدفع
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const stock = row.original as unknown as UserStock
+        return (
+          <span>
+            {stock.stocks * stock.project.projectStockPrice} {APP_CURRENCY}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "totalProfit",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          إجمالي الربح من الأسهم
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const stock = row.original as unknown as UserStock
+        const baseProfit = stock.project.projectStockProfits * stock.stocks
+        const additionalProfit = baseProfit * (stock.newPercentage / 100)
+        return (
+          <span>
+            {baseProfit + additionalProfit} {APP_CURRENCY}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "totalReturn",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          الإجمالي من ربح الأسهم ورأس المال
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const stock = row.original as unknown as UserStock
+        const totalPayment = stock.stocks * stock.project.projectStockPrice
+        const baseProfit = stock.project.projectStockProfits * stock.stocks
+        const additionalProfit = baseProfit * (stock.newPercentage / 100)
+        return (
+          <span>
+            {totalPayment + baseProfit + additionalProfit} {APP_CURRENCY}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          تاريخ الشراء
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const stock = row.original as unknown as UserStock
+        return formatDate({ date: stock.createdAt.toString() })
+      },
+    },
+    {
+      accessorKey: "projectProfitsCollectDate",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          تاريخ تسليم الأرباح
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const stock = row.original as unknown as UserStock
+        return formatDate({ date: stock.project.projectProfitsCollectDate.toString() })
+      },
+    },
+  ]
+
   const actionsColumn: ColumnDef<T> = {
     id: "actions",
     header: translateSring("actions"),
@@ -1060,7 +1245,9 @@ export function useSharedColumns<T extends BaseEntity>({
             ? [...withdrawActionColumns, actionsColumn]
             : entityType === "profits_percentage"
               ? [...profitsPercentageColumns, actionsColumn]
-              : []),
+              : entityType === "user_stocks"
+                ? [...userStocksColumns]
+                : []),
     ] as ColumnDef<T>[],
     filterFields,
   }
