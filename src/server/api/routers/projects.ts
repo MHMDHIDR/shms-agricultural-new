@@ -182,7 +182,6 @@ export const projectRouter = createTRPCRouter({
       const project = await ctx.db.projects.create({
         data: {
           ...input,
-          // projectStatus: "pending",
           projectAvailableStocks: input.projectTotalStocks,
           projectImages: input.projectImages.map(url => ({
             imgDisplayName: url.split("/").pop() ?? "",
@@ -539,6 +538,47 @@ export const projectRouter = createTRPCRouter({
               ? "تم إيداع رأس المال للمشروع المحدد"
               : "تم إيداع الأرباح للمشروع المحدد",
         }
+      }
+    }),
+
+  sendPurchaseContract: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        stocks: z.number().min(1),
+        newPercentage: z.number(),
+        totalPayment: z.number(),
+        totalProfit: z.number(),
+        totalReturn: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session?.user?.id
+
+      if (!userId) {
+        throw new Error("User not authenticated")
+      }
+
+      const [project, user] = await Promise.all([
+        ctx.db.projects.findUnique({ where: { id: input.projectId } }),
+        ctx.db.user.findUnique({ where: { id: userId } }),
+      ])
+
+      if (!project || !user) {
+        throw new Error("Project or user not found")
+      }
+
+      try {
+        await sendPurchaseConfirmationEmail({
+          user,
+          project,
+          purchaseDetails: input,
+        })
+
+        return { success: true }
+      } catch (error) {
+        console.error("Failed to send contract email:", error)
+        throw new Error("Failed to send contract email")
       }
     }),
 })

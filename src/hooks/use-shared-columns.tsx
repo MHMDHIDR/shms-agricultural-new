@@ -9,6 +9,7 @@ import {
   ListRestart,
   MoreHorizontal,
   Pencil,
+  ReceiptText,
   Trash,
 } from "lucide-react"
 import Link from "next/link"
@@ -25,12 +26,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useToast } from "@/hooks/use-toast"
 import { APP_CURRENCY } from "@/lib/constants"
 import { formatDate } from "@/lib/format-date"
 import { translateSring } from "@/lib/translate-string"
+import { api } from "@/trpc/react"
 import type { DataTableFilterField } from "@/components/custom/data-table/data-table-faceted-filter"
 import type { Projects, User, withdraw_actions } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
+import type { TRPCClientErrorLike } from "@trpc/client"
 
 type BaseEntity = {
   id: string
@@ -1094,6 +1098,56 @@ export function useSharedColumns<T extends BaseEntity>({
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
+    },
+    {
+      accessorKey: "stocksContract",
+      header: () => (
+        <Button variant="ghost" className="cursor-pointer">
+          عقد شراء الأسهم
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const stock = row.original as unknown as UserStock
+        const toast = useToast()
+        const sendContract = api.projects.sendPurchaseContract.useMutation({
+          onSuccess: () => {
+            toast.success("تم إرسال عقد شراء الأسهم إلى بريدك الإلكتروني")
+          },
+          onError: (err: TRPCClientErrorLike<any>) => {
+            toast.error(err.message ?? "حدث خطأ أثناء إرسال العقد")
+          },
+          onMutate: () => {
+            toast.loading("جاري إرسال العقد إلى بريدك الإلكتروني...")
+          },
+        })
+
+        const handleSendContract = () => {
+          sendContract.mutate({
+            projectId: stock.id,
+            stocks: stock.stocks,
+            newPercentage: stock.newPercentage,
+            totalPayment: stock.stocks * stock.project.projectStockPrice,
+            totalProfit:
+              stock.project.projectStockProfits * stock.stocks * (1 + stock.newPercentage / 100),
+            totalReturn:
+              stock.stocks * stock.project.projectStockPrice +
+              stock.project.projectStockProfits * stock.stocks * (1 + stock.newPercentage / 100),
+          })
+        }
+
+        return (
+          <Button
+            variant="pressable"
+            className="cursor-pointer"
+            onClick={handleSendContract}
+            disabled={sendContract.isPending}
+          >
+            {sendContract.isPending ? "جاري الإرسال..." : "طلب عقد الشراء"}
+            <ReceiptText className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
     },
     {
       accessorKey: "projectStockPrice",
