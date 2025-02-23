@@ -56,7 +56,7 @@ export async function generatePurchasePDF(
     <body>
       <h1 style="text-align: center">${APP_TITLE} - عقد شراء أسهم</h1>
 
-      <p style="text-align: left">تاريخ: ${new Date().toLocaleDateString("ar-SA")}</p>
+      <p style="text-align: left">تاريخ: ${new Date().toLocaleDateString("ar-QA")}</p>
 
       <h2>معلومات المستثمر:</h2>
       <p>الاسم: ${user.name}</p>

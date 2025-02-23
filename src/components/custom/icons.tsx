@@ -197,7 +197,7 @@ export function Metric({ amount }: { amount: number }) {
           style={{ transition: "stroke-dashoffset 0.05s linear" }}
         />
       </svg>
-      <strong className="absolute text-base md:text-lg left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-bold text-black whitespace-nowrap">
+      <strong className="absolute text-base md:text-lg left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-bold md:font-extrabold text-foreground whitespace-nowrap">
         {formattedAmount} {APP_CURRENCY}
       </strong>
     </div>

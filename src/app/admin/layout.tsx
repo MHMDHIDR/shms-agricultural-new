@@ -5,7 +5,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { auth } from "@/server/auth"
 import { api } from "@/trpc/server"
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   if (!session?.user) notFound()
 
