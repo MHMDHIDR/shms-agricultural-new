@@ -188,18 +188,6 @@ export function InvestmentChart({ data, profitCollectDate }: InvestmentChartProp
   // Add a ref for the container
   const containerRef = React.useRef<HTMLDivElement>(null)
 
-  // Update container width on mount and resize
-  React.useEffect(() => {
-    const updateWidth = () => {
-      if (containerRef.current) {
-        containerRef.current.offsetWidth
-      }
-    }
-    updateWidth()
-    window.addEventListener("resize", updateWidth)
-    return () => window.removeEventListener("resize", updateWidth)
-  }, [])
-
   // Filter and reduce data points
   const filteredData = React.useMemo(() => {
     const timeFilteredData = data.filter(item => {
