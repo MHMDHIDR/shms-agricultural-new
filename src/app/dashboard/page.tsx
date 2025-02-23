@@ -29,8 +29,8 @@ export default async function Dashboard() {
   )
 
   return (
-    <section className="grid grid-cols-2 grid-rows-[auto_1fr] gap-4 select-none h-screen px-2 md:px-9 pt-14">
-      <Card className="w-full">
+    <section className="grid grid-cols-1 md:grid-cols-3 grid-rows-[auto_1fr] gap-x-0 gap-y-4 md:gap-4 select-none h-screen px-2 md:px-9 pt-14">
+      <Card className="w-full col-span-1">
         <CardHeader className="text-center">
           <CardTitle>رصيد الحساب</CardTitle>
           <CardDescription>رصيدك الحالي القابل للسحب</CardDescription>
@@ -47,7 +47,7 @@ export default async function Dashboard() {
         </CardFooter>
       </Card>
 
-      <Card className="w-full">
+      <Card className="w-full col-span-2">
         <CardHeader className="text-center">
           <CardTitle>معلومات إضافية</CardTitle>
           <CardDescription>سيتم إضافة المزيد من المعلومات لاحقاً</CardDescription>
@@ -59,7 +59,7 @@ export default async function Dashboard() {
         </CardContent>
       </Card>
 
-      <div className="col-span-2">
+      <div className="col-span-full">
         <Card>
           <CardHeader className="text-center">
             <CardTitle>الأسهم الخاصة بي</CardTitle>

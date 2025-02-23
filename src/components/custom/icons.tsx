@@ -157,8 +157,8 @@ export function Metric({ amount }: { amount: number }) {
   }).format(Math.round(currentAmount))
 
   useEffect(() => {
-    const duration = 1000 // 1 second animation
-    const steps = 60 // 60 frames per second
+    const duration = 1000
+    const steps = 60
     const increment = amount / steps
     let currentStep = 0
 
@@ -179,28 +179,25 @@ export function Metric({ amount }: { amount: number }) {
   const progress = (currentAmount / amount) * 100 || 0
 
   return (
-    <div>
+    <div className="relative">
       <svg
-        width="150"
-        height="150"
+        className="w-32 h-32 md:w-44 md:h-44"
         viewBox="0 0 148 148"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ transform: "rotate(-90deg)" }}
       >
-        <circle cx="74" cy="74" r="67" className="fill-none stroke-primary/20" strokeWidth="14" />
+        <circle cx="74" cy="74" r="67" className="fill-none stroke-primary/20 stroke-10" />
         <circle
           cx="74"
           cy="74"
           r="67"
-          className="fill-none stroke-primary"
-          strokeWidth="14"
+          className="fill-none stroke-primary stroke-10"
           strokeDasharray={421}
           strokeDashoffset={421 - (progress * 421) / 100}
           style={{ transition: "stroke-dashoffset 0.05s linear" }}
         />
       </svg>
-      <strong className="absolute text-lg left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-bold text-black">
+      <strong className="absolute text-base md:text-lg left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-bold text-black whitespace-nowrap">
         {formattedAmount} {APP_CURRENCY}
       </strong>
     </div>
