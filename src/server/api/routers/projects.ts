@@ -132,13 +132,13 @@ export const projectRouter = createTRPCRouter({
 
           // Add stocks to user
           const newStock = {
+            id: new ObjectId(projectId).toString(),
             stocks,
             newPercentage,
             percentageCode: percentageCode ?? "",
             createdAt: new Date(),
             capitalDeposited: false,
             profitsDeposited: false,
-            id: new ObjectId(projectId).toString(),
           }
 
           await tx.user.update({
@@ -462,6 +462,8 @@ export const projectRouter = createTRPCRouter({
           },
         })
 
+        let anyUpdatesPerformed = false
+
         // Iterate through each user
         for (const user of users) {
           if (!user.stocks) continue
@@ -475,17 +477,21 @@ export const projectRouter = createTRPCRouter({
               // Only process stocks for this specific project
               const stockCredits = stock.stocks * project.projectStockPrice
 
+              // Skip already deposited stocks based on depositType
               if (depositType === "capital" && stock.capitalDeposited) {
-                throw new Error("تم إيداع رأس المال لهذا المشروع سابقاً!")
+                updatedStocks.push(stock) // Keep the stock unchanged
+                continue
               }
 
               if (depositType === "profits" && stock.profitsDeposited) {
-                throw new Error("تم إيداع الأرباح لهذا المشروع سابقاً!")
+                updatedStocks.push(stock) // Keep the stock unchanged
+                continue
               }
 
               if (depositType === "capital" && !stock.capitalDeposited) {
                 totalCredits += stockCredits
                 updatedStocks.push({ ...stock, capitalDeposited: true })
+                anyUpdatesPerformed = true
               }
 
               if (depositType === "profits" && !stock.profitsDeposited) {
@@ -512,6 +518,7 @@ export const projectRouter = createTRPCRouter({
                   capitalDeposited: true,
                   profitsDeposited: true,
                 })
+                anyUpdatesPerformed = true
               }
             } else {
               // Keep other projects' stocks unchanged
@@ -529,6 +536,15 @@ export const projectRouter = createTRPCRouter({
               },
             })
           }
+        }
+
+        // If no updates were performed, it means all stocks were already deposited
+        if (!anyUpdatesPerformed) {
+          throw new Error(
+            depositType === "capital"
+              ? "تم إيداع رأس المال لجميع الأسهم في هذا المشروع مسبقاً"
+              : "تم إيداع الأرباح لجميع الأسهم في هذا المشروع مسبقاً",
+          )
         }
 
         return {

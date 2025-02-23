@@ -129,9 +129,7 @@ export default function UsersClientPage({ users, count }: { users: User[]; count
       columnVisibility,
       rowSelection,
       globalFilter,
-      columnPinning: {
-        right: ["actions"],
-      },
+      columnPinning: { right: ["actions"] },
     },
   })
 
