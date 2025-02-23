@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { api } from "@/trpc/react"
 import type { Projects } from "@prisma/client"
 
 type DepositDialogProps = {
