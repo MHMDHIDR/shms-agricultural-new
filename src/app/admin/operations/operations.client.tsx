@@ -9,6 +9,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import clsx from "clsx"
+import { Trash } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { TableToolbar } from "@/components/custom/data-table/table-toolbar"
 import NoRecords from "@/components/custom/no-records"
@@ -22,6 +24,7 @@ import {
 } from "@/components/ui/table"
 import { useSharedColumns } from "@/hooks/use-shared-columns"
 import { useToast } from "@/hooks/use-toast"
+import { api } from "@/trpc/react"
 import type { BulkAction } from "@/components/custom/data-table/table-toolbar"
 import type { withdraw_actions } from "@prisma/client"
 import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table"
@@ -39,12 +42,25 @@ export default function OperationsClientPage({
   const [rowSelection, setRowSelection] = useState({})
   const [globalFilter, setGlobalFilter] = useState("")
   const toast = useToast()
+  const utils = api.useUtils()
+  const router = useRouter()
 
-  // Handle operation actions
-  const handleDeleteOperation = () => {
-    void (async () => {
-      toast.error("Delete functionality not implemented yet")
-    })()
+  const handleBulkDeleteOperations = api.operations.bulkDelete.useMutation({
+    onSuccess: () => {
+      toast.success("تم حذف العمليات بنجاح")
+      void utils.operations.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ أثناء حذف العمليات")
+    },
+    onMutate: () => {
+      toast.loading("جاري حذف العمليات ...")
+    },
+  })
+
+  const handleDeleteOperation = (id: string) => {
+    handleBulkDeleteOperations.mutate({ operationIds: [id] })
   }
 
   const { columns, filterFields } = useSharedColumns<withdraw_actions>({
@@ -88,10 +104,11 @@ export default function OperationsClientPage({
       {
         label: "حذف المحدد",
         onClick: () => {
-          const ids = selectedRows.map(row => row.id)
-          toast.success(`Selected IDs: ${ids.join(", ")}`)
+          const operationIds = selectedRows.map(row => row.id)
+          handleBulkDeleteOperations.mutate({ operationIds })
         },
         variant: "destructive",
+        icon: Trash,
       },
     ]
   }

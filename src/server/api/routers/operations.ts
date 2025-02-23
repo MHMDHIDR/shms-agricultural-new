@@ -1,3 +1,4 @@
+import { z } from "zod"
 import { createWithdrawAmountSchema } from "@/schemas/withdraw"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
@@ -86,5 +87,12 @@ export const operationsRouter = createTRPCRouter({
       ])
 
       return withdrawAction
+    }),
+
+  bulkDelete: protectedProcedure
+    .input(z.object({ operationIds: z.array(z.string()) }))
+    .mutation(async ({ ctx, input }) => {
+      const { operationIds } = input
+      await ctx.db.withdraw_actions.deleteMany({ where: { id: { in: operationIds } } })
     }),
 })

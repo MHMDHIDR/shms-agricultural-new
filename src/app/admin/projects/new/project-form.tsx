@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, X } from "lucide-react"
 import { marked } from "marked"
-import { ObjectId } from "mongodb"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -34,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { convertToBase64 } from "@/lib/convert-file-to-base64"
 import { formatDateValue, parseDate } from "@/lib/format-date"
+import { generateMongoId } from "@/lib/generate-model-id"
 import { optimizeImage } from "@/lib/optimize-image"
 import { projectSchema, updateProjectSchema } from "@/schemas/project"
 import { api } from "@/trpc/react"
@@ -60,9 +60,7 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
   const turndown = new TurndownService()
 
   const { mutate: deleteProjectFile } = api.projects.deleteProjectFile.useMutation({
-    onSuccess: () => {
-      router.refresh()
-    },
+    onSuccess: () => router.refresh(),
   })
 
   type FormInput = typeof isEditing extends true ? UpdateProjectInput : ProjectInput
@@ -252,7 +250,7 @@ export function ProjectForm({ isEditing = false, project }: ProjectFormProps) {
     }
 
     try {
-      const projectId = isEditing ? project!.id : new ObjectId().toString()
+      const projectId = isEditing ? project!.id : generateMongoId()
       const uploadedUrls = await uploadSelectedFiles(projectId)
 
       if (!isEditing && (!uploadedUrls.projectImages.length || !uploadedUrls.projectStudyCase)) {

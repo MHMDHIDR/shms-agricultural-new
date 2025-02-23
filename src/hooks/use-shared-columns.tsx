@@ -45,6 +45,8 @@ type UserType = BaseEntity & User
 
 type Project = BaseEntity & Projects
 
+type WithdrawAction = BaseEntity & withdraw_actions
+
 type UserStock = {
   id: string
   stocks: number
@@ -737,6 +739,240 @@ export function useSharedColumns<T extends BaseEntity>({
     },
   ]
 
+  const withdrawActionColumns: ColumnDef<T>[] = [
+    {
+      accessorKey: "id",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("id")} للعملية
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction
+        return (
+          <span className="whitespace-nowrap">
+            <CopyText text={withdrawAction.id} className="ml-2 inline h-4 w-4" />
+            {withdrawAction.id}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "sn",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("sn")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction & {
+          user: Pick<UserType, "sn">
+        }
+        return (
+          <span className="whitespace-nowrap">
+            <CopyText text={withdrawAction.user.sn.toString()} className="ml-2 inline h-4 w-4" />
+            {withdrawAction.user.sn}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("name")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction & {
+          user: Pick<UserType, "name">
+        }
+
+        return (
+          <span className="whitespace-nowrap">
+            <CopyText text={withdrawAction.user.name} className="ml-2 inline h-4 w-4" />
+            {withdrawAction.user.name}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "withdraw_amount",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("amount")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction
+        return (
+          <strong className="text-primary">
+            {withdrawAction.withdraw_amount} {APP_CURRENCY}
+          </strong>
+        )
+      },
+    },
+    {
+      accessorKey: "accounting_operation_status",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("status")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction
+        return (
+          <span
+            className={clsx("rounded-full border px-2.5 py-0.5 select-none", {
+              "bg-green-50 text-green-600":
+                withdrawAction.accounting_operation_status === "completed",
+              "bg-yellow-50 text-yellow-600":
+                withdrawAction.accounting_operation_status === "pending",
+              "bg-red-50 text-red-600": withdrawAction.accounting_operation_status === "rejected",
+            })}
+          >
+            {translateSring(withdrawAction.accounting_operation_status)}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "action_type",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("type")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction
+        return <span>{translateSring(withdrawAction.action_type)}</span>
+      },
+    },
+    {
+      accessorKey: "phone",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("phone")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction & {
+          user: Pick<UserType, "phone">
+        }
+        return (
+          <Link
+            href={`tel:${withdrawAction.user.phone}`}
+            className="text-primary whitespace-nowrap"
+          >
+            {withdrawAction.user.phone}
+          </Link>
+        )
+      },
+    },
+    {
+      accessorKey: "email",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("email")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction & {
+          user: Pick<UserType, "email">
+        }
+        return (
+          <Link
+            href={`mailto:${withdrawAction.user.email}`}
+            className="text-primary whitespace-nowrap"
+          >
+            {withdrawAction.user.email}
+          </Link>
+        )
+      },
+    },
+    {
+      accessorKey: "address",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("address")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const withdrawAction = row.original as unknown as WithdrawAction & {
+          user: Pick<UserType, "address">
+        }
+        return (
+          <span className="whitespace-nowrap">
+            <CopyText text={withdrawAction.user.address} className="ml-2 inline h-4 w-4" />
+            {withdrawAction.user.address}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "created_at",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="cursor-pointer"
+        >
+          {translateSring("created_at")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) =>
+        formatDate({
+          date: String((row.original as unknown as WithdrawAction).created_at),
+        }),
+    },
+  ]
+
   const profitsPercentageColumns: ColumnDef<T>[] = [
     {
       accessorKey: "projectName",
@@ -1059,11 +1295,13 @@ export function useSharedColumns<T extends BaseEntity>({
         ? [...userColumns, actionsColumn]
         : entityType === "projects"
           ? [...projectColumns, actionsColumn]
-          : entityType === "profits_percentage"
-            ? [...profitsPercentageColumns, actionsColumn]
-            : entityType === "user_stocks"
-              ? [...userStocksColumns]
-              : []),
+          : entityType === "withdraw_actions"
+            ? [...withdrawActionColumns, actionsColumn]
+            : entityType === "profits_percentage"
+              ? [...profitsPercentageColumns, actionsColumn]
+              : entityType === "user_stocks"
+                ? [...userStocksColumns]
+                : []),
     ] as ColumnDef<T>[],
     filterFields,
   }
