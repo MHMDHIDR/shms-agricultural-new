@@ -76,15 +76,15 @@ export function TableToolbar<TData>({
           placeholder={searchPlaceholder || "إبحث عن بيانات ..."}
           value={filtering}
           onChange={event => setFiltering(event.target.value)}
-          className="rtl w-full sm:max-w-md"
+          className="rtl w-full md:max-w-xs"
         />
         <div className="flex flex-wrap items-center gap-2">
           {selectedRows.length > 0 && hasBulkActions && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="cursor-pointer">
-                  إجراءات إضافية
-                  <SettingsIcon className="ml-2 h-4 w-4" />
+                  <SettingsIcon className="h-3 w-3" />
+                  إجراءات
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="space-y-1">
