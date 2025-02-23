@@ -187,13 +187,12 @@ export function InvestmentChart({ data, profitCollectDate }: InvestmentChartProp
 
   // Add a ref for the container
   const containerRef = React.useRef<HTMLDivElement>(null)
-  const [containerWidth, setContainerWidth] = React.useState(0)
 
   // Update container width on mount and resize
   React.useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth)
+        containerRef.current.offsetWidth
       }
     }
     updateWidth()
@@ -273,7 +272,7 @@ export function InvestmentChart({ data, profitCollectDate }: InvestmentChartProp
                 tickMargin={8}
                 minTickGap={80}
                 interval={0}
-                tickFormatter={value => {
+                tickFormatter={(value: string) => {
                   const date = new Date(value)
                   return date.toLocaleDateString("ar-QA", {
                     month: "short",
@@ -286,7 +285,9 @@ export function InvestmentChart({ data, profitCollectDate }: InvestmentChartProp
                 axisLine={false}
                 tickMargin={8}
                 tickCount={5}
-                tickFormatter={value => `${value.toLocaleString("ar-QA")} ${APP_CURRENCY}`}
+                tickFormatter={(value: number) =>
+                  `${value.toLocaleString("ar-QA")} ${APP_CURRENCY}`
+                }
               />
               <Tooltip
                 content={<CustomTooltip />}
