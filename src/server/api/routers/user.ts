@@ -169,4 +169,247 @@ export const userRouter = createTRPCRouter({
       select: input.select,
     })
   }),
+
+  depositForUsers: protectedProcedure
+    .input(
+      z.object({
+        userIds: z.array(z.string()),
+        projectId: z.string(),
+        depositType: z.enum(["capital", "profits", "reset"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userIds, projectId, depositType } = input
+
+      const project = await ctx.db.projects.findUnique({
+        where: { id: projectId },
+      })
+
+      if (!project) {
+        throw new Error("المشروع غير موجود")
+      }
+
+      const users = await ctx.db.user.findMany({
+        where: {
+          id: { in: userIds },
+          stocks: {
+            some: {
+              id: projectId,
+            },
+          },
+        },
+      })
+
+      let anyUpdatesPerformed = false
+
+      if (depositType === "reset") {
+        // Handle reset logic
+        for (const user of users) {
+          if (!user.stocks || user.stocks.length === 0) continue
+
+          let updatedStocks = [...user.stocks]
+          let creditsToUpdate = 0
+
+          updatedStocks = updatedStocks.map(stock => {
+            if (stock.id === projectId) {
+              const baseStockValue = stock.stocks * project.projectStockPrice
+
+              if (stock.capitalDeposited) {
+                creditsToUpdate -= baseStockValue
+              }
+
+              if (stock.profitsDeposited) {
+                const profitPercentage = stock.newPercentage || 0
+                const stockProfits = project.projectStockProfits
+                const additionalProfit = stockProfits * (profitPercentage / 100)
+                const totalStockProfit = (stockProfits + additionalProfit) * stock.stocks
+                creditsToUpdate -= totalStockProfit
+              }
+
+              anyUpdatesPerformed = true
+              return {
+                ...stock,
+                capitalDeposited: false,
+                profitsDeposited: false,
+              }
+            }
+            return stock
+          })
+
+          if (creditsToUpdate !== 0) {
+            await ctx.db.user.update({
+              where: { id: user.id },
+              data: {
+                credits: { decrement: Math.abs(creditsToUpdate) },
+                stocks: updatedStocks,
+              },
+            })
+          }
+        }
+      } else {
+        // Handle capital and profits deposits
+        for (const user of users) {
+          if (!user.stocks) continue
+
+          let totalCredits = 0
+          const updatedStocks: typeof user.stocks = []
+
+          // Iterate through user's stocks
+          for (const stock of user.stocks) {
+            if (stock.id === projectId) {
+              // Only process stocks for this specific project
+              const stockCredits = stock.stocks * project.projectStockPrice
+
+              // Skip already deposited stocks based on depositType
+              if (depositType === "capital" && stock.capitalDeposited) {
+                updatedStocks.push(stock) // Keep the stock unchanged
+                continue
+              }
+
+              if (depositType === "profits" && stock.profitsDeposited) {
+                updatedStocks.push(stock) // Keep the stock unchanged
+                continue
+              }
+
+              if (depositType === "capital" && !stock.capitalDeposited) {
+                totalCredits += stockCredits
+                updatedStocks.push({ ...stock, capitalDeposited: true })
+                anyUpdatesPerformed = true
+              }
+
+              if (depositType === "profits" && !stock.profitsDeposited) {
+                // Calculate profits percentage
+                const profitPercentage = stock.newPercentage || 0
+                const stockProfits = project.projectStockProfits
+
+                // Calculate additional profit based on percentage
+                const additionalProfit = stockProfits * (profitPercentage / 100)
+
+                // Total profit for this stock
+                const totalStockProfit = stockProfits + additionalProfit
+
+                if (stock.capitalDeposited) {
+                  // If capital was already deposited, only add profits
+                  totalCredits += totalStockProfit * stock.stocks
+                } else {
+                  // If capital wasn't deposited yet, add both capital and profits
+                  totalCredits += totalStockProfit * stock.stocks + stockCredits
+                }
+
+                updatedStocks.push({
+                  ...stock,
+                  capitalDeposited: true,
+                  profitsDeposited: true,
+                })
+                anyUpdatesPerformed = true
+              }
+            } else {
+              // Keep other projects' stocks unchanged
+              updatedStocks.push(stock)
+            }
+          }
+
+          // Update user credits only if there are changes
+          if (totalCredits > 0) {
+            await ctx.db.user.update({
+              where: { id: user.id },
+              data: {
+                credits: { increment: totalCredits },
+                stocks: updatedStocks,
+              },
+            })
+          }
+        }
+      }
+
+      if (!anyUpdatesPerformed) {
+        return {
+          success: false,
+          message:
+            depositType === "capital"
+              ? "تم إيداع رأس المال لجميع الأسهم في هذا المشروع مسبقاً"
+              : depositType === "profits"
+                ? "تم إيداع الأرباح لجميع الأسهم في هذا المشروع مسبقاً"
+                : "لا يوجد رصيد لإعادة تعيينه",
+        }
+      }
+
+      return {
+        success: true,
+        message:
+          depositType === "capital"
+            ? "تم إيداع رأس المال للمستخدمين المحددين"
+            : depositType === "profits"
+              ? "تم إيداع الأرباح للمستخدمين المحددين"
+              : "تم إعادة تعيين الرصيد للمستخدمين المحددين",
+      }
+    }),
+
+  bulkUpdateUsers: protectedProcedure
+    .input(
+      z.object({
+        userIds: z.array(z.string()),
+        actionType: z.enum(["delete", "block", "unblock"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userIds, actionType } = input
+
+      switch (actionType) {
+        case "delete": {
+          // Get all users with their stocks
+          const users = await ctx.db.user.findMany({
+            where: { id: { in: userIds } },
+            select: { id: true, stocks: true },
+          })
+
+          // Return stocks to projects for each user
+          for (const user of users) {
+            if (user.stocks?.length) {
+              for (const stock of user.stocks) {
+                await ctx.db.projects.update({
+                  where: { id: stock.id },
+                  data: { projectAvailableStocks: { increment: stock.stocks } },
+                })
+              }
+            }
+
+            // Mark user as deleted and remove their stocks
+            await ctx.db.user.update({
+              where: { id: user.id },
+              data: { stocks: [], isDeleted: true, accountStatus: "block" },
+            })
+          }
+
+          return {
+            success: true,
+            message: "تم حذف المستخدمين المحددين بنجاح",
+          }
+        }
+
+        case "block": {
+          await ctx.db.user.updateMany({
+            where: { id: { in: userIds } },
+            data: { accountStatus: "block" },
+          })
+
+          return {
+            success: true,
+            message: "تم حظر المستخدمين المحددين بنجاح",
+          }
+        }
+
+        case "unblock": {
+          await ctx.db.user.updateMany({
+            where: { id: { in: userIds } },
+            data: { accountStatus: "active" },
+          })
+
+          return {
+            success: true,
+            message: "تم إلغاء حظر المستخدمين المحددين بنجاح",
+          }
+        }
+      }
+    }),
 })

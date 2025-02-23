@@ -9,6 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import clsx from "clsx"
+import { CircleCheck, CircleX, TrashIcon } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -162,6 +163,20 @@ export default function ProjectsClientPage({
     })
   }
 
+  const handleBulkUpdateProjects = api.projects.bulkUpdateProjects.useMutation({
+    onSuccess: data => {
+      toast.success(data.message)
+      void utils.projects.getAll.invalidate()
+      router.refresh()
+    },
+    onError: error => {
+      toast.error(error.message || "حدث خطأ أثناء تحديث المشاريع")
+    },
+    onMutate: () => {
+      toast.loading("جاري تحديث المشاريع ...")
+    },
+  })
+
   const { columns, filterFields } = useSharedColumns<Projects>({
     entityType: "projects",
     actions: {
@@ -207,10 +222,16 @@ export default function ProjectsClientPage({
       {
         label: "حذف المحدد",
         onClick: () => {
-          const ids = selectedRows.map(row => row.id)
-          void handleDeleteManyProjects.mutate({ ids })
+          const projectIds = selectedRows.map(row => row.id)
+          void handleDeleteManyProjects.mutate({ projectIds })
         },
         variant: "destructive",
+        icon: TrashIcon,
+        confirmationTitle: "تأكيد حذف المشاريع",
+        confirmationDescription:
+          "هل أنت متأكد من حذف المشاريع المحددين؟ لا يمكن التراجع عن هذه العملية.",
+        confirmationButtonText: "حذف",
+        confirmationButtonClass: "bg-red-500 hover:bg-red-600",
       },
     ]
 
@@ -222,10 +243,15 @@ export default function ProjectsClientPage({
         actions.push({
           label: "تفعيل المحدد",
           onClick: () => {
-            const ids = selectedRows.map(row => row.id)
-            toast.success(`Selected IDs: ${ids.join(", ")}`)
+            const projectIds = selectedRows.map(row => row.id)
+            void handleBulkUpdateProjects.mutate({ projectIds, actionType: "active" })
           },
           variant: "success",
+          icon: CircleCheck,
+          confirmationTitle: "تأكيد تفعيل المشاريع",
+          confirmationDescription: "هل أنت متأكد من تفعيل المشاريع المحددة؟",
+          confirmationButtonText: "تفعيل",
+          confirmationButtonClass: "bg-green-500 hover:bg-green-600",
         })
       }
 
@@ -233,10 +259,15 @@ export default function ProjectsClientPage({
         actions.push({
           label: "تعطيل المحدد",
           onClick: () => {
-            const ids = selectedRows.map(row => row.id)
-            toast.success(`Selected IDs: ${ids.join(", ")}`)
+            const projectIds = selectedRows.map(row => row.id)
+            void handleBulkUpdateProjects.mutate({ projectIds, actionType: "pending" })
           },
           variant: "success",
+          icon: CircleX,
+          confirmationTitle: "تأكيد تعطيل المشاريع",
+          confirmationDescription: "هل أنت متأكد من تعطيل المشاريع المحددة؟",
+          confirmationButtonText: "تعطيل",
+          confirmationButtonClass: "bg-red-500 hover:bg-red-600",
         })
       }
     }

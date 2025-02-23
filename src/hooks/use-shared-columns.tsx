@@ -475,7 +475,7 @@ export function useSharedColumns<T extends BaseEntity>({
           <span
             className={clsx("rounded-full border px-2.5 py-0.5 select-none", {
               "bg-green-50 text-green-600": user.accountStatus === "active",
-              "bg-red-50 text-red-600": user.accountStatus === "block",
+              "bg-red-50 text-red-600": user.accountStatus === "block" || isDeleted,
               "bg-yellow-50 text-yellow-600": user.accountStatus === "pending",
             })}
           >

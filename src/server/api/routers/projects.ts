@@ -234,13 +234,13 @@ export const projectRouter = createTRPCRouter({
     }),
 
   deleteManyById: protectedProcedure
-    .input(z.object({ ids: z.array(z.string()) }))
+    .input(z.object({ projectIds: z.array(z.string()) }))
     .mutation(async ({ ctx, input }) => {
       const caller = createCaller(ctx)
 
       // Remove all projects' files from S3 and delete projects
       const projects = await ctx.db.projects.findMany({
-        where: { id: { in: input.ids } },
+        where: { id: { in: input.projectIds } },
       })
 
       for (const project of projects) {
@@ -265,7 +265,7 @@ export const projectRouter = createTRPCRouter({
       }
 
       await ctx.db.projects.deleteMany({
-        where: { id: { in: input.ids } },
+        where: { id: { in: input.projectIds } },
       })
 
       return { success: true }
@@ -596,6 +596,30 @@ export const projectRouter = createTRPCRouter({
       } catch (error) {
         console.error("Failed to send contract email:", error)
         throw new Error("Failed to send contract email")
+      }
+    }),
+
+  bulkUpdateProjects: protectedProcedure
+    .input(
+      z.object({
+        projectIds: z.array(z.string()),
+        actionType: z.enum(["pending", "active"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { projectIds, actionType } = input
+
+      await ctx.db.projects.updateMany({
+        where: { id: { in: projectIds } },
+        data: { projectStatus: actionType },
+      })
+
+      return {
+        success: true,
+        message:
+          actionType === "active"
+            ? "تم تفعيل المشاريع المحددة بنجاح"
+            : "تم تعطيل المشاريع المحددة بنجاح",
       }
     }),
 })
