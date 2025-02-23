@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb"
 import { z } from "zod"
 import { calculateNewAvailableStocks } from "@/lib/calculate-new-available-stocks"
 import { sendPurchaseConfirmationEmail } from "@/lib/email/purchase-confirmation"
@@ -131,21 +132,19 @@ export const projectRouter = createTRPCRouter({
 
           // Add stocks to user
           const newStock = {
-            id: projectId,
             stocks,
             newPercentage,
             percentageCode: percentageCode ?? "",
             createdAt: new Date(),
             capitalDeposited: false,
             profitsDeposited: false,
+            id: new ObjectId(projectId).toString(),
           }
 
           await tx.user.update({
             where: { id: userId },
             data: {
-              stocks: {
-                push: newStock,
-              },
+              stocks: { push: newStock },
             },
           })
 
@@ -384,9 +383,7 @@ export const projectRouter = createTRPCRouter({
 
       if (depositType === "reset") {
         // Keep existing reset logic
-        const project = await ctx.db.projects.findUnique({
-          where: { id: projectId },
-        })
+        const project = await ctx.db.projects.findUnique({ where: { id: projectId } })
 
         if (!project) {
           throw new Error("المشروع غير موجود")
@@ -395,7 +392,7 @@ export const projectRouter = createTRPCRouter({
         const users = await ctx.db.user.findMany({
           where: {
             stocks: {
-              isEmpty: false,
+              some: { id: projectId },
             },
           },
         })

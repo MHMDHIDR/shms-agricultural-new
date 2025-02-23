@@ -195,9 +195,7 @@ export default function ProjectsClientPage({
       columnVisibility,
       rowSelection,
       globalFilter,
-      columnPinning: {
-        right: ["actions"],
-      },
+      columnPinning: { right: ["actions"] },
     },
   })
 

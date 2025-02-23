@@ -45,7 +45,7 @@ export default async function ProjectsPage() {
                 <CardContent className="relative flex flex-col p-0">
                   {role === "admin" ? (
                     <span
-                      className={`absolute top-20 -left-4 z-10 origin-top-left -rotate-45 transform px-14 py-1 text-center text-xs font-bold text-white ${
+                      className={`absolute top-20 -left-8 z-10 origin-top-left -rotate-45 transform px-14 py-1 text-center text-xs font-bold text-white ${
                         project.projectStatus === "active" ? "bg-green-600" : "bg-red-600"
                       }`}
                     >
