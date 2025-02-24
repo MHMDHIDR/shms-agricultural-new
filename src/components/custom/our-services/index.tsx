@@ -47,7 +47,7 @@ export default function OurServices({ children }: { children: React.ReactNode })
           <div className="mt-8 flex flex-col gap-4 lg:flex-row">
             {children}
             <Button variant="outline" size="lg" className="gap-2" asChild>
-              <Link href={`/contact?service=${services[serviceIndex]}`}>
+              <Link href={`/contact?service=${services[serviceIndex]?.title ?? ""}`}>
                 {servicesSchema[serviceIndex]}
               </Link>
             </Button>

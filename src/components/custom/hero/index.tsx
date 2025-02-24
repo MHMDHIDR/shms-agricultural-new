@@ -15,9 +15,12 @@ import { useCountUp } from "@/hooks/use-count-up"
 import { api } from "@/trpc/react"
 import { LoadingCard } from "../loading"
 import Video from "../video"
+import type { RouterOutputs } from "@/trpc/react"
 
 const CACHE_KEY = "usersData"
 const CACHE_DURATION = 60 * 60 * 1000
+
+type User = RouterOutputs["user"]["getAll"]
 
 export default function Hero({ children }: { children: React.ReactNode }) {
   // Configure query with stale time
@@ -27,14 +30,18 @@ export default function Hero({ children }: { children: React.ReactNode }) {
       staleTime: CACHE_DURATION, // Data considered fresh for 60 minutes
       gcTime: CACHE_DURATION,
       initialData: () => {
-        // Check localStorage for cached data
-        const cached = localStorage.getItem(CACHE_KEY)
-        if (cached) {
-          const { data, timestamp } = JSON.parse(cached)
-          const isStale = Date.now() - timestamp > CACHE_DURATION
-          if (!isStale) {
-            return data
+        try {
+          // Check localStorage for cached data
+          const cached = localStorage.getItem(CACHE_KEY)
+          if (cached) {
+            const parsedCache = JSON.parse(cached) as { data: User; timestamp: number }
+            const isStale = Date.now() - parsedCache.timestamp > CACHE_DURATION
+            if (!isStale) {
+              return parsedCache.data
+            }
           }
+        } catch {
+          localStorage.removeItem(CACHE_KEY)
         }
         return undefined
       },
