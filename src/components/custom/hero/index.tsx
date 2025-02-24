@@ -2,7 +2,7 @@
 
 import { NutIcon, TreePineIcon } from "lucide-react"
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   Dialog,
@@ -16,8 +16,38 @@ import { api } from "@/trpc/react"
 import { LoadingCard } from "../loading"
 import Video from "../video"
 
+const CACHE_KEY = "usersData"
+const CACHE_DURATION = 60 * 60 * 1000
+
 export default function Hero({ children }: { children: React.ReactNode }) {
-  const { data: usersData, isLoading: isLoadingUsers } = api.user.getAll.useQuery()
+  // Configure query with stale time
+  const { data: usersData, isLoading: isLoadingUsers } = api.user.getAll.useQuery(
+    undefined, // no input
+    {
+      staleTime: CACHE_DURATION, // Data considered fresh for 60 minutes
+      gcTime: CACHE_DURATION,
+      initialData: () => {
+        // Check localStorage for cached data
+        const cached = localStorage.getItem(CACHE_KEY)
+        if (cached) {
+          const { data, timestamp } = JSON.parse(cached)
+          const isStale = Date.now() - timestamp > CACHE_DURATION
+          if (!isStale) {
+            return data
+          }
+        }
+        return undefined
+      },
+    },
+  )
+
+  // Update localStorage when new data arrives
+  useEffect(() => {
+    if (usersData) {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ data: usersData, timestamp: Date.now() }))
+    }
+  }, [usersData])
+
   const YEAR_IN_INDUSTRY = Math.abs(2020 - new Date().getFullYear())
   const FARMING_PROJECTS = 1
   const USER_SATISFACTION = 100
@@ -53,6 +83,7 @@ export default function Hero({ children }: { children: React.ReactNode }) {
                   className="h-full w-full object-cover"
                   width={500}
                   height={500}
+                  quality={20}
                   priority
                 />
               </div>

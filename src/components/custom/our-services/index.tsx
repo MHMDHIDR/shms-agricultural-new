@@ -4,10 +4,36 @@ import { motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { services } from "@/schemas/contact"
+import { services as servicesSchema } from "@/schemas/contact"
 
 export default function OurServices({ children }: { children: React.ReactNode }) {
   const serviceIndex = 4
+  const services = [
+    {
+      image: "/our-services/agricultural-investment.webp",
+      title: "استثمار",
+      text: "نوفر فرص استثمارية مستدامة تساهم في تطوير القطاع الزراعي وتحقيق النمو الاقتصادي.",
+      href: "/projects",
+    },
+    {
+      image: "/our-services/preparation.webp",
+      title: "تحضير",
+      text: "نضمن تحضير التربة واستخدام أفضل الأدوات والتقنيات الحديثة لبدء الزراعة بأفضل جودة.",
+      href: "/preparation",
+    },
+    {
+      image: "/our-services/farming.webp",
+      title: "زراعة",
+      text: "نستخدم أحدث الأساليب لضمان زراعة فعالة وإنتاج محاصيل ذات جودة عالية وصحية.",
+      href: "/farming",
+    },
+    {
+      image: "/our-services/harvest.webp",
+      title: "حصاد",
+      text: "نحرص على تنفيذ عمليات الحصاد بأعلى المعايير لضمان الحصول على أفضل إنتاج.",
+      href: "/harvest",
+    },
+  ]
 
   return (
     <section className="container mx-auto overflow-clip px-4 py-20 md:max-w-[70rem] md:px-0">
@@ -22,38 +48,13 @@ export default function OurServices({ children }: { children: React.ReactNode })
             {children}
             <Button variant="outline" size="lg" className="gap-2" asChild>
               <Link href={`/contact?service=${services[serviceIndex]}`}>
-                {services[serviceIndex]}
+                {servicesSchema[serviceIndex]}
               </Link>
             </Button>
           </div>
         </div>
         <div className="flex flex-col gap-12 md:gap-20">
-          {[
-            {
-              image: "/our-services/agricultural-investment.webp",
-              title: "استثمار",
-              text: "نوفر فرص استثمارية مستدامة تساهم في تطوير القطاع الزراعي وتحقيق النمو الاقتصادي.",
-              href: "/projects",
-            },
-            {
-              image: "/our-services/preparation.webp",
-              title: "تحضير",
-              text: "نضمن تحضير التربة واستخدام أفضل الأدوات والتقنيات الحديثة لبدء الزراعة بأفضل جودة.",
-              href: "/preparation",
-            },
-            {
-              image: "/our-services/farming.webp",
-              title: "زراعة",
-              text: "نستخدم أحدث الأساليب لضمان زراعة فعالة وإنتاج محاصيل ذات جودة عالية وصحية.",
-              href: "/farming",
-            },
-            {
-              image: "/our-services/harvest.webp",
-              title: "حصاد",
-              text: "نحرص على تنفيذ عمليات الحصاد بأعلى المعايير لضمان الحصول على أفضل إنتاج.",
-              href: "/harvest",
-            },
-          ].map((service, index) => (
+          {services.map((service, index) => (
             <Link href={service.href} key={index} className="block">
               <motion.div
                 className="rounded-xl border p-2"
@@ -67,6 +68,7 @@ export default function OurServices({ children }: { children: React.ReactNode })
                   className="aspect-video w-full rounded-xl border border-dashed object-cover"
                   width={400}
                   height={200}
+                  quality={20}
                   priority
                 />
                 <div className="p-6">

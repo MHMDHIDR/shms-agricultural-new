@@ -160,7 +160,7 @@ export default async function AdminPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{investorsCount}</div>
-            <p className="text-xs text-muted-foreground">مستخدم مسجل في النظام</p>
+            <p className="text-xs text-muted-foreground">مستثمر في المشاريع</p>
           </CardContent>
         </Card>
 
