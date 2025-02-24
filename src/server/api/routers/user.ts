@@ -412,4 +412,27 @@ export const userRouter = createTRPCRouter({
         }
       }
     }),
+
+  getActiveSessions: protectedProcedure.query(async ({ ctx }) => {
+    const now = new Date()
+    const sessions = await ctx.db.session.findMany({
+      where: {
+        expires: {
+          gt: now,
+        },
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        expires: "desc",
+      },
+    })
+    return sessions
+  }),
 })
