@@ -55,6 +55,9 @@ export const translateSring = (string: string) => {
     case "projectStockPrice": {
       return "سعر السهم"
     }
+    case "stocksContract": {
+      return "عقد شراء الأسهم"
+    }
     case "projectSpecialPercentage": {
       return "نسبة زيادة خاصة"
     }

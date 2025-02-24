@@ -65,7 +65,7 @@ export default async function Dashboard() {
 
   return (
     <section className="grid grid-cols-1 md:grid-cols-3 grid-rows-[auto_1fr] gap-x-0 gap-y-4 md:gap-4 select-none h-screen px-2 md:px-9 pt-14">
-      <Card className="w-full col-span-1">
+      <Card className="w-full col-span-1 flex flex-col justify-between">
         <CardHeader className="text-center">
           <CardTitle>رصيد الحساب</CardTitle>
           <CardDescription>رصيدك الحالي القابل للسحب</CardDescription>

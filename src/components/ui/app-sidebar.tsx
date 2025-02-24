@@ -4,6 +4,7 @@ import {
   DollarSignIcon,
   Eye,
   HelpCircle,
+  Home,
   Link2Icon,
   PercentIcon,
   Plus,
@@ -51,6 +52,11 @@ export function AppSidebar({
       id: project.id,
     })),
     navMain: [
+      {
+        title: "لوحة الإدارة",
+        url: "/admin",
+        icon: Home,
+      },
       {
         title: "المشاريع",
         url: open || isMobile ? "" : "/admin/projects",

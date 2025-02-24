@@ -4,28 +4,22 @@
  */
 import "./src/env.js"
 
+const hostNames = [
+  "shmsagricultural.com",
+  "shms-uploads.s3.eu-west-2.amazonaws.com",
+  "new-shms.s3.eu-west-2.amazonaws.com",
+  "dev-shms-uploads.s3.eu-west-2.amazonaws.com",
+]
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    remotePatterns: [
-      { protocol: "https", hostname: "shmsagricultural.com", pathname: "/**" },
-      {
-        protocol: "https",
-        hostname: "shms-uploads.s3.eu-west-2.amazonaws.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "new-shms.s3.eu-west-2.amazonaws.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "dev-shms-uploads.s3.eu-west-2.amazonaws.com",
-        pathname: "/**",
-      },
-    ],
+    remotePatterns: hostNames.map(hostname => ({
+      protocol: "https",
+      hostname,
+      pathname: "/**",
+    })),
   },
 }
 

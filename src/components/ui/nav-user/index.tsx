@@ -1,8 +1,9 @@
 "use client"
 
-import { ChevronsUpDown, LogOut } from "lucide-react"
+import { ChevronsUpDown, LogOut, User as UserIcon } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
+  DropdownLinkItem,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -57,8 +58,12 @@ export function NavUser({ user }: { user: Session["user"] }) {
             align="start"
             sideOffset={3}
           >
+            <DropdownLinkItem href="/account">
+              <UserIcon className="text-blue-400 w-4 h-4" />
+              الحســاب
+            </DropdownLinkItem>
             <DropdownMenuItem onClick={handleSignout}>
-              <LogOut className="text-red-400" />
+              <LogOut className="text-red-400 w-4 h-4" />
               تسجيل الخروج
             </DropdownMenuItem>
           </DropdownMenuContent>

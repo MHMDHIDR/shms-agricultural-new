@@ -75,7 +75,7 @@ export function Nav({ user }: { user: Session["user"] | undefined }) {
       )}
       dir="ltr"
     >
-      <div className="container mx-auto flex h-full items-center justify-between px-4 text-black select-none dark:text-white">
+      <div className="container mx-auto flex h-full items-center justify-between px-2.5 text-black select-none dark:text-white">
         <div className="flex items-center">
           <Link href="/">
             <ShmsIcon

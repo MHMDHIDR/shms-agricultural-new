@@ -848,7 +848,7 @@ export function useSharedColumns<T extends BaseEntity>({
         const withdrawAction = row.original as unknown as WithdrawAction
         return (
           <span
-            className={clsx("rounded-full border px-2.5 py-0.5 select-none", {
+            className={clsx("rounded-full border px-2.5 py-0.5 select-none whitespace-nowrap", {
               "bg-green-50 text-green-600":
                 withdrawAction.accounting_operation_status === "completed",
               "bg-yellow-50 text-yellow-600":

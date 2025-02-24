@@ -94,7 +94,7 @@ function CustomTooltip({
         name: item.name,
         value: item.value,
         color: item.stroke,
-        label: `استثمار ${parseInt(item.name.replace("stock", "")) + 1}`,
+        label: `ربح ${item.name}`,
       })
     }
   })
@@ -131,11 +131,12 @@ function CustomTooltip({
 
 // Function to reduce data points based on available width
 function reduceDataPoints(data: InvestmentDataPoint[]): InvestmentDataPoint[] {
+  const MAX_POINTS = 7
   if (!data.length) return []
-  if (data.length <= 6) return data // If we have 6 or fewer points, show all
+  if (data.length <= MAX_POINTS) return data // If we have MAX_POINTS or fewer points, show all
 
-  // Calculate step size to show approximately 6 points
-  const targetPoints = 6
+  // Calculate step size to show approximately MAX_POINTS points
+  const targetPoints = MAX_POINTS
   const step = Math.max(1, Math.floor(data.length / targetPoints))
   const result: InvestmentDataPoint[] = []
 
@@ -234,14 +235,18 @@ export function InvestmentChart({ data, profitCollectDate }: InvestmentChartProp
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger
-            className="w-fit px-3 rounded-lg sm:mr-auto cursor-pointer"
+            className="w-full md:w-fit px-3 rounded-lg rtl sm:mr-auto cursor-pointer"
             aria-label="اختر فترة زمنية"
           >
             <SelectValue placeholder={timeRanges[0]?.label} />
           </SelectTrigger>
           <SelectContent className="rounded-xl rtl">
             {timeRanges.map(range => (
-              <SelectItem key={range.value} value={range.value} className="rounded-lg">
+              <SelectItem
+                key={range.value}
+                value={range.value}
+                className="rounded-lg cursor-pointer"
+              >
                 {range.label}
               </SelectItem>
             ))}
