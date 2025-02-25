@@ -178,7 +178,16 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
           <p className="text-xl font-extrabold text-muted-foreground mb-4">
             إبدأ ببناء المستقبل، استثمر في هذا المشروع الآن
           </p>
-          <Button variant="pressable" className="w-fit" onClick={handleStartInvestment}>
+          <Button
+            variant="pressable"
+            className="w-fit"
+            onClick={handleStartInvestment}
+            disabled={
+              project.projectAvailableStocks === 0 ||
+              project.projectStatus === "pending" ||
+              project.projectInvestDate < new Date()
+            }
+          >
             إبدأ الاستثمار
           </Button>
         </div>

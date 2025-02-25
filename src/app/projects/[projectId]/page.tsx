@@ -29,6 +29,8 @@ export default async function ProjectPage({
   const session = await auth()
   const { projectId } = await params
   const project = await api.projects.getProjectById({ projectId })
+  if (!project) notFound()
+
   const searchParamsProp = await searchParams
   const { step } = searchParamsProp
   const currentStep = step ?? "info"
@@ -37,10 +39,6 @@ export default async function ProjectPage({
   if ((currentStep === "purchase" || currentStep === "confirm") && !session?.user) {
     const callbackUrl = encodeURIComponent(`/projects/${projectId}?step=${currentStep}`)
     redirect(`/signin?callbackUrl=${callbackUrl}`)
-  }
-
-  if (!project) {
-    notFound()
   }
 
   return (

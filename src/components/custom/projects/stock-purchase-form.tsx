@@ -22,6 +22,17 @@ import type { Projects } from "@prisma/client"
 
 export function StockPurchaseForm({ project }: { project: Projects }) {
   const router = useRouter()
+
+  const projectInvestmentDisabled =
+    project.projectAvailableStocks === 0 ||
+    project.projectStatus === "pending" ||
+    project.projectInvestDate < new Date()
+
+  if (projectInvestmentDisabled) {
+    router.replace(`/projects`)
+    return null
+  }
+
   const { data: session, status } = useSession()
   const [selectedStocks, setSelectedStocks] = useState(0)
   const [percentageCode, setPercentageCode] = useState("")
