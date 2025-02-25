@@ -9,9 +9,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import clsx from "clsx"
-import { Ban, CheckCircle, RotateCcw, Trash } from "lucide-react"
+import { Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { TablePagination } from "@/components/custom/data-table/table-pagination"
 import { TableToolbar } from "@/components/custom/data-table/table-toolbar"
 import NoRecords from "@/components/custom/no-records"
 import {
@@ -26,14 +27,14 @@ import { useSharedColumns } from "@/hooks/use-shared-columns"
 import { useToast } from "@/hooks/use-toast"
 import { api } from "@/trpc/react"
 import type { BulkAction } from "@/components/custom/data-table/table-toolbar"
-import type { withdraw_actions } from "@prisma/client"
+import type { User } from "@prisma/client"
 import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table"
 
-export default function OperationsClientPage({
-  operations,
+export default function InvestorsClientPage({
+  investors,
   count,
 }: {
-  operations: withdraw_actions[]
+  investors: User[]
   count: number
 }) {
   const [sorting, setSorting] = useState<SortingState>([])
@@ -59,42 +60,20 @@ export default function OperationsClientPage({
     },
   })
 
-  const handleBulkUpdateOperationStatus = api.operations.updateOperationStatus.useMutation({
-    onSuccess: () => {
-      toast.success("تم تحديث حالة العمليات بنجاح")
-      void utils.operations.getAll.invalidate()
-      router.refresh()
-    },
-    onError: error => {
-      toast.error(error.message || "حدث خطأ أثناء تحديث حالة العمليات")
-    },
-    onMutate: () => {
-      toast.loading("جاري تحديث حالة العمليات ...")
-    },
-  })
-
   const handleDeleteOperation = (id: string) => {
     handleBulkDeleteOperations.mutate({ operationIds: [id] })
   }
 
-  const handleUpdateOperationStatus = (
-    id: string,
-    status: withdraw_actions["accounting_operation_status"],
-  ) => {
-    handleBulkUpdateOperationStatus.mutate({ ids: [id], status })
-  }
-
-  const { columns, filterFields } = useSharedColumns<withdraw_actions>({
-    entityType: "withdraw_actions",
+  const { columns, filterFields } = useSharedColumns<User>({
+    entityType: "users",
     actions: {
       onDelete: handleDeleteOperation,
-      onUpdate: handleUpdateOperationStatus,
-      basePath: "/operations",
+      basePath: "/users",
     },
   })
 
-  const table = useReactTable<withdraw_actions>({
-    data: operations,
+  const table = useReactTable<User>({
+    data: investors,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -121,7 +100,7 @@ export default function OperationsClientPage({
   const selectedRows = table.getFilteredSelectedRowModel().rows.map(row => row.original)
 
   const getBulkActions = (): BulkAction[] => {
-    const actions: BulkAction[] = [
+    return [
       {
         label: "حذف المحدد",
         onClick: () => {
@@ -132,75 +111,23 @@ export default function OperationsClientPage({
         icon: Trash,
       },
     ]
-
-    // Get unique statuses of selected operations
-    const selectedStatuses = new Set(selectedRows.map(row => row.accounting_operation_status))
-
-    // Only show "pending" option if not all selected operations are already pending
-    if (!selectedStatuses.has("pending") || selectedStatuses.size > 1) {
-      actions.push({
-        label: "معلق",
-        onClick: () => {
-          const operationIds = selectedRows.map(row => row.id)
-          handleBulkUpdateOperationStatus.mutate({
-            ids: operationIds,
-            status: "pending",
-          })
-        },
-        variant: "outline",
-        icon: RotateCcw,
-      })
-    }
-
-    // Only show "completed" option if not all selected operations are already completed
-    if (!selectedStatuses.has("completed") || selectedStatuses.size > 1) {
-      actions.push({
-        label: "مكتمل",
-        onClick: () => {
-          const operationIds = selectedRows.map(row => row.id)
-          handleBulkUpdateOperationStatus.mutate({
-            ids: operationIds,
-            status: "completed",
-          })
-        },
-        variant: "default",
-        icon: CheckCircle,
-      })
-    }
-
-    // Only show "rejected" option if not all selected operations are already rejected
-    if (!selectedStatuses.has("rejected") || selectedStatuses.size > 1) {
-      actions.push({
-        label: "مرفوض",
-        onClick: () => {
-          const operationIds = selectedRows.map(row => row.id)
-          handleBulkUpdateOperationStatus.mutate({
-            ids: operationIds,
-            status: "rejected",
-          })
-        },
-        variant: "destructive",
-        icon: Ban,
-      })
-    }
-
-    return actions
   }
 
-  return !operations || count === 0 ? (
-    <NoRecords msg="لم يتم العثور على أي عمليات مالية في الوقت الحالي" />
+  return !investors || count === 0 ? (
+    <NoRecords msg="لم يتم العثور على أي مستثمرين في الوقت الحالي" />
   ) : (
     <div className="space-y-4">
-      <TableToolbar<withdraw_actions>
+      <TableToolbar<User>
         table={table}
         filtering={globalFilter}
         setFiltering={setGlobalFilter}
         selectedRows={selectedRows}
-        searchPlaceholder="ابحث عن عملية"
+        searchPlaceholder="ابحث عن مستثمر"
         bulkActions={getBulkActions()}
         filterFields={filterFields}
       />
 
+      <TablePagination table={table} selectedRows={selectedRows} />
       <div className="rounded-md border">
         <Table>
           <TableHeader className="select-none">
@@ -256,6 +183,7 @@ export default function OperationsClientPage({
           </TableBody>
         </Table>
       </div>
+      <TablePagination table={table} selectedRows={selectedRows} />
     </div>
   )
 }

@@ -24,7 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <SidebarTrigger className="mr-2 cursor-pointer" />
           </div>
         </header>
-        <section className="mx-auto max-w-sm min-w-full sm:max-w-screen-sm md:max-w-screen-md xl:max-w-screen-xl">
+        <section className="mx-auto max-w-sm min-w-full sm:max-w-screen-sm xl:max-w-screen-xl">
           {children}
         </section>
       </SidebarInset>

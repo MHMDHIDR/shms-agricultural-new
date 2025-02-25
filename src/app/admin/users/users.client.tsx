@@ -11,8 +11,6 @@ import {
 import clsx from "clsx"
 import {
   Ban,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   CircleCheck,
   CircleDollarSign,
   HandCoinsIcon,
@@ -21,10 +19,10 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { TablePagination } from "@/components/custom/data-table/table-pagination"
 import { TableToolbar } from "@/components/custom/data-table/table-toolbar"
 import { DepositDialog } from "@/components/custom/deposit-dialog"
 import NoRecords from "@/components/custom/no-records"
-import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -38,12 +36,7 @@ import { useToast } from "@/hooks/use-toast"
 import { api } from "@/trpc/react"
 import type { BulkAction } from "@/components/custom/data-table/table-toolbar"
 import type { Projects, User } from "@prisma/client"
-import type {
-  ColumnFiltersState,
-  SortingState,
-  Table as TableType,
-  VisibilityState,
-} from "@tanstack/react-table"
+import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table"
 
 export default function UsersClientPage({
   users,
@@ -201,7 +194,6 @@ export default function UsersClientPage({
 
   const selectedRows = table.getFilteredSelectedRowModel().rows.map(row => row.original)
 
-  // Define bulk actions
   const getBulkActions = (): BulkAction[] => {
     const actions: BulkAction[] = [
       {
@@ -302,7 +294,7 @@ export default function UsersClientPage({
           filterFields={filterFields}
         />
 
-        <TablePagination table={table} />
+        <TablePagination table={table} selectedRows={selectedRows} />
         <div className="rounded-md border">
           <Table>
             <TableHeader className="select-none">
@@ -357,7 +349,7 @@ export default function UsersClientPage({
             </TableBody>
           </Table>
         </div>
-        <TablePagination table={table} />
+        <TablePagination table={table} selectedRows={selectedRows} />
       </div>
 
       <DepositDialog
@@ -388,32 +380,5 @@ export default function UsersClientPage({
         }
       />
     </>
-  )
-}
-
-function TablePagination({ table }: { table: TableType<User> }) {
-  return (
-    <div className="flex gap-x-3">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}
-        className="cursor-pointer"
-      >
-        <ChevronRightIcon className="h-4 w-4" />
-        السابق
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}
-        className="cursor-pointer"
-      >
-        التالي
-        <ChevronLeftIcon className="h-4 w-4" />
-      </Button>
-    </div>
   )
 }

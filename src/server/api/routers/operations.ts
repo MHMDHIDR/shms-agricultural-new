@@ -1,3 +1,4 @@
+import { AccountingOperationStatus } from "@prisma/client"
 import { z } from "zod"
 import { createWithdrawAmountSchema } from "@/schemas/withdraw"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
@@ -87,6 +88,21 @@ export const operationsRouter = createTRPCRouter({
       ])
 
       return withdrawAction
+    }),
+
+  updateOperationStatus: protectedProcedure
+    .input(
+      z.object({
+        ids: z.array(z.string()),
+        status: z.nativeEnum(AccountingOperationStatus),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { ids, status } = input
+      await ctx.db.withdraw_actions.updateMany({
+        where: { id: { in: ids } },
+        data: { accounting_operation_status: status },
+      })
     }),
 
   bulkDelete: protectedProcedure

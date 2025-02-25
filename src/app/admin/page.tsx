@@ -12,7 +12,7 @@ import {
 import Link from "next/link"
 import { InvestmentChart } from "@/components/custom/investment-chart"
 import NoRecords from "@/components/custom/no-records"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardLink, CardTitle } from "@/components/ui/card"
 import { calculateInvestmentMetrics } from "@/lib/calculate-investment-metrics"
 import { api } from "@/trpc/server"
 
@@ -142,7 +142,7 @@ export default async function AdminPage() {
       <h1 className="mb-8 text-center text-2xl font-bold select-none">لوحة التحكم</h1>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <Card>
+        <CardLink href="/admin/users">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">إجمالي المستخدمين</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -151,9 +151,9 @@ export default async function AdminPage() {
             <div className="text-2xl font-bold">{usersCount}</div>
             <p className="text-xs text-muted-foreground">مستخدم مسجل في النظام</p>
           </CardContent>
-        </Card>
+        </CardLink>
 
-        <Card>
+        <CardLink href="/admin/users">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">إجمالي المستثمرين</CardTitle>
             <Wallet className="h-4 w-4 text-muted-foreground" />
@@ -162,9 +162,9 @@ export default async function AdminPage() {
             <div className="text-2xl font-bold">{investorsCount}</div>
             <p className="text-xs text-muted-foreground">مستثمر في المشاريع</p>
           </CardContent>
-        </Card>
+        </CardLink>
 
-        <Card>
+        <CardLink href="/admin/projects">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">المشاريع النشطة</CardTitle>
             <Tractor className="h-4 w-4 text-muted-foreground" />
@@ -173,9 +173,9 @@ export default async function AdminPage() {
             <div className="text-2xl font-bold">{projectsCount}</div>
             <p className="text-xs text-muted-foreground">مشروع استثماري نشط</p>
           </CardContent>
-        </Card>
+        </CardLink>
 
-        <Card>
+        <CardLink href="/admin/operations">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">إجمالي الاستثمارات</CardTitle>
             <DollarSignIcon className="h-4 w-4 text-muted-foreground" />
@@ -186,9 +186,9 @@ export default async function AdminPage() {
             </div>
             <p className="text-xs text-muted-foreground">قيمة الاستثمارات الكلية</p>
           </CardContent>
-        </Card>
+        </CardLink>
 
-        <Card>
+        <CardLink href="/admin/operations">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">العمليات المالية</CardTitle>
             <PercentIcon className="h-4 w-4 text-muted-foreground" />
@@ -197,7 +197,7 @@ export default async function AdminPage() {
             <div className="text-2xl font-bold">{operationsCount}</div>
             <p className="text-xs text-muted-foreground">عملية مالية مسجلة</p>
           </CardContent>
-        </Card>
+        </CardLink>
       </div>
 
       <div className="mb-8">

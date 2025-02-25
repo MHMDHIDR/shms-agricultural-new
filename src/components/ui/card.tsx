@@ -1,3 +1,4 @@
+import Link from "next/link"
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
@@ -11,6 +12,19 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   ),
 )
 Card.displayName = "Card"
+
+const CardLink = React.forwardRef<
+  HTMLAnchorElement,
+  React.HTMLAttributes<HTMLAnchorElement> & { href: string }
+>(({ className, href, ...props }, ref) => (
+  <Link
+    ref={ref}
+    href={href}
+    className={cn("rounded-xl border bg-card text-card-foreground shadow-sm", className)}
+    {...props}
+  />
+))
+CardLink.displayName = "CardLink"
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
@@ -51,4 +65,4 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 )
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, CardLink }

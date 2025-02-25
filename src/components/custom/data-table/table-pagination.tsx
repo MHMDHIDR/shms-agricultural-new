@@ -13,17 +13,13 @@ export function TablePagination<TData>({
   isSelectable = true,
 }: TablePaginationProps<TData>) {
   return (
-    <div className="flex items-center justify-end gap-x-2 py-4">
-      {isSelectable && (
-        <div className="text-muted-foreground text-sm">
-          تم تحديد {selectedRows.length} من {table.getFilteredRowModel().rows.length}
-        </div>
-      )}
+    <div className="flex items-center justify-start gap-x-2 py-4">
       <Button
         variant="outline"
         size="sm"
         onClick={() => table.previousPage()}
         disabled={!table.getCanPreviousPage()}
+        className="cursor-pointer"
       >
         السابق
       </Button>
@@ -32,9 +28,16 @@ export function TablePagination<TData>({
         size="sm"
         onClick={() => table.nextPage()}
         disabled={!table.getCanNextPage()}
+        className="cursor-pointer"
       >
         التالي
       </Button>
+
+      {isSelectable && (
+        <div className="text-muted-foreground text-sm">
+          تم تحديد {selectedRows.length} من {table.getFilteredRowModel().rows.length}
+        </div>
+      )}
     </div>
   )
 }

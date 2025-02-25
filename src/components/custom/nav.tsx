@@ -69,7 +69,7 @@ export function Nav({ user }: { user: Session["user"] | undefined }) {
   return (
     <nav
       className={clsx(
-        "sticky top-0 z-50 w-full shadow-md backdrop-blur-md transition-all duration-200",
+        "sticky top-0 z-50 min-w-full shadow-md backdrop-blur-md transition-all duration-200",
         "dark:bg-background/55 bg-white/55",
         { "h-12": scrolled, "h-16": !scrolled },
       )}

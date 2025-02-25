@@ -3,8 +3,10 @@
 import {
   DollarSignIcon,
   Eye,
+  HandCoins,
   HelpCircle,
   Home,
+  Landmark,
   Link2Icon,
   PercentIcon,
   Plus,
@@ -61,7 +63,7 @@ export function AppSidebar({
         title: "المشاريع",
         url: open || isMobile ? "" : "/admin/projects",
         icon: Tractor,
-        isActive: true,
+        isActive: true, // will make the dropdown open by default
         items: [
           {
             title: "عرض المشاريع",
@@ -76,14 +78,26 @@ export function AppSidebar({
         ],
       },
       {
+        title: "العمليات المالية",
+        url: open || isMobile ? "" : "/admin/operations",
+        icon: DollarSignIcon,
+        items: [
+          {
+            title: "المستثمرين",
+            url: "/admin/investors",
+            icon: HandCoins,
+          },
+          {
+            title: "عرض العمليات",
+            url: "/admin/operations",
+            icon: Landmark,
+          },
+        ],
+      },
+      {
         title: "المستخدمين",
         url: "/admin/users",
         icon: Users,
-      },
-      {
-        title: "العمليات المالية",
-        url: "/admin/operations",
-        icon: DollarSignIcon,
       },
       {
         title: "نسب الأرباح",

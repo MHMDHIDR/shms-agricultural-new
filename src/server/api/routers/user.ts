@@ -67,12 +67,12 @@ export const userRouter = createTRPCRouter({
   }),
 
   getInvestors: publicProcedure.query(async ({ ctx }) => {
-    const [users, count] = await Promise.all([
+    const [investors, count] = await Promise.all([
       ctx.db.user.findMany({ where: { stocks: { some: {} } } }),
       ctx.db.user.count({ where: { stocks: { some: {} } } }),
     ])
 
-    return { users, count }
+    return { investors, count }
   }),
 
   update: protectedProcedure

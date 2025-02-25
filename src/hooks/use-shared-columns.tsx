@@ -10,6 +10,7 @@ import {
   MoreHorizontal,
   Pencil,
   ReceiptText,
+  RotateCcw,
   Trash,
 } from "lucide-react"
 import Link from "next/link"
@@ -65,6 +66,7 @@ type UserStock = {
 
 type TableActions = {
   onDelete?: (id: string) => void
+  onUpdate?: (id: string, status: withdraw_actions["accounting_operation_status"]) => void
   onBlock?: (id: string) => void
   onUnblock?: (id: string) => void
   onActivate?: (id: string) => void
@@ -124,9 +126,10 @@ function ActionCell<T extends BaseEntity>({
       accountStatus?: string
       projectStatus?: string
       projectName?: string
+      accounting_operation_status?: string
     }
   >
-  entityType: string
+  entityType: "withdraw_actions" | "projects" | "users" | "profits_percentage" | "user_stocks"
   actions: TableActions
 }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -141,6 +144,10 @@ function ActionCell<T extends BaseEntity>({
     actions.onDelete?.(entity.id)
     setIsDeleting(false)
     setIsDeleteDialogOpen(false)
+  }
+
+  const handleStatusUpdate = (status: "pending" | "completed" | "rejected") => {
+    actions.onUpdate?.(entity.id, status)
   }
 
   const handleDepositCapital = async () => {
@@ -169,13 +176,43 @@ function ActionCell<T extends BaseEntity>({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center" className="rtl">
           <DropdownMenuLabel className="sr-only">{translateSring("actions")}</DropdownMenuLabel>
-          <DropdownMenuItem asChild>
-            <Link href={`/admin${actions.basePath}/${entity.id}`}>
-              <Pencil className="mr-2 h-4 w-4" />
-              تعديل
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          {entityType === "withdraw_actions" && (
+            <>
+              {(row.original as unknown as WithdrawAction).accounting_operation_status !==
+                "pending" && (
+                <DropdownMenuItem onClick={() => handleStatusUpdate("pending")}>
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  معلق
+                </DropdownMenuItem>
+              )}
+              {(row.original as unknown as WithdrawAction).accounting_operation_status !==
+                "completed" && (
+                <DropdownMenuItem onClick={() => handleStatusUpdate("completed")}>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  مكتمل
+                </DropdownMenuItem>
+              )}
+              {(row.original as unknown as WithdrawAction).accounting_operation_status !==
+                "rejected" && (
+                <DropdownMenuItem onClick={() => handleStatusUpdate("rejected")}>
+                  <Ban className="mr-2 h-4 w-4" />
+                  مرفوض
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+            </>
+          )}
+          {entityType === "users" || entityType === "withdraw_actions" ? null : (
+            <>
+              <DropdownMenuItem asChild>
+                <Link href={`/admin${actions.basePath}/${entity.id}`}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  تعديل
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
           {entityType === "users" && actions.onBlock && actions.onUnblock && (
             <DropdownMenuItem
               onClick={() =>
@@ -804,7 +841,7 @@ export function useSharedColumns<T extends BaseEntity>({
         }
 
         return (
-          <span className="whitespace-nowrap">
+          <span className="whitespace-nowrap table-cell">
             <CopyText text={withdrawAction.user.name} className="ml-2 inline h-4 w-4" />
             {withdrawAction.user.name}
           </span>
