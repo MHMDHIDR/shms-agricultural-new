@@ -22,17 +22,6 @@ import type { Projects } from "@prisma/client"
 
 export function StockPurchaseForm({ project }: { project: Projects }) {
   const router = useRouter()
-
-  const projectInvestmentDisabled =
-    project.projectAvailableStocks === 0 ||
-    project.projectStatus === "pending" ||
-    project.projectInvestDate < new Date()
-
-  if (projectInvestmentDisabled) {
-    router.replace(`/projects`)
-    return null
-  }
-
   const { data: session, status } = useSession()
   const [selectedStocks, setSelectedStocks] = useState(0)
   const [percentageCode, setPercentageCode] = useState("")
@@ -40,6 +29,11 @@ export function StockPurchaseForm({ project }: { project: Projects }) {
   const [newPercentage, setNewPercentage] = useState(0)
   const [showTerms, setShowTerms] = useState(false)
   const [isClient, setIsClient] = useState(false)
+
+  const projectInvestmentDisabled =
+    project.projectAvailableStocks === 0 ||
+    project.projectStatus === "pending" ||
+    project.projectInvestDate < new Date()
 
   useEffect(() => {
     setIsClient(true)
@@ -56,6 +50,22 @@ export function StockPurchaseForm({ project }: { project: Projects }) {
         setNewPercentage(data.percentage)
       },
     })
+
+  // Handle project investment disabled state
+  useEffect(() => {
+    if (projectInvestmentDisabled) {
+      router.replace(`/projects`)
+    }
+  }, [projectInvestmentDisabled, router])
+
+  // Show loading state during initial client-side render
+  if (!isClient || status === "loading" || isLoadingUser) {
+    return <LoadingCard renderedSkeletons={8} className="h-28" />
+  }
+
+  if (projectInvestmentDisabled) {
+    return null
+  }
 
   // Calculate available stocks using userData instead of session
   const purchasedStocksForProject =
@@ -74,11 +84,6 @@ export function StockPurchaseForm({ project }: { project: Projects }) {
   const totalProfit = baseProfit + bonusProfit
   const totalPayment = selectedStocks * project.projectStockPrice
   const totalReturn = totalPayment + totalProfit
-
-  // Show loading state during initial client-side render
-  if (!isClient || status === "loading" || isLoadingUser) {
-    return <LoadingCard renderedSkeletons={8} className="h-28" />
-  }
 
   if (status === "unauthenticated") {
     const currentPath = `/projects/${project.id}?step=purchase`

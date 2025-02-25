@@ -22,20 +22,16 @@ type PurchaseData = {
 
 export function PurchaseConfirmation({ project }: { project: Projects }) {
   const router = useRouter()
+  const { data: session } = useSession()
+  const [purchaseData, setPurchaseData] = useState<PurchaseData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const toast = useToast()
+
   const projectInvestmentDisabled =
     project.projectAvailableStocks === 0 ||
     project.projectStatus === "pending" ||
     project.projectInvestDate < new Date()
 
-  if (projectInvestmentDisabled) {
-    router.replace(`/projects`)
-    return null
-  }
-
-  const { data: session } = useSession()
-  const [purchaseData, setPurchaseData] = useState<PurchaseData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const toast = useToast()
   // Fetch user data
   const { data: userData, isLoading: isLoadingUser } = api.user.getUserById.useQuery(
     { id: session?.user?.id ?? "" },
@@ -65,8 +61,18 @@ export function PurchaseConfirmation({ project }: { project: Projects }) {
     setIsLoading(false)
   }, [project.id, router])
 
+  useEffect(() => {
+    if (projectInvestmentDisabled) {
+      router.replace(`/projects`)
+    }
+  }, [projectInvestmentDisabled, router])
+
   if (isLoading || isLoadingUser || !purchaseData) {
     return <LoadingCard renderedSkeletons={10} />
+  }
+
+  if (projectInvestmentDisabled) {
+    return null
   }
 
   return (
