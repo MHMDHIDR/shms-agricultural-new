@@ -27,10 +27,10 @@ export function PurchaseConfirmation({ project }: { project: Projects }) {
   const [isLoading, setIsLoading] = useState(true)
   const toast = useToast()
 
-  const projectInvestmentDisabled =
-    project.projectAvailableStocks === 0 ||
-    project.projectStatus === "pending" ||
-    project.projectInvestDate < new Date()
+  // const projectInvestmentDisabled =
+  //   project.projectAvailableStocks === 0 ||
+  //   project.projectStatus === "pending" ||
+  //   project.projectInvestDate < new Date()
 
   // Fetch user data
   const { data: userData, isLoading: isLoadingUser } = api.user.getUserById.useQuery(
@@ -61,19 +61,19 @@ export function PurchaseConfirmation({ project }: { project: Projects }) {
     setIsLoading(false)
   }, [project.id, router])
 
-  useEffect(() => {
-    if (projectInvestmentDisabled) {
-      router.replace(`/projects`)
-    }
-  }, [projectInvestmentDisabled, router])
+  // useEffect(() => {
+  //   if (projectInvestmentDisabled) {
+  //     router.replace(`/projects`)
+  //   }
+  // }, [projectInvestmentDisabled, router])
 
   if (isLoading || isLoadingUser || !purchaseData) {
     return <LoadingCard renderedSkeletons={10} />
   }
 
-  if (projectInvestmentDisabled) {
-    return null
-  }
+  // if (projectInvestmentDisabled) {
+  //   return null
+  // }
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">

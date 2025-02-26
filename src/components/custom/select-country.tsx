@@ -58,7 +58,7 @@ const SelectCountry = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="rtl max-h-64 w-full overflow-y-auto p-0 md:max-h-96"
+        className="rtl max-h-60 w-full max-w-56 overflow-y-auto p-0 md:max-h-96"
         avoidCollisions={false}
       >
         <Command>

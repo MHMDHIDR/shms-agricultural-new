@@ -4,11 +4,13 @@ import { Calendar, Pin } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { formatDate } from "@/lib/format-date"
+import { getProjectImages } from "@/lib/get-project-images"
 import { scrollToView } from "@/lib/scroll-to-view"
 import type { Projects } from "@prisma/client"
 
 export function ProjectIntro({ project }: { project: Projects }) {
-  const randomImages = project.projectImages.sort(() => Math.random() - 0.5).slice(0, 3)
+  // Use the utility function to get a stable set of images
+  const selectedImages = getProjectImages(project.projectImages)
 
   return (
     <section className="container mx-auto py-12 md:py-14 px-5">
@@ -18,7 +20,7 @@ export function ProjectIntro({ project }: { project: Projects }) {
             <div className="relative w-full pb-[116.6666666861111%]">
               <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
                 <Image
-                  src={randomImages[0]?.imgDisplayPath ?? "/our-services/preparation.webp"}
+                  src={selectedImages[0]?.imgDisplayPath ?? "/our-services/preparation.webp"}
                   alt={project.projectName}
                   className="block w-full h-full object-cover rounded-md"
                   draggable="false"
@@ -32,7 +34,7 @@ export function ProjectIntro({ project }: { project: Projects }) {
             <div className="relative w-full pb-[126.66666670044445%]">
               <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
                 <Image
-                  src={randomImages[1]?.imgDisplayPath ?? "/our-services/farming.webp"}
+                  src={selectedImages[1]?.imgDisplayPath ?? "/our-services/farming.webp"}
                   alt={project.projectName}
                   className="block w-full h-full object-cover rounded-md"
                   draggable="false"
@@ -46,7 +48,7 @@ export function ProjectIntro({ project }: { project: Projects }) {
             <div className="relative w-full pb-[111.79487177537935%]">
               <div className="overflow-hidden absolute top-0 right-0 bottom-0 left-0">
                 <Image
-                  src={randomImages[2]?.imgDisplayPath ?? "/our-services/harvest.webp"}
+                  src={selectedImages[2]?.imgDisplayPath ?? "/our-services/harvest.webp"}
                   alt={project.projectName}
                   className="block w-full h-full object-cover rounded-md"
                   draggable="false"
@@ -106,10 +108,12 @@ export function ProjectIntro({ project }: { project: Projects }) {
               variant={"pressable"}
               size="sm"
               className="mx-14 my-2.5"
-              onClick={e => {
-                const buttonRect = e.currentTarget.getBoundingClientRect()
-                const scrollPosition = window.innerWidth > 768 ? buttonRect.x : buttonRect.y
-                scrollToView(scrollPosition * 1.5)
+              onClick={() => {
+                if (window.innerWidth > 768) {
+                  scrollToView(window.innerHeight * 1.2)
+                } else {
+                  scrollToView(window.innerHeight * 1.7)
+                }
               }}
             >
               إبدأ الاستثمار

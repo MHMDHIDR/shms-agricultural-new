@@ -30,10 +30,10 @@ export function StockPurchaseForm({ project }: { project: Projects }) {
   const [showTerms, setShowTerms] = useState(false)
   const [isClient, setIsClient] = useState(false)
 
-  const projectInvestmentDisabled =
-    project.projectAvailableStocks === 0 ||
-    project.projectStatus === "pending" ||
-    project.projectInvestDate < new Date()
+  // const projectInvestmentDisabled =
+  //   project.projectAvailableStocks === 0 ||
+  //   project.projectStatus === "pending" ||
+  //   project.projectInvestDate < new Date()
 
   useEffect(() => {
     setIsClient(true)
@@ -52,20 +52,20 @@ export function StockPurchaseForm({ project }: { project: Projects }) {
     })
 
   // Handle project investment disabled state
-  useEffect(() => {
-    if (projectInvestmentDisabled) {
-      router.replace(`/projects`)
-    }
-  }, [projectInvestmentDisabled, router])
+  // useEffect(() => {
+  //   if (projectInvestmentDisabled) {
+  //     router.replace(`/projects`)
+  //   }
+  // }, [projectInvestmentDisabled, router])
 
   // Show loading state during initial client-side render
   if (!isClient || status === "loading" || isLoadingUser) {
     return <LoadingCard renderedSkeletons={8} className="h-28" />
   }
 
-  if (projectInvestmentDisabled) {
-    return null
-  }
+  // if (projectInvestmentDisabled) {
+  //   return null
+  // }
 
   // Calculate available stocks using userData instead of session
   const purchasedStocksForProject =

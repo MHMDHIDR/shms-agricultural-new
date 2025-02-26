@@ -9,12 +9,15 @@ import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { APP_CURRENCY } from "@/lib/constants"
 import { formatDate } from "@/lib/format-date"
+import { getProjectImages } from "@/lib/get-project-images"
 import type { Projects } from "@prisma/client"
 
 export function Info({ project }: { project: Projects & { projectDuration: string } }) {
   const router = useRouter()
   const { data: session } = useSession()
-  const randomImages = project.projectImages.sort(() => Math.random() - 0.5).slice(0, 3)
+
+  // Use the utility function to get a stable set of images
+  const selectedImages = getProjectImages(project.projectImages)
 
   const properties = [
     { name: "projectProfitsCollectDate" as const, title: "تاريخ جمع الأرباح" },
@@ -69,7 +72,7 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
           defaultValue="0"
           className="grid grid-cols-1 lg:grid-cols-3 gap-px overflow-hidden rounded-xl border bg-border"
         >
-          <div className="block md:hidden">
+          {/* <div className="block md:hidden">
             <TabsList className="flex md:flex-col gap-px bg-border select-none lg:col-span-1">
               {properties
                 .filter(
@@ -90,21 +93,25 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
                   </TabsTrigger>
                 ))}
             </TabsList>
-          </div>
+          </div> */}
 
           <div className="lg:col-span-2">
             {properties.map((property, index) => (
               <TabsContent
                 value={index.toString()}
                 key={property.name}
-                className="flex flex-col gap-7 select-none bg-background p-5 data-[state=inactive]:hidden"
+                className="flex relative flex-col gap-2.5 select-none bg-background data-[state=inactive]:hidden"
               >
-                <div className="flex items-center justify-end md:justify-center gap-2">
+                {/* Overlay for the badge but also covering the area of the whole tabs content */}
+                {property.name !== "projectStudyCase" && (
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-t from-black/90 via-black/60 to-transparent" />
+                )}
+                <div className="flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 items-center justify-end md:justify-center gap-2">
                   {property.name === "projectStudyCase" &&
                   project.projectStudyCaseVisibility ? null : (
                     <Badge
                       variant="outline"
-                      className="text-xs md:text-sm md:font-bold rounded-full font-light"
+                      className="text-lg md:text-2xl font-bold rounded-full text-white"
                       dir="auto"
                     >
                       {addCurrencySuffix(getPropertyValue(property.name))}
@@ -122,11 +129,11 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
                         />
                       </div>
                     ))
-                  : randomImages.length > 0 && (
+                  : selectedImages.length > 0 && (
                       <Image
-                        src={randomImages[index % randomImages.length]?.imgDisplayPath ?? ""}
+                        src={selectedImages[index % selectedImages.length]?.imgDisplayPath ?? ""}
                         alt="Project Image"
-                        className="aspect-video max-h-[450px] rounded-xl object-cover"
+                        className="aspect-video max-h-[450px] rounded-l-xl object-cover"
                         height={450}
                         width={800}
                         draggable={false}
@@ -136,7 +143,7 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
             ))}
           </div>
 
-          <TabsList className="hidden md:flex md:flex-col gap-px bg-border select-none lg:col-span-1">
+          <TabsList className="flex flex-col gap-px bg-border select-none lg:col-span-1">
             {properties
               .filter(
                 prop =>
@@ -175,18 +182,18 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
         </div>
 
         <div className="flex flex-col justify-center items-center bg-background p-10 gap-6 select-none rounded-xl">
-          <p className="text-xl font-extrabold text-muted-foreground mb-4">
+          <p className="md:text-xl text-lg font-extrabold leading-loose text-muted-foreground mb-4">
             إبدأ ببناء المستقبل، استثمر في هذا المشروع الآن
           </p>
           <Button
             variant="pressable"
             className="w-fit"
             onClick={handleStartInvestment}
-            disabled={
-              project.projectAvailableStocks === 0 ||
-              project.projectStatus === "pending" ||
-              project.projectInvestDate < new Date()
-            }
+            // disabled={
+            //   project.projectAvailableStocks === 0 ||
+            //   project.projectStatus === "pending" ||
+            //   project.projectInvestDate < new Date()
+            // }
           >
             إبدأ الاستثمار
           </Button>

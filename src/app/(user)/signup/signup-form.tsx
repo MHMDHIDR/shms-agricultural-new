@@ -389,7 +389,10 @@ export function SignUpForm({ sn }: { sn: number }) {
               <FormControl>
                 <FileUpload
                   onFilesSelected={files => handleFileSelection(files, "doc")}
-                  accept={{ "application/pdf": [".pdf"] }}
+                  accept={{
+                    "application/pdf": [".pdf"],
+                    "image/*": [".jpeg", ".jpg", ".png", ".webp"],
+                  }}
                   disabled={isUploading}
                 />
               </FormControl>
