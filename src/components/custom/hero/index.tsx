@@ -17,10 +17,29 @@ import { LoadingCard } from "../loading"
 import Video from "../video"
 import type { RouterOutputs } from "@/trpc/react"
 
+type User = RouterOutputs["user"]["getAll"]
 const CACHE_KEY = "usersData"
 const CACHE_DURATION = 60 * 60 * 1000
 
-type User = RouterOutputs["user"]["getAll"]
+const getInitialData = () => {
+  if (typeof window === "undefined") return undefined
+
+  try {
+    const cached = localStorage.getItem(CACHE_KEY)
+    if (cached) {
+      const parsedCache = JSON.parse(cached) as { data: User; timestamp: number }
+      const isStale = Date.now() - parsedCache.timestamp > CACHE_DURATION
+      if (!isStale) {
+        return parsedCache.data
+      }
+    }
+  } catch {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(CACHE_KEY)
+    }
+  }
+  return undefined
+}
 
 export default function Hero({ children }: { children: React.ReactNode }) {
   // Configure query with stale time
@@ -29,22 +48,7 @@ export default function Hero({ children }: { children: React.ReactNode }) {
     {
       staleTime: CACHE_DURATION, // Data considered fresh for 60 minutes
       gcTime: CACHE_DURATION,
-      initialData: () => {
-        try {
-          // Check localStorage for cached data
-          const cached = localStorage.getItem(CACHE_KEY)
-          if (cached) {
-            const parsedCache = JSON.parse(cached) as { data: User; timestamp: number }
-            const isStale = Date.now() - parsedCache.timestamp > CACHE_DURATION
-            if (!isStale) {
-              return parsedCache.data
-            }
-          }
-        } catch {
-          localStorage.removeItem(CACHE_KEY)
-        }
-        return undefined
-      },
+      initialData: getInitialData,
     },
   )
 

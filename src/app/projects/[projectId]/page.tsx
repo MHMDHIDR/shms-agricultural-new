@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation"
 import { ProjectStepper } from "@/components/custom/projects/stepper"
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants"
 import { auth } from "@/server/auth"
+import { db } from "@/server/db"
 import { api } from "@/trpc/server"
 import type { Metadata } from "next"
 
@@ -21,7 +22,9 @@ export async function generateMetadata({
 
 export async function generateStaticParams(): Promise<{ projectId: string }[]> {
   try {
-    const { projects } = await api.projects.getAll()
+    const projects = await db.projects.findMany({
+      select: { id: true },
+    })
 
     return projects.map(project => ({
       projectId: project.id,
