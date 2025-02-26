@@ -19,6 +19,19 @@ export async function generateMetadata({
   }
 }
 
+export async function generateStaticParams(): Promise<{ projectId: string }[]> {
+  try {
+    const { projects } = await api.projects.getAll()
+
+    return projects.map(project => ({
+      projectId: project.id,
+    }))
+  } catch (error) {
+    console.error("Error generating static params:", error)
+    return [] // Return empty array as fallback
+  }
+}
+
 export default async function ProjectPage({
   params,
   searchParams,

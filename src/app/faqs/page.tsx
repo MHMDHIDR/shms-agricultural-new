@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { ContactWhatsAppWidget } from "@/components/custom/contact-whatsapp-widget"
 import FAQ from "@/components/custom/faqs"
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants"
 import type { Metadata } from "next"
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 export default async function page() {
   return (
     <>
+      <ContactWhatsAppWidget />
       <FAQ pathname="/faqs" />
 
       <div className="flex flex-col items-center justify-center gap-y-14 select-none md:gap-y-20">

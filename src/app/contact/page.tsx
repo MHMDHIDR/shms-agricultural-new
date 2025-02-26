@@ -1,6 +1,7 @@
 import { Mail, Phone } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
+import { ContactWhatsAppWidget } from "@/components/custom/contact-whatsapp-widget"
 import Divider from "@/components/custom/divider"
 import { LoadingCard } from "@/components/custom/loading"
 import { ADMIN_EMAIL, ADMIN_PHONE, APP_DESCRIPTION, APP_TITLE } from "@/lib/constants"
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 export default function Contact() {
   return (
     <section className="flex select-none flex-col h-screen min-h-screen items-center justify-center p-2.5 pt-16 mb-20">
+      <ContactWhatsAppWidget />
       <div className="mt-14 flex w-full flex-col items-center text-center gap-y-10">
         <div>
           <span className="text-sm font-semibold">تواصل معنا</span>

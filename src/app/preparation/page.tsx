@@ -1,5 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
+import { ContactWhatsAppWidget } from "@/components/custom/contact-whatsapp-widget"
 import { Button } from "@/components/ui/button"
 import { env } from "@/env"
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants"
@@ -20,6 +21,7 @@ export default async function Preparation() {
 
   return (
     <main className="flex min-h-full flex-col items-center -mb-22">
+      <ContactWhatsAppWidget />
       <h1 className="mt-10 text-2xl select-none">التحضير للموسم الزراعي</h1>
 
       <div className="flex w-full flex-col items-center">
