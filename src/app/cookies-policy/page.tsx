@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
 }
 
+export const dynamic = "force-static"
+
 export default function CookiesPolicyPage() {
   return (
     <main className="rtl flex min-h-screen flex-col justify-start p-24">

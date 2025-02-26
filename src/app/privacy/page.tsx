@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
 }
 
+export const dynamic = "force-static"
+
 export default function PrivacyPage() {
   return (
     <main className="rtl flex min-h-screen flex-col gap-y-10 p-2.5 md:p-16">

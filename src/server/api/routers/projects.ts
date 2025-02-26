@@ -40,6 +40,7 @@ export const projectRouter = createTRPCRouter({
         data: {
           projectSpecialPercentage: input.percentage,
           projectSpecialPercentageCode: input.percentageCode,
+          updatedAt: new Date(),
         },
       })
 
@@ -54,6 +55,7 @@ export const projectRouter = createTRPCRouter({
         data: {
           projectSpecialPercentage: null,
           projectSpecialPercentageCode: null,
+          updatedAt: new Date(),
         },
       })
 
@@ -127,6 +129,7 @@ export const projectRouter = createTRPCRouter({
               projectAvailableStocks: {
                 decrement: stocks,
               },
+              updatedAt: new Date(),
             },
           })
 
@@ -297,6 +300,7 @@ export const projectRouter = createTRPCRouter({
             where: { id },
             data: {
               projectAvailableStocks: newAvailableStocks,
+              updatedAt: new Date(),
             },
           })
         }
@@ -318,6 +322,7 @@ export const projectRouter = createTRPCRouter({
                 },
               ]
             : undefined,
+          updatedAt: new Date(),
         },
       })
 
@@ -353,6 +358,7 @@ export const projectRouter = createTRPCRouter({
                 where: { imgDisplayPath: input.fileUrl },
               },
             },
+            updatedAt: new Date(),
           },
         })
       } else {
@@ -364,6 +370,7 @@ export const projectRouter = createTRPCRouter({
                 where: { imgDisplayPath: input.fileUrl },
               },
             },
+            updatedAt: new Date(),
           },
         })
       }

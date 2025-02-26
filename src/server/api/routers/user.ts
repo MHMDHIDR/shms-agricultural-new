@@ -152,7 +152,7 @@ export const userRouter = createTRPCRouter({
         for (const stock of user.stocks) {
           await ctx.db.projects.update({
             where: { id: stock.id },
-            data: { projectAvailableStocks: { increment: stock.stocks } },
+            data: { projectAvailableStocks: { increment: stock.stocks }, updatedAt: new Date() },
           })
         }
       }
@@ -369,7 +369,10 @@ export const userRouter = createTRPCRouter({
               for (const stock of user.stocks) {
                 await ctx.db.projects.update({
                   where: { id: stock.id },
-                  data: { projectAvailableStocks: { increment: stock.stocks } },
+                  data: {
+                    projectAvailableStocks: { increment: stock.stocks },
+                    updatedAt: new Date(),
+                  },
                 })
               }
             }

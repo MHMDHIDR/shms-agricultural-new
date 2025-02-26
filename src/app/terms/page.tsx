@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
 }
 
+export const dynamic = "force-static"
+
 export default function TermsPage() {
   return (
     <main className="rtl flex min-h-screen flex-col justify-between p-2.5 md:p-16">
