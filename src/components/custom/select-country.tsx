@@ -15,7 +15,7 @@ import { countryNames } from "@/lib/list-of-countries"
 import { cn } from "@/lib/utils"
 
 type SelectCountryProps = {
-  nationality?: string
+  nationality: string
   setNationality: (value: string) => void
   placeholder?: string
   className?: string
@@ -51,9 +51,8 @@ const SelectCountry = ({
             className,
           )}
         >
-          {nationality
-            ? countryNames.find(countryName => countryName.label === nationality)?.label
-            : placeholder}
+          {countryNames.find(countryName => countryName.label.includes(nationality))?.label ??
+            placeholder}
           <ListCollapse className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

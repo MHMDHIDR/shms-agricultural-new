@@ -76,7 +76,7 @@ export function PurchaseConfirmation({ project }: { project: Projects }) {
   // }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
+    <div className="max-w-2xl mx-auto space-y-8 select-none">
       <h2 className="text-2xl font-bold text-center">تأكيد الشراء</h2>
 
       <div className="space-y-6 bg-muted p-6 rounded-lg">
