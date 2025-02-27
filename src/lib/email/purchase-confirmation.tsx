@@ -42,7 +42,7 @@ export const PurchaseConfirmationEmail = ({
     <Preview>{APP_TITLE} | تأكيد شراء الأسهم</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src={`${baseUrl}/logo-slogan.svg`} width="40" height="33" alt={APP_TITLE} />
+        <Img src={`${baseUrl}/logo-slogan.png`} width="40" height="33" alt={APP_TITLE} />
         <Section dir="rtl">
           <Text style={text}>مرحبا {user.name}،</Text>
           <Text style={text}>
