@@ -1,5 +1,6 @@
 "use client"
 
+import clsx from "clsx"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -163,9 +164,15 @@ export function PurchaseConfirmation({ project }: { project: Projects }) {
           onClick={() => router.push(`/projects/${project.id}?step=purchase`)}
           disabled={isPending}
         >
-          تعديل
+          تعديل البيانات
         </Button>
-        <Button onClick={() => confirmPurchase(purchaseData)} disabled={isPending}>
+        <Button
+          onClick={() => confirmPurchase(purchaseData)}
+          disabled={isPending}
+          className={clsx("cursor-pointer", {
+            "cursor-progress": isPending,
+          })}
+        >
           {isPending ? "جاري التأكيد..." : "تأكيد الشراء"}
         </Button>
       </div>

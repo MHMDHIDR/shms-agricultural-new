@@ -63,8 +63,7 @@ export const PurchaseConfirmationEmail = ({
           <Text style={text}>
             • العائد الإجمالي: {purchaseDetails.totalReturn} {APP_CURRENCY}
           </Text>
-          <Text style={text}>شروط المشروع:</Text>
-          <Text style={terms} dangerouslySetInnerHTML={{ __html: project.projectTerms }} />
+
           <Button style={button} href={`${baseUrl}/dashboard`}>
             عرض استثماراتي
           </Button>

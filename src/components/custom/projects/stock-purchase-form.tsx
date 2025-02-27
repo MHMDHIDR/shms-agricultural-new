@@ -237,7 +237,11 @@ export function StockPurchaseForm({ project }: { project: Projects }) {
         onAccept={() => setAcceptedTerms(true)}
       />
 
-      <Button type="submit" className="w-full" disabled={!acceptedTerms || selectedStocks === 0}>
+      <Button
+        type="submit"
+        className="w-full cursor-pointer"
+        disabled={!acceptedTerms || selectedStocks === 0}
+      >
         متابعة
       </Button>
     </form>
