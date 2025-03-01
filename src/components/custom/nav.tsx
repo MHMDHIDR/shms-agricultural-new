@@ -33,6 +33,7 @@ import type { Session } from "next-auth"
 export function Nav({ user }: { user: Session["user"] | undefined }) {
   const { data: session } = useSession()
   const currentUser = session?.user ?? user
+  const [isSigningOut, setIsSigningOut] = useState(false)
 
   const [scrolled, setScrolled] = useState(false)
   const SCROLL_THRESHOLD = 130
@@ -65,6 +66,11 @@ export function Nav({ user }: { user: Session["user"] | undefined }) {
       href: "/harvest",
     },
   ]
+
+  const handleSignoutClick = async () => {
+    setIsSigningOut(true)
+    await handleSignout()
+  }
 
   return (
     <nav
@@ -130,9 +136,10 @@ export function Nav({ user }: { user: Session["user"] | undefined }) {
                 <Button
                   variant="destructive"
                   className="w-full cursor-pointer"
-                  onClick={handleSignout}
+                  onClick={handleSignoutClick}
+                  disabled={isSigningOut}
                 >
-                  تسجيل الخروج
+                  {isSigningOut ? "جاري تسجيل الخروج..." : "تسجيل الخروج"}
                 </Button>
               </DropdownMenuItem>
             </DropdownMenuContent>
