@@ -12,7 +12,14 @@ import {
 import Link from "next/link"
 import { InvestmentChart } from "@/components/custom/investment-chart"
 import NoRecords from "@/components/custom/no-records"
-import { Card, CardContent, CardHeader, CardLink, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardLink,
+  CardTitle,
+} from "@/components/ui/card"
 import { calculateInvestmentMetrics } from "@/lib/calculate-investment-metrics"
 import { api } from "@/trpc/server"
 
@@ -77,6 +84,7 @@ export default async function AdminPage() {
       href: "/admin/projects",
       color: "text-blue-500",
       bgColor: "bg-blue-100",
+      bgColorHover: "hover:bg-blue-100/50",
       description: "إدارة المشاريع الاستثمارية",
     },
     {
@@ -85,6 +93,7 @@ export default async function AdminPage() {
       href: "/admin/users",
       color: "text-green-500",
       bgColor: "bg-green-100",
+      bgColorHover: "hover:bg-green-100/50",
       description: "إدارة حسابات المستخدمين",
     },
     {
@@ -93,6 +102,7 @@ export default async function AdminPage() {
       href: "/admin/operations",
       color: "text-purple-500",
       bgColor: "bg-purple-100",
+      bgColorHover: "hover:bg-purple-100/50",
       description: "متابعة العمليات المالية",
     },
     {
@@ -101,6 +111,7 @@ export default async function AdminPage() {
       href: "/admin/profits-percentage",
       color: "text-yellow-500",
       bgColor: "bg-yellow-100",
+      bgColorHover: "hover:bg-yellow-100/50",
       description: "إدارة نسب الأرباح",
     },
     {
@@ -109,6 +120,7 @@ export default async function AdminPage() {
       href: "/admin/projects/new",
       color: "text-indigo-500",
       bgColor: "bg-indigo-100",
+      bgColorHover: "hover:bg-indigo-100/50",
       description: "إضافة مشروع جديد",
     },
     {
@@ -117,6 +129,7 @@ export default async function AdminPage() {
       href: "/admin/projects",
       color: "text-pink-500",
       bgColor: "bg-pink-100",
+      bgColorHover: "hover:bg-pink-100/50",
       description: "عرض كافة المشاريع",
     },
     {
@@ -125,6 +138,7 @@ export default async function AdminPage() {
       href: "/admin/social-links",
       color: "text-cyan-500",
       bgColor: "bg-cyan-100",
+      bgColorHover: "hover:bg-cyan-100/50",
       description: "إدارة روابط التواصل الاجتماعي",
     },
     {
@@ -133,6 +147,7 @@ export default async function AdminPage() {
       href: "/admin/faq",
       color: "text-orange-500",
       bgColor: "bg-orange-100",
+      bgColorHover: "hover:bg-orange-100/50",
       description: "إدارة الأسئلة الشائعة",
     },
   ]
@@ -252,19 +267,21 @@ export default async function AdminPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5">
         {quickLinks.map((link, index) => (
-          <Link key={index} href={link.href}>
-            <Card className="hover:bg-accent transition-colors cursor-pointer">
-              <CardHeader className="flex flex-row items-center gap-4">
-                <div className={`p-2 rounded-lg ${link.bgColor}`}>
-                  <link.icon className={`h-6 w-6 ${link.color}`} />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">{link.title}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{link.description}</p>
-                </div>
+          <Link key={index} href={link.href} className="inline-block">
+            <Card
+              className={`${link.bgColorHover} transition-colors cursor-pointer ${link.bgColor}`}
+            >
+              <CardHeader className={`flex flex-row gap-x-2 pb-2 pt-4`}>
+                <link.icon className={`h-6 w-6 ${link.color}`} />
+                <CardTitle className="text-lg whitespace-nowrap">{link.title}</CardTitle>
               </CardHeader>
+              <CardContent className="pb-4">
+                <CardDescription className="text-sm text-muted-foreground whitespace-nowrap">
+                  {link.description}
+                </CardDescription>
+              </CardContent>
             </Card>
           </Link>
         ))}

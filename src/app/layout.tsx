@@ -34,7 +34,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="ar" className={`${notoKufiArabic.variable}`} suppressHydrationWarning dir="rtl">
       <body
-        className="font-noto-kufi flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50"
+        className="font-noto-kufi flex min-h-screen flex-col bg-background text-slate-900 dark:text-slate-50"
         suppressHydrationWarning
       >
         <SessionProvider>

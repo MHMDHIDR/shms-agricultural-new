@@ -149,7 +149,7 @@ export function Nav({ user }: { user: Session["user"] | undefined }) {
           <NavigationMenu className="z-50">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="dark:bg-accent-foreground dark:text-accent">
+                <NavigationMenuTrigger className="dark:bg-accent dark:text-accent-foreground">
                   <MenuIcon />
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="bg-background">

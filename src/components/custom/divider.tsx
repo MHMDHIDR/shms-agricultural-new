@@ -8,7 +8,7 @@ export const Divider = ({ children, className }: { children?: string; className?
     )}
   >
     {children ? (
-      <span className="z-10 bg-white px-2 dark:bg-gray-800 dark:text-neutral-200">{children}</span>
+      <span className="z-10 bg-background px-2 dark:text-neutral-200">{children}</span>
     ) : null}
   </div>
 )

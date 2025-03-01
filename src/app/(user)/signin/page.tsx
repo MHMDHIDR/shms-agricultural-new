@@ -38,7 +38,7 @@ export default async function SignInPage({
     <div className="container mx-auto max-w-md px-2.5 py-20">
       <h1 className="mb-14 text-center text-2xl font-bold select-none">تسجيل الدخول</h1>
       <SignInForm />
-      <Divider className="my-10" />
+      <Divider className="my-10">أو</Divider>
 
       <div className="divide-primary flex items-center justify-center gap-x-4 divide-x divide-dotted select-none">
         <div className="flex items-center gap-x-4 pl-3">
