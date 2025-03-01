@@ -168,7 +168,7 @@ export const authConfig = {
     },
     async signOut(message) {
       if ("token" in message && message.token?.id) {
-        void db.session.deleteMany({
+        await db.session.deleteMany({
           where: {
             userId: message.token.id,
           },
