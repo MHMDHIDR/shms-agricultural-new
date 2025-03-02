@@ -48,7 +48,7 @@ export async function Services() {
           width={400}
           height={200}
           quality={20}
-          priority
+          loading="lazy"
           placeholder="blur"
           blurDataURL={service.blurDataURL ?? undefined}
         />

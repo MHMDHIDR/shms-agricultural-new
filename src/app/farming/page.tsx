@@ -2,7 +2,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { ContactWhatsAppWidget } from "@/components/custom/contact-whatsapp-widget"
 import { Button } from "@/components/ui/button"
-import { env } from "@/env"
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants"
 import { getBlurPlaceholder } from "@/lib/optimize-image"
 import { services } from "@/schemas/contact"
@@ -13,9 +12,15 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
 }
 
+// Force static generation
+export const dynamic = "force-static"
+export const revalidate = false
+export const fetchCache = "force-cache"
+export const runtime = "nodejs"
+
 export default async function Farming() {
-  const MAIN_IMAGE = `${env.NEXT_PUBLIC_APP_URL}/our-services/farming.webp`
-  const blurImage = await getBlurPlaceholder({ imageSrc: MAIN_IMAGE })
+  const imagePath = "/our-services/farming.webp"
+  const blurImage = await getBlurPlaceholder({ imageSrc: imagePath })
 
   const serviceIndex = 1
 
@@ -27,13 +32,13 @@ export default async function Farming() {
       <div className="flex w-full flex-col items-center">
         <div className="relative mt-12 w-full min-w-screen">
           <Image
-            src="/our-services/farming.webp"
+            src={imagePath}
             width={1200}
             height={800}
             alt="الزراعة"
             className="h-[600px] w-full object-cover"
             placeholder="blur"
-            blurDataURL={blurImage ?? MAIN_IMAGE}
+            blurDataURL={blurImage ?? undefined}
             priority
           />
 

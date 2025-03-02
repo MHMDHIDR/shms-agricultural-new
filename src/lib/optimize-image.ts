@@ -1,7 +1,10 @@
 "use server"
 
+import { promises as fs } from "fs"
+import path from "path"
 import sharp from "sharp"
 import { env } from "@/env"
+import type { SharpOptions } from "sharp"
 
 /**
  * Get the blur placeholder of an image, used for lazy loading
@@ -17,17 +20,44 @@ export async function getBlurPlaceholder({
   width?: number
   height?: number
 }): Promise<string | null> {
-  const imageUrl = await getFullUrl(imageSrc)
-  const response = await fetch(imageUrl)
-  if (response.status !== 200) return null
+  try {
+    // Handle local images from public directory during build
+    if (imageSrc.startsWith("/")) {
+      const publicDir: string = path.join(process.cwd(), "public")
+      const imagePath: string = path.join(publicDir, imageSrc)
 
-  const buffer = await response.arrayBuffer()
-  const { data, info } = await sharp(buffer)
-    .resize(width, height, { fit: "inside" })
-    .toBuffer({ resolveWithObject: true })
+      try {
+        await fs.access(imagePath)
+      } catch {
+        console.warn(`Local image not found: ${imagePath}`)
+        return null
+      }
 
-  const base64 = `data:image/${info.format};base64,${data.toString("base64")}`
-  return base64
+      const imageBuffer = await fs.readFile(imagePath)
+      const sharpOptions: SharpOptions = { failOn: "none" }
+      const { data, info } = await sharp(imageBuffer, sharpOptions)
+        .resize(width, height, { fit: "inside" })
+        .toBuffer({ resolveWithObject: true })
+
+      return `data:image/${info.format};base64,${data.toString("base64")}`
+    }
+
+    // Handle remote images
+    const imageUrl = await getFullUrl(imageSrc)
+    const response = await fetch(imageUrl)
+    if (response.status !== 200) return null
+
+    const buffer = await response.arrayBuffer()
+    const sharpOptions: SharpOptions = { failOn: "none" }
+    const { data, info } = await sharp(Buffer.from(buffer), sharpOptions)
+      .resize(width, height, { fit: "inside" })
+      .toBuffer({ resolveWithObject: true })
+
+    return `data:image/${info.format};base64,${data.toString("base64")}`
+  } catch (error) {
+    console.warn("Error generating blur placeholder:", error)
+    return null
+  }
 }
 
 export async function optimizeImage({ base64, quality }: { base64: string; quality: number }) {
