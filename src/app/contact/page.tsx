@@ -15,47 +15,55 @@ export const metadata: Metadata = {
 
 export default function Contact() {
   return (
-    <section className="flex select-none flex-col h-screen min-h-screen items-center justify-center p-2.5 pt-16 mb-20">
+    <section className="min-h-screen w-full py-16 px-4 md:px-6">
       <ContactWhatsAppWidget />
-      <div className="mt-14 flex w-full flex-col items-center text-center gap-y-10">
-        <div>
+      <div className="container mx-auto max-w-6xl space-y-8 md:space-y-12">
+        <div className="text-center space-y-4">
           <span className="text-sm font-semibold">تواصل معنا</span>
-          <h1 className="mb-3 mt-1 text-balance text-3xl font-semibold md:text-4xl">
-            تواصل مع فريقنا المتحمس
-          </h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold">تواصل مع فريقنا المتحمس</h1>
+          <p className="text-base md:text-lg text-muted-foreground">
             نحن نحب أن نساعدك. قم بملء النموذج أو أرسل لنا بريدًا إلكترونيًا.
           </p>
         </div>
-        <div className="flex justify-evenly items-center w-full">
-          <div>
-            <span className="mb-3 mx-auto flex size-12 flex-col items-center justify-center rounded-full bg-accent">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 place-items-center">
+          <div className="text-center space-y-4">
+            <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-accent">
               <Mail className="h-6 w-auto" />
             </span>
-            <p className="mb-2 text-lg font-semibold">البريد الإلكتروني</p>
-            <p className="mb-3 text-muted-foreground">فريقنا على أتم الاستعداد لمساعدتك.</p>
-            <Link href={`mailto:${ADMIN_EMAIL}`} className="font-semibold hover:underline">
-              {ADMIN_EMAIL}
-            </Link>
+            <div className="space-y-2">
+              <p className="text-lg font-semibold">البريد الإلكتروني</p>
+              <p className="text-sm md:text-base text-muted-foreground">
+                فريقنا على أتم الاستعداد لمساعدتك.
+              </p>
+              <Link href={`mailto:${ADMIN_EMAIL}`} className="font-semibold hover:underline">
+                {ADMIN_EMAIL}
+              </Link>
+            </div>
           </div>
-          <div>
-            <span className="mb-3 mx-auto flex size-12 flex-col items-center justify-center rounded-full bg-accent">
+
+          <div className="text-center space-y-4">
+            <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-accent">
               <Phone className="h-6 w-auto" />
             </span>
-            <p className="mb-2 text-lg font-semibold">اتصل بنا</p>
-            <p className="mb-3 text-muted-foreground">نحن متاحون يوميًا في كل الأوقات.</p>
-            <Link href={`tel:${ADMIN_PHONE}`} className="font-semibold hover:underline" dir="ltr">
-              {ADMIN_PHONE}
-            </Link>
+            <div className="space-y-2">
+              <p className="text-lg font-semibold">اتصل بنا</p>
+              <p className="text-sm md:text-base text-muted-foreground">
+                نحن متاحون يوميًا في كل الأوقات.
+              </p>
+              <Link href={`tel:${ADMIN_PHONE}`} className="font-semibold hover:underline" dir="ltr">
+                {ADMIN_PHONE}
+              </Link>
+            </div>
           </div>
         </div>
+
+        <Divider className="my-8 md:my-12" />
+
+        <Suspense fallback={<LoadingCard renderedSkeletons={3} />}>
+          <ContactForm />
+        </Suspense>
       </div>
-
-      <Divider className="my-10" />
-
-      <Suspense fallback={<LoadingCard renderedSkeletons={3} />}>
-        <ContactForm />
-      </Suspense>
     </section>
   )
 }

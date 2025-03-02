@@ -253,17 +253,21 @@ export function InvestmentChart({ data, profitCollectDate }: InvestmentChartProp
           </SelectContent>
         </Select>
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer ref={containerRef} config={chartConfig} className="aspect-auto h-60 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={filteredData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+      <CardContent className="px-3 pt-4 sm:px-6 sm:pt-6">
+        <ChartContainer
+          ref={containerRef}
+          config={chartConfig}
+          className="aspect-auto h-60 w-full overflow-x-auto"
+        >
+          <ResponsiveContainer width={Math.max(filteredData.length * 120, 100)} height="100%">
+            <LineChart data={filteredData} margin={{ top: 20, right: 25, left: 10, bottom: 5 }}>
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis
                 dataKey="date"
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                minTickGap={80}
+                minTickGap={30}
                 interval={0}
                 tickFormatter={(value: string) => {
                   const date = new Date(value)
@@ -276,7 +280,7 @@ export function InvestmentChart({ data, profitCollectDate }: InvestmentChartProp
               <YAxis
                 tickLine={false}
                 axisLine={false}
-                tickMargin={8}
+                tickMargin={50}
                 tickCount={5}
                 tickFormatter={(value: number) =>
                   `${value.toLocaleString("ar-QA")} ${APP_CURRENCY}`
@@ -352,7 +356,7 @@ export function InvestmentChart({ data, profitCollectDate }: InvestmentChartProp
         <div className="leading-none text-muted-foreground">
           {firstDate && lastDate ? (
             <>
-              عرض تطور الاستثمار من {new Date(firstDate).toLocaleDateString("ar-QA")} إلى{" "}
+              عرض تطور مستمر للاستثمار من {new Date(firstDate).toLocaleDateString("ar-QA")} إلى{" "}
               {new Date(lastDate).toLocaleDateString("ar-QA")}
             </>
           ) : (

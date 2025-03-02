@@ -45,7 +45,7 @@ export default async function SignInPage({
           <h2 className="text-sm">ليس لديك حساب؟</h2>
           <Link
             href="/signup"
-            className="bg-primary hover:bg-primary/90 rounded-md px-4 py-2 text-white"
+            className="bg-primary text-xs sm:text-base hover:bg-primary/90 rounded-md px-4 py-2 text-white whitespace-nowrap"
           >
             سجل الآن
           </Link>
@@ -53,7 +53,7 @@ export default async function SignInPage({
 
         <Link
           href="/forgot-password"
-          className="text-primary hover:text-primary/70 text-sm hover:underline hover:underline-offset-4"
+          className="text-primary text-xs sm:text-base hover:text-primary/70 hover:underline hover:underline-offset-4 whitespace-nowrap"
         >
           نسيت كلمة المرور؟
         </Link>

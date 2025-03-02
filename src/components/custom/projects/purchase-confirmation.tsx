@@ -78,11 +78,11 @@ export function PurchaseConfirmation({ project }: { project: Projects }) {
 
   return (
     <div className="max-w-2xl mx-auto space-y-8 select-none">
-      <h2 className="text-2xl font-bold text-center">تأكيد الشراء</h2>
+      <h2 className="text-base md:text-xl font-bold text-center">تأكيد معلومات الشراء</h2>
 
-      <div className="space-y-6 bg-muted p-6 rounded-lg">
+      <div className="space-y-5 bg-muted p-3.5 rounded-lg">
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">معلومات المشروع</h3>
+          <h3 className="text-sm md:text-lg font-semibold">معلومات المشروع</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <span className="text-muted-foreground">اسم المشروع:</span>
@@ -96,7 +96,7 @@ export function PurchaseConfirmation({ project }: { project: Projects }) {
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">تفاصيل الشراء</h3>
+          <h3 className="text-sm md:text-lg font-semibold">تفاصيل الشراء</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <span className="text-muted-foreground">عدد الأسهم:</span>
@@ -135,8 +135,8 @@ export function PurchaseConfirmation({ project }: { project: Projects }) {
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">معلومات المستثمر</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <h3 className="text-sm md:text-lg font-semibold">معلومات المستثمر</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <span className="text-muted-foreground">الاسم:</span>
               <p className="font-medium">{userData?.name}</p>

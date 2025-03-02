@@ -1,5 +1,6 @@
 "use client"
 
+import clsx from "clsx"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -14,6 +15,7 @@ import {
   StepperTitle,
   StepperTrigger,
 } from "@/components/ui/stepper"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { Info } from "./info"
 import { ProjectIntro } from "./intro"
 import { PurchaseConfirmation } from "./purchase-confirmation"
@@ -81,8 +83,10 @@ export function ProjectStepper({
     return true
   }
 
+  const isMobile = useIsMobile()
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 w-full">
       <Stepper
         value={stepIndex}
         onValueChange={index => {
@@ -91,7 +95,11 @@ export function ProjectStepper({
             router.push(`/projects/${projectId}?step=${step.id}`)
           }
         }}
-        className="justify-center"
+        className={clsx(
+          "gap-x-2 w-full items-center mx-auto",
+          isMobile ? "flex-col" : "justify-center",
+        )}
+        orientation={isMobile ? "vertical" : "horizontal"}
       >
         {steps.map(({ id, title, description }) => (
           <StepperItem
@@ -102,12 +110,14 @@ export function ProjectStepper({
           >
             <StepperTrigger>
               <StepperIndicator />
-              <div className="text-right">
-                <StepperTitle>{title}</StepperTitle>
+              <div>
+                <StepperTitle className="font-bold">{title}</StepperTitle>
                 <StepperDescription>{description}</StepperDescription>
               </div>
             </StepperTrigger>
-            {id !== steps[steps.length - 1]?.id && <StepperSeparator className="md:mx-4" />}
+            {id !== steps[steps.length - 1]?.id && (
+              <StepperSeparator className={isMobile ? "h-4" : "md:mx-4"} />
+            )}
           </StepperItem>
         ))}
       </Stepper>
@@ -120,7 +130,7 @@ export function ProjectStepper({
         </Link>
       )}
 
-      <div className="mt-8">
+      <div className="mt-8 px-3.5">
         {currentStep === "info" && (
           <>
             <ProjectIntro project={project} />

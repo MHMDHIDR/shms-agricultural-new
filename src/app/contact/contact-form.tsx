@@ -57,20 +57,18 @@ export function ContactForm() {
   }
 
   return (
-    <form className="w-full md:max-w-4xl" dir="rtl" onSubmit={handleSubmit(onSubmit)}>
-      <div className="mb-6 md:flex md:items-center">
-        <div className="md:w-1/3">
-          <Label
-            style={{ textAlign: "right" }}
-            className="mb-1 block pl-4 font-bold text-gray-500 md:mb-0 md:text-right"
-            htmlFor="contact"
-          >
-            البريد الالكتروني أو رقم الهاتف
-          </Label>
-        </div>
-        <div className="md:w-2/3">
+    <form
+      className="w-full max-w-3xl mx-auto space-y-6"
+      dir="rtl"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+        <Label className="text-sm md:text-base font-medium text-right" htmlFor="contact">
+          البريد الالكتروني أو رقم الهاتف
+        </Label>
+        <div className="md:col-span-2">
           <Input
-            className="w-full appearance-none rounded border border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+            className="w-full bg-gray-100 dark:bg-gray-800"
             {...register("phoneOrEmail")}
             id="contact"
             type="text"
@@ -83,24 +81,18 @@ export function ContactForm() {
         </div>
       </div>
 
-      <div className="mb-6 md:flex md:items-center">
-        <div className="md:w-1/3">
-          <Label
-            style={{ textAlign: "right" }}
-            className="mb-1 block pl-4 font-bold text-gray-500 md:mb-0 md:text-right"
-            htmlFor="subject"
-          >
-            نوع الخدمة
-          </Label>
-        </div>
-        <div className="md:w-2/3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+        <Label className="text-sm md:text-base font-medium text-right" htmlFor="subject">
+          نوع الخدمة
+        </Label>
+        <div className="md:col-span-2">
           <Controller
             name="subject"
             control={control}
             render={({ field }) => (
               <Select onValueChange={field.onChange} defaultValue={service ?? field.value} required>
                 <SelectTrigger
-                  className="w-full border border-gray-200 bg-gray-200 px-4 py-2 leading-tight text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+                  className="w-full bg-gray-100 dark:bg-gray-800"
                   id="subject"
                   dir="auto"
                 >
@@ -123,23 +115,15 @@ export function ContactForm() {
         </div>
       </div>
 
-      <div className="mb-6 md:flex md:items-center">
-        <div className="md:w-1/3">
-          <Label
-            style={{ textAlign: "right" }}
-            className="mb-1 block pl-4 font-bold text-gray-500 md:mb-0 md:text-right"
-            htmlFor="message"
-          >
-            الرسالة
-          </Label>
-        </div>
-        <div className="md:w-2/3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+        <Label className="text-sm md:text-base font-medium text-right" htmlFor="message">
+          الرسالة
+        </Label>
+        <div className="md:col-span-2">
           <Textarea
             {...register("message")}
-            className="max-h-96 min-h-64 w-full resize-y appearance-none rounded border border-gray-200 bg-gray-200 px-4 py-2 leading-loose text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+            className="w-full min-h-[150px] max-h-[300px] bg-gray-100 dark:bg-gray-800"
             placeholder="اكتب رسالتك هنا"
-            rows={10}
-            cols={50}
             id="message"
             required
           />
@@ -147,10 +131,10 @@ export function ContactForm() {
         </div>
       </div>
 
-      <div className="md:flex md:items-center">
-        <div className="md:w-1/3"></div>
-        <div className="md:w-2/3">
-          <Button type="submit" disabled={isSubmitting} className="w-full cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        <div className="md:col-span-1" />
+        <div className="md:col-span-2">
+          <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

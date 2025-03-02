@@ -91,14 +91,6 @@ const text = {
   lineHeight: "26px",
 }
 
-const terms = {
-  ...text,
-  fontSize: "14px",
-  backgroundColor: "#f9f9f9",
-  padding: "15px",
-  borderRadius: "4px",
-}
-
 const button = {
   backgroundColor: "#007ee6",
   borderRadius: "4px",
