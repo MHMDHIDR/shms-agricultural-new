@@ -72,29 +72,6 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
           defaultValue="0"
           className="grid grid-cols-1 lg:grid-cols-3 gap-px overflow-hidden rounded-xl border bg-border"
         >
-          {/* <div className="block md:hidden">
-            <TabsList className="flex md:flex-col gap-px bg-border select-none lg:col-span-1">
-              {properties
-                .filter(
-                  prop =>
-                    prop.name !== "projectStudyCase" ||
-                    (prop.name === "projectStudyCase" && project.projectStudyCaseVisibility),
-                )
-                .map((property, index) => (
-                  <TabsTrigger
-                    key={property.name}
-                    value={index.toString()}
-                    className="flex-1 group justify-center relative flex cursor-pointer flex-col bg-muted p-4 transition-colors duration-300 data-[state=active]:bg-background"
-                  >
-                    <span className="absolute bottom-0 left-0 top-0 h-full w-[3px] bg-primary transition-opacity duration-300 group-data-[state=inactive]:opacity-0"></span>
-                    <div className="flex w-full items-center justify-center">
-                      <span className="font-medium">{property.title}</span>
-                    </div>
-                  </TabsTrigger>
-                ))}
-            </TabsList>
-          </div> */}
-
           <div className="lg:col-span-2">
             {properties.map((property, index) => (
               <TabsContent
@@ -123,8 +100,8 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
                       <div key={idx} className="w-full">
                         <iframe
                           src={image.imgDisplayPath}
-                          className="w-full"
-                          height={380}
+                          className="w-full h-112.5"
+                          height={450}
                           title={`Study Case ${idx + 1}`}
                         />
                       </div>
@@ -133,7 +110,7 @@ export function Info({ project }: { project: Projects & { projectDuration: strin
                       <Image
                         src={selectedImages[index % selectedImages.length]?.imgDisplayPath ?? ""}
                         alt="Project Image"
-                        className="aspect-video max-h-[450px] rounded-l-xl object-cover"
+                        className="aspect-video max-h-[450px] min-w-full rounded-l-xl object-cover"
                         height={450}
                         width={800}
                         draggable={false}
