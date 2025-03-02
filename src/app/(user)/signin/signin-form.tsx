@@ -39,7 +39,7 @@ export function SignInForm() {
       setIsLoading(true)
       const result = await signInAction(values)
 
-      if (result.error) {
+      if (result?.error) {
         toast.error(result.error)
         setIsLoading(false)
         return

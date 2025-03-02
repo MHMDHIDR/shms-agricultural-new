@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { compare } from "bcryptjs"
 import Credentials from "next-auth/providers/credentials"
@@ -5,7 +6,7 @@ import { cookies } from "next/headers"
 import { getBlurPlaceholder } from "@/lib/optimize-image"
 import { signInSchema } from "@/schemas/signin"
 import { db } from "@/server/db"
-import type { AdapterUser } from "@auth/core/adapters"
+import type { AdapterSession, AdapterUser } from "@auth/core/adapters"
 import type { User as UserTable, UserTheme } from "@prisma/client"
 import type { NextAuthConfig, Session, User } from "next-auth"
 import type { JWT } from "next-auth/jwt"
@@ -24,6 +25,7 @@ declare module "@auth/core/jwt" {
     id: string
     role: UserTable["role"]
     theme: UserTheme
+    sessionToken?: string | null
   }
 }
 
@@ -118,7 +120,7 @@ export const authConfig = {
       session,
     }: {
       token: JWT
-      user: User | AdapterUser
+      user: User | (AdapterUser & { sessionToken?: string })
       trigger?: "signIn" | "update" | "signUp"
       session?: Session
     }) {
@@ -132,6 +134,11 @@ export const authConfig = {
         token.theme = user.theme
         token.name = user.name
         token.image = user.image
+
+        // Ensure sessionToken is copied to the token
+        if ("sessionToken" in user) {
+          token.sessionToken = user.sessionToken
+        }
       }
       return token
     },
@@ -157,22 +164,39 @@ export const authConfig = {
   events: {
     async signIn({ user, account }) {
       if (user.id && account?.providerAccountId) {
+        const SESSION_EXPIRATION_DAYS = 24 * 60 * 60 * 1000 * 30
+        const sessionToken = randomBytes(32).toString("hex")
+
+        // Create the session and store it
         await db.session.create({
           data: {
             userId: user.id,
-            sessionToken: `${account.providerAccountId}_${Date.now()}`,
-            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            sessionToken,
+            expires: new Date(Date.now() + SESSION_EXPIRATION_DAYS),
           },
         })
+
+        // Add sessionToken directly to the user object
+        Object.assign(user, { sessionToken })
       }
     },
-    async signOut(message) {
-      if ("token" in message && message.token?.id) {
-        await db.session.deleteMany({
-          where: {
-            userId: message.token.id,
-          },
+    async signOut(
+      message: { session: void | AdapterSession | null | undefined } | { token: JWT | null },
+    ) {
+      const token = "token" in message ? message.token : null
+
+      // If we don't have the session token in the JWT, try to find it
+      if (token?.id) {
+        const session = await db.session.findFirst({
+          where: { userId: token.id },
+          orderBy: { createdAt: "desc" },
         })
+
+        if (session) {
+          await db.session.delete({
+            where: { sessionToken: session.sessionToken },
+          })
+        }
       }
     },
   },
