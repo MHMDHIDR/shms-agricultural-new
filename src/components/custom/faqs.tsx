@@ -21,7 +21,7 @@ export default async function FAQ({ pathname }: { pathname: "/faqs" | "/" }) {
     },
     ["faqs-data"],
     {
-      revalidate: false, // Disable revalidation for static generation
+      revalidate: 3600,
       tags: ["faqs"],
     },
   )

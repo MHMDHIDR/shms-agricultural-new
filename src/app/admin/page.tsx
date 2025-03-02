@@ -222,7 +222,11 @@ export default async function AdminPage() {
           </CardHeader>
           <CardContent>
             {stockMetrics.length > 0 ? (
-              <InvestmentChart data={investmentData} profitCollectDate={dates.endDate} />
+              <InvestmentChart
+                data={investmentData}
+                profitCollectDate={dates.endDate}
+                MAX_POINTS={8}
+              />
             ) : (
               <div className="flex justify-center items-center h-60">
                 <p className="text-muted-foreground">لا توجد بيانات استثمارية لعرضها</p>

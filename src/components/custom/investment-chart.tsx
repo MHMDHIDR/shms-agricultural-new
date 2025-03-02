@@ -53,6 +53,7 @@ const baseChartConfig = {
 type InvestmentChartProps = {
   data: InvestmentDataPoint[]
   profitCollectDate: Date
+  MAX_POINTS?: number
 }
 
 type TooltipData = {
@@ -130,8 +131,7 @@ function CustomTooltip({
 }
 
 // Function to reduce data points based on available width
-function reduceDataPoints(data: InvestmentDataPoint[]): InvestmentDataPoint[] {
-  const MAX_POINTS = 7
+function reduceDataPoints(data: InvestmentDataPoint[], MAX_POINTS = 7): InvestmentDataPoint[] {
   if (!data.length) return []
   if (data.length <= MAX_POINTS) return data // If we have MAX_POINTS or fewer points, show all
 
@@ -165,7 +165,7 @@ function reduceDataPoints(data: InvestmentDataPoint[]): InvestmentDataPoint[] {
   return result
 }
 
-export function InvestmentChart({ data, profitCollectDate }: InvestmentChartProps) {
+export function InvestmentChart({ data, profitCollectDate, MAX_POINTS = 7 }: InvestmentChartProps) {
   // Find the earliest date in the data
   const startDate = React.useMemo(() => {
     const dates = data.map(item => new Date(item.date))
@@ -195,8 +195,8 @@ export function InvestmentChart({ data, profitCollectDate }: InvestmentChartProp
       const date = new Date(item.date)
       return date >= filterStartDate && date <= filterEndDate
     })
-    return reduceDataPoints(timeFilteredData)
-  }, [data, filterStartDate, filterEndDate])
+    return reduceDataPoints(timeFilteredData, MAX_POINTS)
+  }, [data, filterStartDate, filterEndDate, MAX_POINTS])
 
   // Calculate growth percentage
   const growthPercentage = React.useMemo(() => {
