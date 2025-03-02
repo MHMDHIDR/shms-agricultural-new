@@ -6,14 +6,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { api } from "@/trpc/server"
+import { createCaller } from "@/server/api/root"
+import { createTRPCContext } from "@/server/api/trpc"
 import type { Faq } from "@prisma/client"
 
 export default async function FAQ({ pathname }: { pathname: "/faqs" | "/" }) {
-  // Cache the FAQ data with unstable_cache for static generation
+  const context = await createTRPCContext({ headers: new Headers() })
+  const caller = createCaller(context)
+
   const getFaqData = unstable_cache(
     async () => {
-      const data = await api.faq.getAll()
+      const data = await caller.faq.getAll()
       return data
     },
     ["faqs-data"],
@@ -37,7 +40,7 @@ export default async function FAQ({ pathname }: { pathname: "/faqs" | "/" }) {
           {faqs.slice(0, FAQS_TO_RENDER).map((item: Faq, index: number) => (
             <Accordion key={index} type="single" collapsible>
               <AccordionItem value={`item-${index}`}>
-                <AccordionTrigger className="focus-within:text-foreground/60 hover:text-foreground/60 dark:focus-within:text-secondary-foreground dark:hover:text-secondary-foreground hover:no-underline">
+                <AccordionTrigger className="focus-within:text-foreground/60 cursor-pointer hover:text-foreground/60 dark:focus-within:text-secondary-foreground dark:hover:text-secondary-foreground hover:no-underline">
                   {item.question}
                 </AccordionTrigger>
                 <AccordionContent className="leading-loose">{item.answer}</AccordionContent>

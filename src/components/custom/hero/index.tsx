@@ -4,7 +4,6 @@ import { auth } from "@/server/auth"
 import { HeroClient } from "./hero-client"
 
 export default async function Hero() {
-  // Fetch user data on the server
   const context = await createTRPCContext({ headers: new Headers() })
   const caller = createCaller(context)
   const usersData = await caller.user.getAll()
