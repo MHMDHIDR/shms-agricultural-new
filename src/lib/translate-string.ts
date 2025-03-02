@@ -5,6 +5,12 @@
  * */
 export const translateSring = (string: string) => {
   switch (string) {
+    case "purchase": {
+      return "صفحة شراء الأسهم"
+    }
+    case "dashboard": {
+      return "صفحة لوحة التحكم"
+    }
     case "sn": {
       return "الرقم التسلسلي"
     }

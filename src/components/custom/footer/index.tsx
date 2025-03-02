@@ -6,7 +6,7 @@ import { APP_LOGO_SVG, APP_TITLE } from "@/lib/constants"
 import { api } from "@/trpc/server"
 import FooterWrapper from "./footer-wrapper"
 
-const sections = [
+const footerSections = [
   {
     title: "الخدمات",
     links: [
@@ -25,7 +25,7 @@ const sections = [
   {
     title: "الموارد",
     links: [
-      { name: "الدعم", href: "/contact" },
+      { name: "الدعم والمساعدة", href: "/contact" },
       { name: "الخصوصية", href: "/privacy" },
     ],
   },
@@ -55,7 +55,7 @@ export default async function Footer() {
                     width={56}
                     height={56}
                   />
-                  <p className="text-xl font-semibold select-none md:text-3xl">شمــس</p>
+                  <h1 className="text-sm font-semibold select-none md:text-xl">{APP_TITLE}</h1>
                 </span>
                 <p className="text-muted-foreground mt-6 text-sm leading-loose">
                   منصة استثمارية زراعية توفر مشاريع متنوعة لتعزيز الإنتاج الزراعي باستخدام أحدث
@@ -74,8 +74,8 @@ export default async function Footer() {
                   ))}
               </ul>
             </div>
-            <div className="grid grid-cols-3 gap-14 lg:gap-20">
-              {sections.map((section, sectionIdx) => (
+            <div className="grid grid-cols-3 gap-10 lg:gap-14">
+              {footerSections.map((section, sectionIdx) => (
                 <div key={sectionIdx}>
                   <h3 className="mb-6 font-bold">{section.title}</h3>
                   <ul className="text-muted-foreground space-y-4 text-sm">
@@ -91,10 +91,10 @@ export default async function Footer() {
           </div>
           <Divider className="my-5" />
           <div className="text-muted-foreground flex flex-col justify-between gap-4 pt-4 text-center text-xs font-medium select-none lg:flex-row lg:items-center lg:text-right">
-            <p>
-              <span>&copy; 2023 - {new Date().getFullYear()} </span> {APP_TITLE}
-            </p>
             <ul className="divide-primary flex justify-center divide-x divide-dotted">
+              <li className="hover:text-primary px-3">
+                <Link href="/about">عن {APP_TITLE}</Link>
+              </li>
               <li className="hover:text-primary px-3">
                 <Link href="/terms">الشروط والأحكام</Link>
               </li>
@@ -102,6 +102,9 @@ export default async function Footer() {
                 <Link href="/privacy">الخصوصية</Link>
               </li>
             </ul>
+            <p>
+              <span>&copy; 2023 - {new Date().getFullYear()} </span> {APP_TITLE}
+            </p>
           </div>
         </div>
       </footer>

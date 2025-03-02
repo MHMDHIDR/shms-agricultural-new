@@ -1,7 +1,10 @@
+import { AlertCircle } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import Divider from "@/components/custom/divider"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants"
+import { translateSring } from "@/lib/translate-string"
 import { auth } from "@/server/auth"
 import { SignInForm } from "./signin-form"
 import type { Metadata } from "next"
@@ -20,6 +23,8 @@ export default async function SignInPage({
   const user = session?.user
   const searchParamsProp = await searchParams
   const callbackUrl = searchParamsProp.callbackUrl
+  const callbackUrlPageName =
+    callbackUrl?.split("step=")[1] ?? callbackUrl?.replace("/", "") ?? "هذه الصفحة"
 
   if (user) {
     if (callbackUrl) {
@@ -35,7 +40,22 @@ export default async function SignInPage({
   }
 
   return (
-    <div className="container mx-auto max-w-md px-2.5 py-20">
+    <div className="container mx-auto max-w-md px-2.5 py-12">
+      {callbackUrl && (
+        <Card className="mb-4 select-none flex items-center gap-x-3 rounded-lg border-l-4 border-l-red-500 bg-red-50 p-2.5 dark:bg-red-950/50">
+          <AlertCircle className="h-5 w-5 text-red-500" />
+          <CardHeader className="flex flex-col p-0">
+            <CardTitle className="text-sm font-medium text-red-800 dark:text-red-200">
+              تنبيه الوصول
+            </CardTitle>
+            <CardContent className="p-0">
+              <p className="text-sm text-red-600 dark:text-red-300">
+                يجب عليك تسجيل الدخول للوصول إلى {translateSring(callbackUrlPageName)}
+              </p>
+            </CardContent>
+          </CardHeader>
+        </Card>
+      )}
       <h1 className="mb-14 text-center text-2xl font-bold select-none">تسجيل الدخول</h1>
       <SignInForm />
       <Divider className="my-10">أو</Divider>
