@@ -77,7 +77,7 @@ export default async function Footer() {
             <div className="grid grid-cols-3 gap-10 lg:gap-14">
               {footerSections.map((section, sectionIdx) => (
                 <div key={sectionIdx}>
-                  <h3 className="mb-6 font-bold">{section.title}</h3>
+                  <h2 className="mb-6 font-bold">{section.title}</h2>
                   <ul className="text-muted-foreground space-y-4 text-sm">
                     {section.links.map((link, linkIdx) => (
                       <li key={linkIdx} className="hover:text-primary font-medium">
