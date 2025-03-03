@@ -33,6 +33,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   return (
     <html lang="ar" className={`${notoKufiArabic.variable}`} suppressHydrationWarning dir="rtl">
+      <head>
+        <script
+          defer
+          data-website-id="67ae6fba6e02c8c3d7d53df6"
+          data-domain="shms-agricultural-new.vercel.app"
+          src="https://datafa.st/js/script.js"
+        ></script>
+      </head>
       <body
         className="font-noto-kufi flex min-h-screen flex-col bg-background text-slate-900 dark:text-slate-50"
         suppressHydrationWarning
