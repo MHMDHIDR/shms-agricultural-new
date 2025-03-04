@@ -102,6 +102,7 @@ export default function Video({
         <track label="thumbnails" default kind="metadata" />
         <track kind="metadata" label="cuepoints" />
         <track kind="chapters" label="chapters" />
+        <track kind="captions" label="captions" />
       </video>
       <p className="sr-only">{videoDescription}</p>
     </div>

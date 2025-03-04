@@ -156,7 +156,12 @@ export function Nav({ user }: { user: Session["user"] | undefined }) {
           <NavigationMenu className="z-50">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="dark:bg-accent dark:text-accent-foreground">
+                <NavigationMenuTrigger
+                  className="dark:bg-accent dark:text-accent-foreground"
+                  title="القائمة المنسدلة"
+                  aria-label="القائمة المنسدلة"
+                  aria-haspopup="true"
+                >
                   <MenuIcon />
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="bg-background">
