@@ -1,3 +1,4 @@
+import { getBlurPlaceholder } from "@/lib/optimize-image"
 import { createCaller } from "@/server/api/root"
 import { createTRPCContext } from "@/server/api/trpc"
 import { auth } from "@/server/auth"
@@ -18,14 +19,18 @@ export default async function Hero() {
   const MAIN_HEADLINE = "استثمر في مجال الزراعة في السودان"
   const SUB_HEADLINE = `"ازرع ثروتك اليوم.. واحصد نجاحك غدًا! استثمر في مستقبل الزراعة في السودان." 🌱💰`
 
-  const TOP_INVESTORS = usersData?.users.slice(0, 7)
-  const topInvestors =
-    TOP_INVESTORS?.map(user => ({
-      name: user.name?.slice(0, 2) || "",
-      image: user.image || null,
-    })) || []
+  const shuffledUsers = usersData?.users ? [...usersData.users].sort(() => 0.5 - Math.random()) : []
+  const TOP_INVESTORS = shuffledUsers.slice(0, 7)
+  const investorsPromises = TOP_INVESTORS.map(async user => {
+    const blurDataURL = user.image ? await getBlurPlaceholder({ imageSrc: user.image }) : null
 
-  console.log(TOP_INVESTORS)
+    return {
+      name: user.name?.slice(0, 2) ?? "مستثمر".slice(0, 2),
+      image: user.image,
+      blurDataURL,
+    }
+  })
+  const topInvestors = await Promise.all(investorsPromises)
 
   return (
     <HeroClient

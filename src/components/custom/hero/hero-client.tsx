@@ -14,7 +14,7 @@ type HeroClientProps = {
   farmingProjects: number
   userSatisfaction: number
   totalUsers: number
-  topInvestors: { name: string; image: string | null }[]
+  topInvestors: { name: string; image: string | null; blurDataURL: string | null }[]
   mainHeadline: string
   subHeadline: string
   isAuthenticated: boolean
@@ -77,6 +77,10 @@ export function HeroClient({
                           height={32}
                           className="h-full w-full object-contain bg-amber-100"
                           title={`Investor ${name}`}
+                          quality={20}
+                          loading="lazy"
+                          placeholder={topInvestors[index]?.blurDataURL ? "blur" : "empty"}
+                          blurDataURL={topInvestors[index]?.blurDataURL ?? undefined}
                         />
                       ) : (
                         <AvatarFallback
