@@ -7,13 +7,14 @@ import Video from "@/components/custom/video"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { useCountUp } from "@/hooks/use-count-up"
+import { APP_LOGO_SVG } from "@/lib/constants"
 
 type HeroClientProps = {
   yearInIndustry: number
   farmingProjects: number
   userSatisfaction: number
   totalUsers: number
-  topInvestorsNames: { fallback: string }[]
+  topInvestors: { name: string; image: string | null }[]
   mainHeadline: string
   subHeadline: string
   isAuthenticated: boolean
@@ -24,7 +25,7 @@ export function HeroClient({
   farmingProjects,
   userSatisfaction,
   totalUsers,
-  topInvestorsNames,
+  topInvestors,
   mainHeadline,
   subHeadline,
   isAuthenticated,
@@ -56,21 +57,35 @@ export function HeroClient({
                   priority
                 />
               </div>
-              <div className="absolute bottom-0 z-10 flex max-w-fit flex-col items-center justify-center rounded-full bg-white px-6 py-3 shadow-md">
-                <div className="text-sm text-gray-800 whitespace-nowrap">
+              <div className="absolute bottom-0 z-10 flex max-w-fit flex-col items-center justify-center rounded-full bg-white px-6 py-1 shadow-md">
+                <div className="text-xs pt-1 text-gray-800 whitespace-nowrap">
                   إنضم لـ
                   <strong className="mx-1">+{totalUsersCount}</strong>
                   مستثمرين المستقبل
                 </div>
-                <div className="flex -space-x-2 mt-2" dir="ltr">
-                  {topInvestorsNames.map(({ fallback }, index) => (
+                <div className="flex -space-x-2" dir="ltr">
+                  {topInvestors.map(({ name, image }, index) => (
                     <Avatar
                       key={index}
-                      className="bg-primary h-8 w-8 rounded-full border-4 border-white"
+                      className="bg-primary h-8 w-8 rounded-full border-2 border-white shadow-xs"
                     >
-                      <AvatarFallback className="text-secondary text-xs dark:text-white">
-                        {fallback}
-                      </AvatarFallback>
+                      {image ? (
+                        <Image
+                          src={image ?? APP_LOGO_SVG}
+                          alt={`Investor ${name}`}
+                          width={32}
+                          height={32}
+                          className="h-full w-full object-contain bg-amber-100"
+                          title={`Investor ${name}`}
+                        />
+                      ) : (
+                        <AvatarFallback
+                          className="text-primary text-xs dark:text-white"
+                          title={`Investor ${name}`}
+                        >
+                          {name}
+                        </AvatarFallback>
+                      )}
                     </Avatar>
                   ))}
                 </div>
