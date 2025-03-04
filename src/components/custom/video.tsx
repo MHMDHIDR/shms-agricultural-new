@@ -96,9 +96,13 @@ export default function Video({
         autoPlay={autoPlay}
         loop={loop}
         muted={muted}
-        playsInline // Improves mobile behavior
+        playsInline
         preload="auto"
-      />
+      >
+        <track label="thumbnails" default kind="metadata" />
+        <track kind="metadata" label="cuepoints" />
+        <track kind="chapters" label="chapters" />
+      </video>
       <p className="sr-only">{videoDescription}</p>
     </div>
   )
