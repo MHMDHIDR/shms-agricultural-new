@@ -84,7 +84,7 @@ export function HeroClient({
                         />
                       ) : (
                         <AvatarFallback
-                          className="text-primary text-xs dark:text-white"
+                          className="text-foreground text-xs dark:text-white"
                           title={`Investor ${name}`}
                         >
                           {name}
