@@ -23,6 +23,7 @@ export default function Video({
 }: VideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isLoaded, setIsLoaded] = useState(false)
+  const thumbnailUrl = TUMBNAIL as string
 
   useEffect(() => {
     const video = videoRef.current
@@ -40,7 +41,11 @@ export default function Video({
       if (timeoutId) clearTimeout(timeoutId)
     }
 
-    timeoutId = setTimeout(() => {}, 3000)
+    // Set a timeout to ensure we don't wait indefinitely for video loading
+    timeoutId = setTimeout(() => {
+      // Do nothing, just keep showing the thumbnail if video hasn't loaded
+      console.log("Video loading timeout reached")
+    }, 3000)
 
     video.addEventListener("loadeddata", handleLoadedData)
     video.addEventListener("error", handleError)
@@ -58,7 +63,7 @@ export default function Video({
     <div className="relative h-full w-full">
       {!isLoaded && (
         <Image
-          src={TUMBNAIL}
+          src={thumbnailUrl}
           alt="Video placeholder"
           fill
           className="absolute inset-0 h-full w-full object-contain"
