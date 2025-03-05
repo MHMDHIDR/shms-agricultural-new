@@ -11,8 +11,8 @@ export const dynamic = "force-static"
 
 export default function TermsPage() {
   return (
-    <main className="rtl flex min-h-screen flex-col justify-between p-2.5 md:p-16">
-      <h1 className="text-xl font-bold select-none">الشروط والأحكام</h1>
+    <main className="rtl flex min-h-screen flex-col justify-between p-2.5 pt-10 md:p-16">
+      <h1 className="text-xl font-bold select-none text-center">الشروط والأحكام</h1>
       <section className="text-justify leading-loose">
         <h2 className="mt-4 text-lg font-semibold">مقدمة</h2>
         <p>

@@ -36,7 +36,7 @@ export function Nav({ user }: { user: Session["user"] | undefined }) {
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   const [scrolled, setScrolled] = useState(false)
-  const SCROLL_THRESHOLD = 130
+  const SCROLL_THRESHOLD = 150
 
   useEffect(() => {
     const handleScroll = () => {

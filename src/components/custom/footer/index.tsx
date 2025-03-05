@@ -2,7 +2,7 @@ import { Facebook, Instagram, Twitter, Youtube } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import Divider from "@/components/custom/divider"
-import { APP_LOGO_SVG, APP_TITLE } from "@/lib/constants"
+import { APP_LOGO_SVG, APP_TITLE, APP_TITLE_SHORT } from "@/lib/constants"
 import { api } from "@/trpc/server"
 import FooterWrapper from "./footer-wrapper"
 
@@ -25,7 +25,7 @@ const footerSections = [
   {
     title: "الموارد",
     links: [
-      { name: "الدعم والمساعدة", href: "/contact" },
+      { name: "المساعدة", href: "/contact" },
       { name: "الخصوصية", href: "/privacy" },
     ],
   },
@@ -55,9 +55,9 @@ export default async function Footer() {
                     width={56}
                     height={56}
                   />
-                  <h1 className="text-sm font-semibold select-none md:text-xl">{APP_TITLE}</h1>
+                  <h1 className="text-base font-semibold select-none md:text-xl">{APP_TITLE}</h1>
                 </span>
-                <p className="text-muted-foreground mt-6 text-sm leading-loose">
+                <p className="text-muted-foreground mt-3 text-sm leading-loose">
                   منصة استثمارية زراعية توفر مشاريع متنوعة لتعزيز الإنتاج الزراعي باستخدام أحدث
                   التقنيات.
                 </p>
@@ -74,7 +74,7 @@ export default async function Footer() {
                   ))}
               </ul>
             </div>
-            <div className="grid grid-cols-3 gap-10 lg:gap-14">
+            <div className="grid grid-cols-3 gap-15 lg:gap-14">
               {footerSections.map((section, sectionIdx) => (
                 <div key={sectionIdx}>
                   <h2 className="mb-6 font-bold">{section.title}</h2>
@@ -93,7 +93,7 @@ export default async function Footer() {
           <div className="text-muted-foreground flex flex-col justify-between gap-4 pt-4 text-center text-xs font-medium select-none lg:flex-row lg:items-center lg:text-right">
             <ul className="divide-primary flex justify-center divide-x divide-dotted">
               <li className="hover:text-primary px-3">
-                <Link href="/about">عن {APP_TITLE}</Link>
+                <Link href="/about">عن {APP_TITLE_SHORT}</Link>
               </li>
               <li className="hover:text-primary px-3">
                 <Link href="/terms">الشروط والأحكام</Link>
