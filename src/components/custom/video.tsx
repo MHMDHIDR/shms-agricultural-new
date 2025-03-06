@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
-import TUMBNAIL from "@/../public/logo-slogan.svg"
+import TUMBNAIL from "@/../public/hero.webp"
 
 type VideoProps = {
   src: string
@@ -23,7 +23,6 @@ export default function Video({
 }: VideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isLoaded, setIsLoaded] = useState(false)
-  const thumbnailUrl = TUMBNAIL as string
 
   useEffect(() => {
     const video = videoRef.current
@@ -63,10 +62,12 @@ export default function Video({
     <div className="relative h-full w-full">
       {!isLoaded && (
         <Image
-          src={thumbnailUrl}
+          src={TUMBNAIL}
           alt="Video placeholder"
+          className="absolute inset-0 h-full w-full object-cover"
+          placeholder="blur"
+          blurDataURL={TUMBNAIL.blurDataURL}
           fill
-          className="absolute inset-0 h-full w-full object-contain"
           priority
         />
       )}
