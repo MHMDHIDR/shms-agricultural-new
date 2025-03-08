@@ -258,7 +258,10 @@ export function AccountForm({ user }: { user: User }) {
                 <div className="space-y-2">
                   <FileUpload
                     onFilesSelected={files => handleFilesSelected(files, "doc")}
-                    accept={{ "application/pdf": [".pdf"] }}
+                    accept={{
+                      "application/pdf": [".pdf"],
+                      "image/*": [".jpeg", ".jpg", ".png", ".webp"],
+                    }}
                     maxFiles={1}
                     disabled={!isEditingEnabled}
                   />
