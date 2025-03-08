@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2 } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
@@ -28,6 +28,7 @@ export function SignInForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl")
+  const [showPassword, setShowPassword] = useState(false)
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -83,12 +84,22 @@ export function SignInForm() {
             <FormItem>
               <FormLabel className="text-xs select-none">كلمة المرور</FormLabel>
               <FormControl>
-                <Input
-                  type="password"
-                  placeholder="كلمة المرور"
-                  className="border border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
-                  {...field}
-                />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="كلمة المرور"
+                    className="border pl-10 border-gray-200 bg-gray-200 text-gray-700 focus:border-purple-500 focus:bg-white focus:outline-hidden dark:bg-gray-800 dark:text-gray-300"
+                    {...field}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setShowPassword(prev => !prev)}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none dark:text-gray-400 dark:hover:text-gray-300"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </Button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
