@@ -19,7 +19,7 @@ const footerSections = [
     title: "الشركة",
     links: [
       { name: "من نحن", href: "/about" },
-      { name: "الفريق", href: "/" },
+      { name: "الفريق", href: "/about" },
     ],
   },
   {
