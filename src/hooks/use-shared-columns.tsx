@@ -227,6 +227,7 @@ function ActionCell<T extends BaseEntity>({
                   ? actions.onUnblock?.(entity.id)
                   : actions.onBlock?.(entity.id)
               }
+              className="cursor-pointer"
             >
               <Ban className="mr-2 h-4 w-4" />
               {(row.original as unknown as UserType).accountStatus === "block"

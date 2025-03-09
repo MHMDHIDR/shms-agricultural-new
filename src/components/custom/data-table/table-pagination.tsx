@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { SharedColumnsProps } from "@/hooks/use-shared-columns"
+import type { SharedColumnsProps } from "@/hooks/use-shared-columns"
 import type { Table } from "@tanstack/react-table"
 
 type TablePaginationProps<TData> = {

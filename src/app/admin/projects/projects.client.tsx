@@ -12,7 +12,9 @@ import clsx from "clsx"
 import { CircleCheck, CircleX, TrashIcon } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { TableLoadingState } from "@/components/custom/data-table/table-loading-state"
+import { TablePagination } from "@/components/custom/data-table/table-pagination"
 import { TableToolbar } from "@/components/custom/data-table/table-toolbar"
 import NoRecords from "@/components/custom/no-records"
 import { Button } from "@/components/ui/button"
@@ -24,12 +26,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { usePersistedTableState } from "@/hooks/use-persisted-table-state"
 import { useSharedColumns } from "@/hooks/use-shared-columns"
 import { useToast } from "@/hooks/use-toast"
 import { api } from "@/trpc/react"
 import type { BulkAction } from "@/components/custom/data-table/table-toolbar"
 import type { Projects } from "@prisma/client"
-import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table"
 
 export default function ProjectsClientPage({
   projects,
@@ -38,9 +40,27 @@ export default function ProjectsClientPage({
   projects: Projects[]
   count: number
 }) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  // Client-side only flag to prevent hydration mismatches
+  const [isClient, setIsClient] = useState(false)
+
+  // Use the persisted table state hook
+  const {
+    sorting,
+    columnFilters,
+    columnVisibility,
+    pagination,
+    setSorting,
+    setColumnFilters,
+    setColumnVisibility,
+    setPagination,
+    isLoading,
+  } = usePersistedTableState("projects-table")
+
+  // Set isClient to true after hydration
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   const [rowSelection, setRowSelection] = useState({})
   const [globalFilter, setGlobalFilter] = useState("")
   const toast = useToast()
@@ -196,11 +216,12 @@ export default function ProjectsClientPage({
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     enableColumnPinning: true,
@@ -208,6 +229,7 @@ export default function ProjectsClientPage({
       sorting,
       columnFilters,
       columnVisibility,
+      pagination,
       rowSelection,
       globalFilter,
       columnPinning: { right: ["actions"] },
@@ -275,12 +297,14 @@ export default function ProjectsClientPage({
     return actions
   }
 
-  return !projects || count === 0 ? (
-    <NoRecords
-      msg="لم يتم العثور على أي مشاريع استثمارية في الوقت الحالي"
-      links={[{ to: "/admin/projects/new", label: "إضافة مشروع جديد" }]}
-    />
-  ) : (
+  if (!projects || count === 0) {
+    return <NoRecords msg="لم يتم العثور على أي مشاريع في الوقت الحالي" />
+  }
+
+  // Show a loading state if we're still on the server or loading from localStorage
+  const showLoading = !isClient || isLoading
+
+  return (
     <div className="space-y-4">
       <div className="flex items-center justify-start">
         <Link href="/admin/projects/new">
@@ -296,62 +320,71 @@ export default function ProjectsClientPage({
         searchPlaceholder="ابحث عن مشروع"
         bulkActions={getBulkActions()}
         filterFields={filterFields}
+        tableId="projects-table"
       />
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader className="select-none">
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => {
-                  const isPinned = header.column.getIsPinned()
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className={clsx(
-                        "text-center",
-                        isPinned && "sticky left-0 bg-background shadow-[1px_0_0_0_#e5e7eb]",
-                      )}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map(cell => {
-                    const isPinned = cell.column.getIsPinned()
+      <TablePagination table={table} selectedRows={selectedRows} />
+
+      {showLoading ? (
+        <TableLoadingState rows={10} />
+      ) : (
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader className="select-none">
+              {table.getHeaderGroups().map(headerGroup => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map(header => {
+                    const isPinned = header.column.getIsPinned()
                     return (
-                      <TableCell
-                        key={cell.id}
+                      <TableHead
+                        key={header.id}
                         className={clsx(
                           "text-center",
                           isPinned && "sticky left-0 bg-background shadow-[1px_0_0_0_#e5e7eb]",
                         )}
                       >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
                     )
                   })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  لم يتم العثور على نتائج
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map(row => (
+                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                    {row.getVisibleCells().map(cell => {
+                      const isPinned = cell.column.getIsPinned()
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className={clsx(
+                            "text-center",
+                            isPinned && "sticky left-0 bg-background shadow-[1px_0_0_0_#e5e7eb]",
+                          )}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      )
+                    })}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    لم يتم العثور على نتائج
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      <TablePagination table={table} selectedRows={selectedRows} />
     </div>
   )
 }

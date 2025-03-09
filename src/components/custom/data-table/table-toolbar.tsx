@@ -2,6 +2,7 @@ import { ChevronDown, SettingsIcon, X } from "lucide-react"
 import { useMemo, useState } from "react"
 import { ConfirmationDialog } from "@/components/custom/confirmation-dialog"
 import { DataTableFacetedFilter } from "@/components/custom/data-table/data-table-faceted-filter"
+import { ResetTableStateButton } from "@/components/custom/data-table/reset-table-state-button"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -38,6 +39,12 @@ type TableToolbarProps<TData> = {
   bulkActions?: BulkAction[]
   searchPlaceholder?: string
   filterFields?: DataTableFilterField[]
+  /**
+   * Optional table ID for localStorage persistence
+   * If provided, a reset button will be shown
+   */
+  tableId?: string
+  onReset?: () => void
 }
 
 export function TableToolbar<TData>({
@@ -48,6 +55,8 @@ export function TableToolbar<TData>({
   bulkActions = [],
   searchPlaceholder = "Search...",
   filterFields = [],
+  tableId,
+  onReset,
 }: TableToolbarProps<TData>) {
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false)
   const [selectedAction, setSelectedAction] = useState<BulkAction | null>(null)
@@ -154,6 +163,15 @@ export function TableToolbar<TData>({
                 ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {tableId && (
+            <ResetTableStateButton
+              tableId={tableId}
+              table={table}
+              onReset={onReset}
+              refreshAfterReset={true}
+            />
+          )}
         </div>
       </div>
 

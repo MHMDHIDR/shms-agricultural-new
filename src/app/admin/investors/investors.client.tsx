@@ -9,8 +9,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import clsx from "clsx"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { TableLoadingState } from "@/components/custom/data-table/table-loading-state"
 import { TablePagination } from "@/components/custom/data-table/table-pagination"
 import { TableToolbar } from "@/components/custom/data-table/table-toolbar"
 import NoRecords from "@/components/custom/no-records"
@@ -22,11 +22,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { usePersistedTableState } from "@/hooks/use-persisted-table-state"
 import { useSharedColumns } from "@/hooks/use-shared-columns"
-import { useToast } from "@/hooks/use-toast"
-import { api } from "@/trpc/react"
 import type { User } from "@prisma/client"
-import type { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table"
 
 export default function InvestorsClientPage({
   investors,
@@ -35,9 +33,27 @@ export default function InvestorsClientPage({
   investors: User[]
   count: number
 }) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  // Client-side only flag to prevent hydration mismatches
+  const [isClient, setIsClient] = useState(false)
+
+  // Use the persisted table state hook
+  const {
+    sorting,
+    columnFilters,
+    columnVisibility,
+    pagination,
+    setSorting,
+    setColumnFilters,
+    setColumnVisibility,
+    setPagination,
+    isLoading,
+  } = usePersistedTableState("investors-table")
+
+  // Set isClient to true after hydration
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   const [globalFilter, setGlobalFilter] = useState("")
 
   const { columns, filterFields } = useSharedColumns<User>({
@@ -51,92 +67,107 @@ export default function InvestorsClientPage({
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
     enableColumnPinning: true,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
+      pagination,
       globalFilter,
       columnPinning: { right: ["actions"] },
     },
   })
 
-  return !investors || count === 0 ? (
-    <NoRecords msg="لم يتم العثور على أي مستثمرين في الوقت الحالي" />
-  ) : (
+  const selectedRows = table.getFilteredSelectedRowModel().rows.map(row => row.original)
+
+  if (!investors || count === 0) {
+    return <NoRecords msg="لم يتم العثور على أي مستثمرين في الوقت الحالي" />
+  }
+
+  // Show a loading state if we're still on the server or loading from localStorage
+  const showLoading = !isClient || isLoading
+
+  return (
     <div className="space-y-4">
       <TableToolbar<User>
         table={table}
         filtering={globalFilter}
         setFiltering={setGlobalFilter}
+        selectedRows={selectedRows}
         searchPlaceholder="ابحث عن مستثمر"
         filterFields={filterFields}
-        selectedRows={[]}
+        tableId="investors-table"
       />
 
-      <TablePagination table={table} entityType="investors" selectedRows={[]} />
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader className="select-none">
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => {
-                  const isPinned = header.column.getIsPinned()
+      <TablePagination table={table} entityType="investors" selectedRows={selectedRows} />
 
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className={clsx(
-                        "text-center",
-                        isPinned && "sticky left-0 bg-background shadow-[1px_0_0_0_#e5e7eb]",
-                      )}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map(cell => {
-                    const isPinned = cell.column.getIsPinned()
+      {showLoading ? (
+        <TableLoadingState rows={10} />
+      ) : (
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader className="select-none">
+              {table.getHeaderGroups().map(headerGroup => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map(header => {
+                    const isPinned = header.column.getIsPinned()
                     return (
-                      <TableCell
-                        key={cell.id}
+                      <TableHead
+                        key={header.id}
                         className={clsx(
-                          "text-center py-3",
+                          "text-center",
                           isPinned && "sticky left-0 bg-background shadow-[1px_0_0_0_#e5e7eb]",
                         )}
                       >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
                     )
                   })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  لم يتم العثور على نتائج
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <TablePagination table={table} entityType="investors" selectedRows={[]} />
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map(row => (
+                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                    {row.getVisibleCells().map(cell => {
+                      const isPinned = cell.column.getIsPinned()
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className={clsx(
+                            "text-center py-3",
+                            isPinned && "sticky left-0 bg-background shadow-[1px_0_0_0_#e5e7eb]",
+                          )}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      )
+                    })}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    لم يتم العثور على نتائج
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      <TablePagination table={table} entityType="investors" selectedRows={selectedRows} />
     </div>
   )
 }
