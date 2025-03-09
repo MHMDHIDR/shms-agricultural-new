@@ -36,9 +36,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <head>
         <script
           defer
-          data-website-id="67ae6fba6e02c8c3d7d53df6"
-          data-domain="shms-agricultural-new.vercel.app"
-          src="https://datafa.st/js/script.js"
+          src="https://analytics.technodevlabs.com/script.js"
+          data-website-id="e33f6fbd-145d-4d40-a9cf-d93a5681e1f8"
         ></script>
       </head>
       <body

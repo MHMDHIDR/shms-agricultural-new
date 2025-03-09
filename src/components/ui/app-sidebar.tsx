@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  ChartArea,
   DollarSignIcon,
   Eye,
   HandCoins,
@@ -95,16 +96,6 @@ export function AppSidebar({
         ],
       },
       {
-        title: "المستخدمين",
-        url: "/admin/users",
-        icon: Users,
-      },
-      {
-        title: "نسب الأرباح",
-        url: "/admin/profits-percentage",
-        icon: PercentIcon,
-      },
-      {
         title: "إعدادات",
         url: open || isMobile ? "" : "/admin/social-links",
         icon: Settings2,
@@ -120,6 +111,21 @@ export function AppSidebar({
             icon: HelpCircle,
           },
         ],
+      },
+      {
+        title: "المستخدمين",
+        url: "/admin/users",
+        icon: Users,
+      },
+      {
+        title: "نسب الأرباح",
+        url: "/admin/profits-percentage",
+        icon: PercentIcon,
+      },
+      {
+        title: "الإحصائيات",
+        url: "https://analytics.technodevlabs.com/share/OVylyVg7zfHirXjt/www.shmsagricultural.com",
+        icon: ChartArea,
       },
     ],
   }

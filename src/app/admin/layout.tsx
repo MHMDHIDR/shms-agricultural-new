@@ -20,9 +20,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <AppSidebar projects={projects} user={session.user} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex w-full items-center gap-2 px-4">
-            <SidebarTrigger className="mr-2 cursor-pointer" />
-          </div>
+          <label
+            className="flex w-full cursor-pointer items-center gap-2 px-4"
+            htmlFor="sidebar-trigger"
+            aria-label="فتح القائمة"
+          >
+            <SidebarTrigger className="mr-2" id="sidebar-trigger" />
+            <span className="text-sm font-medium">فتح القائمة</span>
+          </label>
         </header>
         <section className="mx-auto max-w-sm min-w-full sm:max-w-screen-sm xl:max-w-screen-xl">
           {children}
