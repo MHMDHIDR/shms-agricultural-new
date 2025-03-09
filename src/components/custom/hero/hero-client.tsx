@@ -79,8 +79,6 @@ export function HeroClient({
                           title={`Investor ${name}`}
                           quality={20}
                           loading="lazy"
-                          placeholder={topInvestors[index]?.blurDataURL ? "blur" : "empty"}
-                          blurDataURL={topInvestors[index]?.blurDataURL ?? undefined}
                         />
                       ) : (
                         <AvatarFallback

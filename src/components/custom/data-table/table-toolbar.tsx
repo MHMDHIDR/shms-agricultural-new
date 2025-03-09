@@ -146,7 +146,7 @@ export function TableToolbar<TData>({
                 الأعمدة
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="center">
+            <DropdownMenuContent align="center" avoidCollisions={false}>
               {table
                 .getAllColumns()
                 .filter(column => column.getCanHide())
@@ -156,6 +156,7 @@ export function TableToolbar<TData>({
                     className="capitalize"
                     checked={column.getIsVisible()}
                     onCheckedChange={value => column.toggleVisibility(!!value)}
+                    onSelect={e => e.preventDefault()}
                     dir="auto"
                   >
                     {translateSring(column.id)}
