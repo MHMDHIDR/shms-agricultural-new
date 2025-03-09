@@ -1,19 +1,22 @@
 import { Button } from "@/components/ui/button"
+import { SharedColumnsProps } from "@/hooks/use-shared-columns"
 import type { Table } from "@tanstack/react-table"
 
-interface TablePaginationProps<TData> {
+type TablePaginationProps<TData> = {
   table: Table<TData>
   selectedRows: TData[]
   isSelectable?: boolean
+  entityType?: SharedColumnsProps["entityType"]
 }
 
 export function TablePagination<TData>({
   table,
   selectedRows,
   isSelectable = true,
+  entityType,
 }: TablePaginationProps<TData>) {
   return (
-    <div className="flex items-center justify-start gap-x-2 py-4">
+    <div className="flex select-none items-center justify-start gap-x-2 py-4">
       <Button
         variant="outline"
         size="sm"
@@ -33,7 +36,7 @@ export function TablePagination<TData>({
         التالي
       </Button>
 
-      {isSelectable && (
+      {isSelectable && entityType !== "investors" && (
         <div className="text-muted-foreground text-sm">
           تم تحديد {selectedRows.length} من {table.getFilteredRowModel().rows.length}
         </div>

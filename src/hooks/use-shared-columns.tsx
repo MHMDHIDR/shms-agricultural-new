@@ -76,17 +76,24 @@ type TableActions = {
   onDepositProfits?: (id: string) => void
   onResetCredits?: (id: string) => void
   basePath:
-    | "/projects"
     | "/users"
+    | "/projects"
     | "/operations"
     | "/withdrawals"
     | "/profits-percentage"
     | "/dashboard"
 }
 
-type SharedColumnsProps = {
-  entityType: "users" | "projects" | "withdraw_actions" | "profits_percentage" | "user_stocks"
+export type SharedColumnsProps = {
+  entityType:
+    | "users"
+    | "projects"
+    | "withdraw_actions"
+    | "profits_percentage"
+    | "user_stocks"
+    | "investors"
   actions: TableActions
+  showActions?: boolean
 }
 
 // Add Row type for better type safety
@@ -129,7 +136,7 @@ function ActionCell<T extends BaseEntity>({
       accounting_operation_status?: string
     }
   >
-  entityType: "withdraw_actions" | "projects" | "users" | "profits_percentage" | "user_stocks"
+  entityType: SharedColumnsProps["entityType"]
   actions: TableActions
 }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -324,6 +331,7 @@ function ActionCell<T extends BaseEntity>({
 export function useSharedColumns<T extends BaseEntity>({
   entityType,
   actions,
+  showActions,
 }: SharedColumnsProps): {
   columns: ColumnDef<T>[]
   filterFields: DataTableFilterField[]
@@ -1317,9 +1325,7 @@ export function useSharedColumns<T extends BaseEntity>({
     enableHiding: false,
     enablePinning: true,
     enableSorting: false,
-    meta: {
-      pinned: "right",
-    },
+    meta: { pinned: "right" },
     cell: ({ row }) => (
       <ActionCell<T> row={row as Row<T>} entityType={entityType} actions={actions} />
     ),
@@ -1327,15 +1333,15 @@ export function useSharedColumns<T extends BaseEntity>({
 
   return {
     columns: [
-      ...baseColumns,
+      ...(entityType === "investors" ? [] : baseColumns),
       ...(entityType === "users"
-        ? [...userColumns, actionsColumn]
+        ? [...userColumns, ...(showActions !== false ? [actionsColumn] : [])]
         : entityType === "projects"
-          ? [...projectColumns, actionsColumn]
+          ? [...projectColumns, ...(showActions !== false ? [actionsColumn] : [])]
           : entityType === "withdraw_actions"
-            ? [...withdrawActionColumns, actionsColumn]
+            ? [...withdrawActionColumns, ...(showActions !== false ? [actionsColumn] : [])]
             : entityType === "profits_percentage"
-              ? [...profitsPercentageColumns, actionsColumn]
+              ? [...profitsPercentageColumns, ...(showActions !== false ? [actionsColumn] : [])]
               : entityType === "user_stocks"
                 ? [...userStocksColumns]
                 : []),

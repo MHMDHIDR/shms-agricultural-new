@@ -71,7 +71,7 @@ export function TableToolbar<TData>({
 
   return (
     <>
-      <div className="flex w-full flex-col gap-2 py-2.5 sm:flex-row">
+      <div className="flex select-none w-full flex-col gap-2 py-2.5 sm:flex-row">
         <Input
           placeholder={searchPlaceholder || "إبحث عن بيانات ..."}
           value={filtering}
