@@ -123,7 +123,7 @@ export function AppSidebar({
         icon: PercentIcon,
       },
       {
-        title: "الإحصائيات",
+        title: "إحصائيات الزوار",
         url: "https://analytics.technodevlabs.com/share/OVylyVg7zfHirXjt/www.shmsagricultural.com",
         icon: ChartArea,
       },
